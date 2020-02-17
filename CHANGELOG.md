@@ -1,5 +1,5 @@
 # DWZ-Ranglisten Changelog
 
-## Version 1.0.0 (2020-XX-XX)
+## Version 0.0.1 (2020-02-17)
 
 Initiale Version
