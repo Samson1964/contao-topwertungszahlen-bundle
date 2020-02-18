@@ -1,5 +1,9 @@
 # DWZ-Ranglisten Changelog
 
+## Version 0.0.4 (2020-02-18)
+
+Fix: Public-Ordner
+
 ## Version 0.0.3 (2020-02-18)
 
 DCA im Backend
