@@ -13,7 +13,7 @@
 
 $GLOBALS['BE_MOD']['content']['dwzranglisten'] = array
 (
-	'tables'            => array('tl_dwzranglisten', 'tl_dwzranglisten_items')
+	'tables'            => array('tl_dwzranglisten', 'tl_dwzranglisten_ratings')
 );
 
 /**
