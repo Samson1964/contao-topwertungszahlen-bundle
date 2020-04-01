@@ -44,7 +44,8 @@ class Rangliste
 				)
 			);
 		
-			$this->getRangliste($client);
+			//$this->getRangliste_DWZ($client);
+			$this->getRangliste_Elo($client);
 		
 		}
 		catch (SOAPFault $f) {
@@ -52,16 +53,12 @@ class Rangliste
 		}
 	}
 	
-	private function getRangliste($client)
+	private function getRangliste_DWZ($client)
 	{
 		$top = 50; // Anzahl der deutschen Spieler, die benötigt werden
 		$listendatum = date('Ymd'); // Datum der Liste als JJJJMMTT (DWZ täglich)
 		$ausgabeArr = array(); // Die Ranglisten werden hier als Array gespeichert
-
 		$startzeit = microtime(true); // Startzeit
-		// Ausgabedatei
-		$fp = fopen('rangliste.csv', 'w');
-		fputs($fp, 'liste|nr|pid|surname|firstname|title|club|state|membership|rating|ratingIndex|idfide|elo|fideTitle'."\n");
 
 		for($x = 0; $x < 6; $x++)
 		{
@@ -113,21 +110,6 @@ class Rangliste
 					//[rating] => 2859
 					//[ratingIndex] => 135
 					$i++;
-					fputs($fp, $liste.'|');
-					fputs($fp, $i.'|');
-					fputs($fp, $m->pid.'|');
-					fputs($fp, $m->surname.'|');
-					fputs($fp, $m->firstname.'|');
-					fputs($fp, $m->title.'|');
-					fputs($fp, $m->club.'|');
-					fputs($fp, $m->state.'|');
-					fputs($fp, $m->membership.'|');
-					fputs($fp, $m->rating.'|');
-					fputs($fp, $m->ratingIndex.'|');
-					fputs($fp, $m->idfide.'|');
-					fputs($fp, $m->elo.'|');
-					fputs($fp, $m->fideTitle);
-					fputs($fp, "\n");
 					// Spieler in Contao eintragen
 					// Zuerst prüfen, ob es den Spieler bereits gibt
 					$player = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen WHERE dewis_id=?")
@@ -211,7 +193,7 @@ class Rangliste
 						(
 							'vorname'    => $m->firstname,
 							'nachname'   => $m->surname,
-							'dewis_id'   => $m->pid,
+							'link'       => 'spieler/'.$m->pid.'.html',
 							'rating'     => $m->rating,
 							'foto'       => $bildid
 						);
@@ -223,7 +205,12 @@ class Rangliste
 			// Ausgabe
 			echo "Liste Top-$top: $liste (Abfrage $anzahl Spieler) - $j Spieler getestet - $i Deutsche gefunden<br>\n";
 		}
+
+		// JSON schreiben
+		$fp = fopen('dwz.json', 'w');
+		fputs($fp, json_encode($ausgabeArr));
 		fclose($fp);
+
 		$stopzeit = microtime(true); // Stopzeit
 		$laufzeit = $stopzeit-$startzeit; // Berechnung
 		$laufzeit = str_replace(".", ",", $laufzeit); // Trennzeichen ersetzen
@@ -232,10 +219,97 @@ class Rangliste
 		print_r($ausgabeArr);
 		echo "</pre>";
 		
-		// JSON schreiben
-		$fp = fopen('dwz.json', 'w');
-		fputs($fp, json_encode($ausgabeArr));
-		fclose($fp);
+	}
+
+	private function getRangliste_Elo($client)
+	{
+		/* Funktionsweise
+		 * ==============
+		 * 1. Listentyp
+		 * 2. Jeweilige Liste aus tl_elo laden
+		 * 3. Nach Spieler in DeWIS suchen, um DeWIS-ID zu ermitteln
+		 * 4. Zuordnung des Spielers zu tl_topwertungszahlen
+		 * 4.1. Ratingplatz eintragen in tl_topwertungszahlen_ratings
+		 */
+
+		// Aktuelle Elo-Liste ermitteln
+		$objActiv = \Database::getInstance()->prepare('SELECT * FROM tl_elo_listen WHERE published=? ORDER BY datum DESC')
+		                                    ->limit(1)
+		                                    ->execute(1);
+
+		// Listentypen abarbeiten
+		for($x = 0; $x < 6; $x++)
+		{
+			switch($x)
+			{
+				case 0: // Alle Spieler
+					$sql = 'ORDER BY rating DESC';
+					break;
+				case 1: // Alle Frauen
+					$sql = 'AND sex=\'F\' ORDER BY rating DESC';
+					break;
+				case 2: // Alle U20
+					$jahr = date('Y') - 20;
+					$sql = 'AND birthday>='.$jahr.' ORDER BY rating DESC';
+					break;
+				case 3: // Alle U20w
+					$sql = 'AND birthday>='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
+					break;
+				case 4: // Alle Ü60
+					$jahr = date('Y') - 60;
+					$sql = 'AND birthday<='.$jahr.' ORDER BY rating DESC';
+					break;
+				case 5: // Alle Ü60w
+					$sql = 'AND birthday<='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
+					break;
+				default:
+			}
+
+			// Elo-Liste laden
+			$objElo = \Database::getInstance()->prepare('SELECT * FROM tl_elo WHERE pid=? AND published=? AND flag NOT LIKE ? '.$sql)
+			                                  ->limit(10)
+			                                  ->execute($objActiv->id, 1, '%i%');
+
+			if($objElo->numRows)
+			{
+				// Spieler in DeWIS suchen
+				$result = $client->searchByName($objElo->surname, $objElo->prename);
+				if($result->members)
+				{
+					// Spieler in DeWIS wahrscheinlich gefunden, jetzt die Treffer prüfen
+					foreach($result->members as $m)
+					{
+						//[pid] => 10018254
+						//[surname] => Blübaum
+						//[firstname] => Matthias
+						//[title] => 
+						//[gender] => m
+						//[yearOfBirth] => 1997
+						//[membership] => 1101
+						//[vkz] => C0303
+						//[club] => SF Deizisau
+						//[state] => 
+						//[rating] => 2643
+						//[ratingIndex] => 174
+						//[tcode] => B944-K00-EOP
+						//[finishedOn] => 2019-11-02
+						//[idfide] => 24651516
+						//[nationfide] => GER
+						//[elo] => 2646
+						//[fideTitle] => GM
+						echo $m->surname;
+						echo $m->firstname;
+					}
+				}
+			}
+
+		}
+
+		$stopzeit = microtime(true); // Stopzeit
+		$laufzeit = $stopzeit-$startzeit; // Berechnung
+		$laufzeit = str_replace(".", ",", $laufzeit); // Trennzeichen ersetzen
+		echo "Abfragezeit: $laufzeit Sekunden<br>\n";
+
 	}
 }
 
