@@ -1,61 +1,301 @@
 liste|nr|pid|surname|firstname|title|club|state|membership|rating|ratingIndex|idfide|elo|fideTitle
-alle|1|10038538|Donchenko|Alexander||SF Deizisau||1109|2657|210|24603295|2650|GM
-alle|2|10154642|Nisipeanu|Liviu-Dieter||USV TU Dresden||1169|2656|136|1202758|2657|GM
-alle|3|10077900|Heimann|Andreas||SF Deizisau||1102|2646|186|24624632|2627|GM
+alle|1|10154642|Nisipeanu|Liviu-Dieter||USV TU Dresden||1169|2656|136|1202758|2655|GM
+alle|2|10038538|Donchenko|Alexander||SF Deizisau||1109|2653|211|24603295|2648|GM
+alle|3|10077900|Heimann|Andreas||SF Deizisau||1102|2646|186|24624632|2631|GM
 alle|4|10091611|Huschenbeth|Niclas||FC Bayern München e.V.||1197|2644|159|24604747|2605|GM
-alle|5|10018254|Blübaum|Matthias||SF Deizisau||1101|2643|174|24651516|2651|GM
-alle|6|10069944|Gustafsson|Jan||OSG Baden-Baden||431|2641|157|4625498|2642|GM
-alle|7|10054341|Fridman|Daniel||Schachverein Mülheim-Nord 1931 e. V.||390|2631|171|11600454|2625|GM
-alle|8|10139700|Meier|Georg||SF Deizisau||1098|2614|167|4675789|2622|GM
+alle|5|10018254|Blübaum|Matthias||SF Deizisau||1101|2643|174|24651516|2646|GM
+alle|6|10069944|Gustafsson|Jan||OSG Baden-Baden||431|2641|157|4625498|2640|GM
+alle|7|10054341|Fridman|Daniel||Schachverein Mülheim-Nord 1931 e. V.||390|2631|171|11600454|2619|GM
+alle|8|10139700|Meier|Georg||SF Deizisau||1098|2614|167|4675789|2620|GM
 alle|9|10016621|Bindrich|Falko||SV Lingen||342|2606|176|4676670|2605|GM
-alle|10|10259246|Kollars|Dmitrij||SF Deizisau||1110|2599|146|12909572|2593|GM
-w|1|10159338|Pähtz|Elisabeth||USV TU Dresden||1168|2433|247|4641833|2472|IM
-w|2|10250286|Michna|Marta||SG Turm Kiel von 1910||1044|2332|97|1106686|2359|WGM
-w|3|10140515|Melamed|Tatjana||SG Aufbau Elbe Magdeburg||1061|2316|108|14102145|2357|WGM
-w|4|10106708|Klek|Hanna Marie||SC Erlangen 48/88||32|2309|178|24670057|2295|WGM
-w|5|10097824|Kachiani-Gersinska|Ketino||OSG Baden-Baden||361|2304|109|4623614|2323|IM
-w|6|10283541|Schulze|Lara||SK Lehrte von 1919 e. V.||1041|2304|139|12956830|2314|FM
-w|7|10158245|Osmanodja|Filiz||USV TU Dresden||118|2296|201|24633569|2282|WIM
-w|8|10128193|Köpke|Elena||SC Garching 1980 e.V.||1109|2294|129|14200686|2280|WGM
-w|9|10088938|Papp|Sarah||Hamburger SK von 1830 eV||2323|2287|186|24606812|2316|WGM
-w|10|10126972|Schleining|Zoya||Schachverein Letmathe 1933 e. V.||1023|2276|118|4671660|2309|IM
-u20|1|10283283|Keymer|Vincent||SF Deizisau||1099|2570|87|12940690|2557|IM
-u20|2|10286900|Engel|Luis||Hamburger SK von 1830 eV||1292|2563|87|12961523|2545|IM
-u20|3|10275071|Buckels|Valentin||Schachverein Mülheim-Nord 1931 e. V.||1197|2473|115|12942766|2462|IM
-u20|4|10274124|Vogel|Roven||USV TU Dresden||1138|2471|139|12908088|2473|IM
-u20|5|10514141|Parvanyan|Ashot||SG Turm Kiel von 1910||1050|2458|39|13307550|2451|IM
-u20|6|10270068|Roseneck|Jonas||SG Aufbau Elbe Magdeburg||1058|2425|134|12939870|2425|FM
-u20|7|10270359|Svane|Frederik||Lübecker SV von 1873||136|2402|110|12923044|2421|
-u20|8|10261381|Schmidek|Emil||Schachfreunde Berlin 1903 e.V.||1189|2385|118|12908150|2409|FM
-u20|9|10264752|Reuker|Jari||SAbt SV Werder Bremen||1293|2375|116|12909300|2385|
-u20|10|10122811|Lagunow|Raphael||SK Zehlendorf e.V.||1062|2367|128|24652644|2401|IM
+alle|10|10219706|Svane|Rasmus||Hamburger SK von 1830 eV||1342|2603|175|4657101|2613|GM
+alle|11|10023157|Braun|Arik||SV Hockenheim||984|2587|135|4663527|2609|GM
+alle|12|10199285|Schröder|Jan-Christian||Schachfreunde Berlin 1903 e.V.||1245|2583|162|24662259|2568|GM
+alle|13|10259246|Kollars|Dmitrij||SF Deizisau||1110|2581|147|12909572|2592|GM
+alle|14|10121208|Kunin|Vitaly||Freibauer Mörlenbach-Birkenau||202|2579|239|4128737|2560|GM
+alle|15|10114544|Krämer|Martin||Schachfreunde Berlin 1903 e.V.||1021|2574|182|4671910|2574|GM
+alle|16|10117535|Kritz|Leonid||SAbt SV Werder Bremen||1017|2571|92|4653530|2568|GM
+alle|17|10283283|Keymer|Vincent||SF Deizisau||1099|2570|87|12940690|2558|IM
+alle|18|10033646|Dautov|Rustem||SF Deizisau||1077|2570|97|4623606|2595|GM
+alle|19|10286900|Engel|Luis||Hamburger SK von 1830 eV||1292|2563|87|12961523|2536|IM
+alle|20|10232885|Wagner|Dennis||SV Hockenheim||964|2558|148|24650684|2581|GM
+alle|21|10090572|Hübner|Robert|Dr.|Schachclub 1919 Siegburg e. V.||1078|2556|198|4600010|2574|GM
+alle|22|10007678|Baramidze|David||SV Hockenheim||951|2552|157|4667719|2601|GM
+alle|23|10151656|Neef|Maximilian||USV TU Dresden||142|2548|106|24692085|2509|IM
+alle|24|10038106|Döttling|Fabian||OSG Baden-Baden||211|2544|134|4627253|2587|GM
+alle|25|10065114|Graf|Alexander||SF Deizisau||1078|2542|114|4680804|2575|GM
+alle|26|10146117|Mons|Leon||MSA Zugzwang 82 e.V.||1193|2540|139|4614950|2543|GM
+alle|27|10027834|Buhmann|Rainer||SV Hockenheim||944|2530|239|4651340|2581|GM
+alle|28|10097653|Jussupow|Artur||Schachgesellschaft Solingen e. V.||590|2528|94|4618777|2560|GM
+alle|29|10233561|Wahls|Matthias||Hamburger SK von 1830 eV||434|2527|109|4600070|2543|GM
+alle|30|10148483|Müller|Karsten|Dr.|Hamburger SK von 1830 eV||544|2521|113|4600347|2532|GM
+alle|31|10165992|Poetsch|Hagen||SC Heusenstamm||1160|2521|208|24615137|2529|GM
+alle|32|10013580|Berelowitsch|Alexander||Düsseldorfer Schachklub 14/25 e. V.||1263|2518|116|14101440|2512|GM
+alle|33|10151372|Naumann|Alexander||Schachgesellschaft Solingen e. V.||476|2514|144|4623169|2539|GM
+alle|34|10168687|Prusikin|Michael||BCA Augsburg||18|2514|185|4642325|2549|GM
+alle|35|10133546|Luther|Thomas||SK Weilheim e.V.||295|2511|162|4611420|2528|GM
+alle|36|10083562|Hickl|Jörg||SV 1920 Hofheim||427|2510|134|4600118|2545|GM
+alle|37|10103387|Khenkin|Igor||SG Turm Kiel von 1910||1042|2510|171|4659600|2559|GM
+alle|38|10257528|Lampert|Jonas||Hamburger SK von 1830 eV||1099|2507|164|1303759|2531|IM
+alle|39|10215504|Stern|René||SK König Tegel 1949 e.V.||438|2507|166|4611799|2526|GM
+alle|40|10013549|Berchtenbreiter|Maximilian||Münchener SC 1836 e.V.||1112|2506|136|24641120|2489|IM
+alle|41|10073478|Handke|Florian|Dr.|Schachgesellschaft Solingen e. V.||1212|2504|118|4634527|2538|GM
+alle|42|10155002|Noe|Christopher||SC Eppingen||253|2503|189|24692018|2518|IM
+alle|43|10017027|Bischoff|Klaus||FC Bayern München e.V.||1070|2501|241|4600045|2503|GM
+alle|44|10252010|Zumsande|Martin||SAbt SV Werder Bremen||1232|2496|117|4651324|2456|IM
+alle|45|10007004|Baldauf|Marco||Schachfreunde Berlin 1903 e.V.||1127|2496|180|4688210|2503|GM
+alle|46|10065184|Graf|Jürgen||TSF Welzheim||1000|2495|67|4600312|2440|IM
+alle|47|10130522|Lobron|Eric||TSV Schott Mainz||1068|2492|117|4600037|2501|GM
+alle|48|10033199|Dann|Matthias||OSG Baden-Baden||818|2489|102|24638056|2511|IM
+alle|49|10169796|Rabiega|Robert||SK König Tegel 1949 e.V.||336|2485|155|4601475|2511|GM
+alle|50|10191360|Schlosser|Philipp||OSG Baden-Baden||780|2485|198|4600169|2509|GM
+w|1|10159338|Pähtz|Elisabeth||USV TU Dresden||1168|2454|248|4641833|2473|IM
+w|2|10250286|Michna|Marta||SG Turm Kiel von 1910||1044|2332|97|1106686|2350|WGM
+w|3|10140515|Melamed|Tatjana||SG Aufbau Elbe Magdeburg||1061|2316|108|14102145|2336|WGM
+w|4|10106708|Klek|Hanna Marie||SC Erlangen 48/88||32|2309|178|24670057|2304|WGM
+w|5|10088938|Papp|Sarah||Hamburger SK von 1830 eV||2323|2307|187|24606812|2334|WGM
+w|6|10097824|Kachiani-Gersinska|Ketino||OSG Baden-Baden||361|2304|109|4623614|2318|IM
+w|7|10283541|Schulze|Lara||SK Lehrte von 1919 e. V.||1041|2304|139|12956830|2314|FM
+w|8|10126972|Schleining|Zoya||Schachverein Letmathe 1933 e. V.||1023|2276|118|4671660|2320|IM
+w|9|10128193|Köpke|Elena||SC Garching 1980 e.V.||1109|2276|130|14200686|2277|WGM
+w|10|10157371|Manakov|Marina||TV Tegernsee||291|2261|85|4616057|2280|WIM
+w|11|10158245|Osmanodja|Filiz||USV TU Dresden||118|2261|202|24633569|2293|WIM
+w|12|10157222|Lubbe|Melanie||SF Neuberg||270|2261|225|4690745|2287|WGM
+w|13|10078252|Heinemann|Josefine||SC Viernheim 1934 e.V.||1129|2260|183|12900460|2281|WGM
+w|14|10268903|Schneider|Jana||SC Bavaria Regensburg von 1881 e.V.||1262|2252|126|12924997|2272|FM
+w|15|10021666|Borulya|Ekaterina Uriivna||OSG Baden-Baden||203|2249|47|4630610|2299|WGM
+w|16|10405844|Mütsch|Annmarie||SC Viernheim 1934 e.V.||1134|2235|133|12971367|2216|WIM
+w|17|10220371|Tammert|Iamze||OSG Baden-Baden||180|2231|69|13601040|2284|WIM
+w|18|10107402|Klink|Tamara||OSG Baden-Baden|P|629|2219|35|4682920|2308|WGM
+w|19|10224807|Trabert|Bettina||SK Freiburg-Zähringen 1887 e.V.||1023|2217|130|4608682|2278|WGM
+w|20|10268724|Sieber|Fiona||SG Aufbau Elbe Magdeburg||1101|2213|123|12902373|2201|WIM
+w|21|10096872|Jürgens|Vera||SF Lilienthal von 1971||1047|2210|74|4617339|2270|WGM
+w|22|10134278|Mader|Manuela||SK 1926 Ettlingen||307|2210|167|24612928|2206|WIM
+w|23|10154559|Schmidt|Jessica||Karlsruher SF 1853||1003|2209|113|4636546|2234|WGM
+w|24|10055989|Fuchs|Judith||Hamburger SK von 1830 eV||1288|2208|214|24605611|2216|WGM
+w|25|10034571|Delemarre|Isabel||Karlsruher SF 1853||244|2189|111|4621905|2251|WIM
+w|26|10139641|Meier|Annemarie||DJK Stuttgart-Süd||213|2183|52|4640586|2258|
+w|27|10018313|Bluhm|Sonja Maria||SV 1920 Hofheim||563|2175|112|24654027|2188|WIM
+w|28|10002106|Alkhazashvili|Ololi||Oberhausener Schachverein 1887 e. V.||1160|2158|50|24616761|2184|
+w|29|10227243|Ulms|Sandra||Schachgemeinschaft Leipzig||98|2158|151|4618947|2149|
+w|30|10181918|Rudolph|Anna||Schachverein Mülheim-Nord 1931 e. V.||1085|2157|80|14102404|2227|WIM
+w|31|10143754|Duppel|Tina||OSG Baden-Baden|P|551|2157|156|4655524|2238|WIM
+w|32|10050174|Fischdick|Gisela||Düsseldorfer Schachklub 14/25 e. V.||1135|2155|122|4603966|2213|WGM
+w|33|10035158|Dergatschova|Anna||Schachklub Holsterhausen e. V.||1073|2137|106|4120663|2176|WIM
+w|34|10241738|Wieland|Ilse||SV Blau-Rot Pratau||1005|2134|7|4612507|2145|
+w|35|10097654|Jussupow|Ekaterina||SK Krumbach||171|2131|134|24625400|2193|WFM
+w|36|10197042|Schöne|Maria||SG Aufbau Elbe Magdeburg||1052|2131|168|4681410|2204|WIM
+w|37|10254732|Zahn|Alina||Hamburger SK von 1830 eV||2041|2130|108|24696730|2099|WFM
+w|38|10229361|Vidonyak|Nellya||FC Bayern München e.V.||1141|2127|83|4637330|2136|WIM
+w|39|10097655|Jussupow|Nadia||SK Krumbach||152|2113|122|4649435|2159|WFM
+w|40|10040364|Düssler|Stefanie||SK Lehrte von 1919 e. V.||1082|2112|110|4634780|2124|
+w|41|10018568|Bochis|Julia||OSG Baden-Baden||360|2106|114|24647276|2142|WFM
+w|42|10251833|Zschischang|Marine||SK Lehrte von 1919 e. V.||157|2100|65|13300644|2082|
+w|43|10119361|Kuckling|Hannah||Schachfreunde Gerresheim 86 e. V.||1169|2099|133|24603660|2070|WFM
+w|44|10103580|Kiefhaber|Veronika||Karlsruher SF 1853||166|2095|143|4616227|2143|WIM
+w|45|10228468|van Münster|Kirsten||Klub Kölner Schachfreunde e. V. 1967||1174|2092|108|4624483|2187|WFM
+w|46|10179199|Rößler|Ulrike||SC 1994 Oberland||111|2090|149|4622650|2118|WIM
+w|47|10044672|Endress|Anna||Sfr.Heimersheim||161|2088|105|24629472|2112|WFM
+w|48|10406646|Ziegenfuß|Antonia||OSG Baden-Baden||655|2087|84|12962554|2101|WFM
+w|49|10701985|Zhang|Wen||SK Freiburg-Zähringen 1887 e.V.||1250|2085|1|16270584|0|
+w|50|10217473|Straub|Natalia||SF Deizisau||1076|2085|67|14102757|2137|WGM
+u20|1|10283283|Keymer|Vincent||SF Deizisau||1099|2570|87|12940690|2558|IM
+u20|2|10286900|Engel|Luis||Hamburger SK von 1830 eV||1292|2563|87|12961523|2536|IM
+u20|3|10275071|Buckels|Valentin||Schachverein Mülheim-Nord 1931 e. V.||1197|2473|115|12942766|2455|IM
+u20|4|10514141|Parvanyan|Ashot||SG Turm Kiel von 1910||1050|2456|40|13307550|2447|IM
+u20|5|10274124|Vogel|Roven||USV TU Dresden||1138|2441|140|12908088|2456|IM
+u20|6|10270068|Roseneck|Jonas||SG Aufbau Elbe Magdeburg||1058|2425|134|12939870|2416|FM
+u20|7|10270359|Svane|Frederik||Lübecker SV von 1873||136|2402|110|12923044|2423|
+u20|8|10261381|Schmidek|Emil||Schachfreunde Berlin 1903 e.V.||1189|2385|118|12908150|2397|FM
+u20|9|10264752|Reuker|Jari||SAbt SV Werder Bremen||1293|2375|116|12909300|2401|
+u20|10|10263809|Martin|Julian||OSG Baden-Baden||522|2362|111|12941000|2387|IM
+u20|11|10260217|Gungl|Theo||SG Aufbau Elbe Magdeburg||1123|2357|127|24695653|2360|FM
+u20|12|10260119|Chittka|Julius||Verein f. Sport u. Freizeit v. 1975 Düsseldorf-Süd e. V.||1081|2353|83|12954772|2340|FM
+u20|13|10567785|Köllner|Ruben Gideon||SF Deizisau||1119|2353|133|12993093|2376|FM
+u20|14|10280663|Muckle|Julius||SK 1912 Ludwigshafen||1071|2349|102|12942430|2386|FM
+u20|15|10267894|Kopylov|Daniel||TuRa Harksheide von 1945 Norderstedt e.V||199|2340|121|12921971|2348|
+u20|16|10122811|Lagunow|Raphael||SK Zehlendorf e.V.||1062|2339|130|24652644|2389|IM
+u20|17|10271338|Nothnagel|Marian Can||SV Griesheim 1976||350|2335|82|12921530|2363|FM
+u20|18|10277577|Pajeken|Jakob Leon||SG Turm Kiel von 1910||1046|2325|135|12942839|2342|IM
+u20|19|10268960|Schröder|Kevin||Schachgesellschaft Solingen e. V.||1155|2324|120|12929840|2332|FM
+u20|20|10280299|Stork|Oliver||SV Oberursel||1049|2322|74|12955728|2367|FM
+u20|21|10252675|Spitzl|Vinzent||SV Griesheim 1976||345|2318|104|12901253|2344|FM
+u20|22|10270334|Suvorov|Alexander||Schachgemeinschaft Porz e. V.||1050|2312|102|12977063|2320|FM
+u20|23|10490363|Krastev|Alexander||Biebertaler Schachfreunde||1047|2308|104|12989983|2340|FM
+u20|24|10285242|Rieß|Alexander||Lübecker SV von 1873||109|2304|81|12953326|2315|FM
+u20|25|10283541|Schulze|Lara||SK Lehrte von 1919 e. V.||1041|2304|139|12956830|2314|FM
+u20|26|10405446|Färber|David||SV 1947 Walldorf||237|2301|90|12971294|2321|
+u20|27|10272688|Kitze|Alexander||Grün-Weiß Granschütz||37|2301|93|12914827|2284|
+u20|28|10269778|Stein|Robert||SG 1871 Löberitz||138|2300|110|12921084|2325|FM
+u20|29|10500504|Uksini|Bardhyl||Hamburger SK von 1830 eV||1555|2299|87|1628313|2313|
+u20|30|10264765|Bergauz|Noam||Schachklub München Südost e.V.||1034|2287|91|12938033|2314|
+u20|31|10269279|Kololli|Martin||Lübecker SV von 1873||56|2286|119|12936910|2309|FM
+u20|32|10286194|Browning|Alex||Schachvereinigung 1920 Plettenberg e. V.||393|2284|109|12984019|2296|FM
+u20|33|10254197|Urban|Konstantin||USV TU Dresden||1199|2282|87|12927511|2318|
+u20|34|10431821|Küppers|Timo||Schachfreunde Essen-Katernberg 04/32 e. V.||62|2281|76|16205820|2278|FM
+u20|35|10401787|Bethke|Richard||SF Neuberg||336|2281|103|12959243|2332|FM
+u20|36|10405541|Richter|Nils||TSV Schönaich||270|2277|78|12990809|2332|FM
+u20|37|10403494|Nguyen|Alex Dac-Vuong||Schachgemeinschaft Leipzig||1327|2276|124|12984388|2361|FM
+u20|38|10281328|Schmider|Niklas||OSG Baden-Baden||834|2265|62|12993778|2297|FM
+u20|39|10259923|Höglauer|Patrick||SC Grunbach||1128|2264|109|1270548|2273|FM
+u20|40|10279476|Biastoch|Bennet||SG Aufbau Elbe Magdeburg||1050|2264|132|12939889|2315|FM
+u20|41|10433212|Wachinger|Nikolas||SAbt SV Werder Bremen||1154|2262|77|12962791|2304|
+u20|42|10254655|Karsay|Pascal||SV Worms 1878||252|2261|100|12953474|2304|FM
+u20|43|10268170|Weber|Samuel||SV Oberursel||1133|2261|135|12924008|2336|FM
+u20|44|10258281|Pallas|Sebastian||SG 1871 Löberitz||116|2260|116|12905453|2313|
+u20|45|10268903|Schneider|Jana||SC Bavaria Regensburg von 1881 e.V.||1262|2252|126|12924997|2272|FM
+u20|46|10282680|Dobrikov|Marco||SV Hockenheim||1000|2249|70|12950378|2290|FM
+u20|47|10407758|Trifan|Andrei Ioan||OSG Baden-Baden||830|2245|62|12967068|2249|
+u20|48|10275057|Goldbeck|Lars||SC Bavaria Regensburg von 1881 e.V.||1244|2244|55|16208188|2275|FM
+u20|49|10406676|Weishäutel|Moritz||Erfurter Schachklub||1099|2243|85|12967300|2218|
+u20|50|10405844|Mütsch|Annmarie||SC Viernheim 1934 e.V.||1134|2235|133|12971367|2216|WIM
 u20w|1|10283541|Schulze|Lara||SK Lehrte von 1919 e. V.||1041|2304|139|12956830|2314|FM
-u20w|2|10268903|Schneider|Jana||SC Bavaria Regensburg von 1881 e.V.||1262|2272|125|12924997|2280|FM
-u20w|3|10405844|Mütsch|Annmarie||SC Viernheim 1934 e.V.||1134|2246|132|12971367|2236|WIM
-u20w|4|10268724|Sieber|Fiona||SG Aufbau Elbe Magdeburg||1101|2213|123|12902373|2202|WIM
-u20w|5|10406646|Ziegenfuß|Antonia||OSG Baden-Baden||655|2067|83|12962554|2065|WFM
-u20w|6|10266256|Sewald|Kathrin||Schachgemeinschaft Porz e. V.||1104|2026|98|12964557|1999|
-u20w|7|10266163|Rogozenco|Teodora||Hamburger SK von 1830 eV||1117|2017|146|12938084|1988|WFM
-u20w|8|10271695|Sanati|Charlotte||SG Trier||1116|2013|82|12907707|2041|
-u20w|9|10588793|Ricken|Katharina||Krefelder Schachklub Turm 1851 e. V.||1129|2003|57|16207017|2035|WCM
-u20w|10|10261764|Halas|Julia||Schachgemeinschaft Leipzig||1187|2002|111|12931810|2010|
-60+|1|10090572|Hübner|Robert|Dr.|Schachclub 1919 Siegburg e. V.||1078|2566|197|4600010|2576|GM
-60+|2|10097653|Jussupow|Artur||Schachgesellschaft Solingen e. V.||590|2528|93|4618777|2560|GM
+u20w|2|10268903|Schneider|Jana||SC Bavaria Regensburg von 1881 e.V.||1262|2252|126|12924997|2272|FM
+u20w|3|10405844|Mütsch|Annmarie||SC Viernheim 1934 e.V.||1134|2235|133|12971367|2216|WIM
+u20w|4|10268724|Sieber|Fiona||SG Aufbau Elbe Magdeburg||1101|2213|123|12902373|2201|WIM
+u20w|5|10406646|Ziegenfuß|Antonia||OSG Baden-Baden||655|2087|84|12962554|2101|WFM
+u20w|6|10701985|Zhang|Wen||SK Freiburg-Zähringen 1887 e.V.||1250|2085|1|16270584|0|
+u20w|7|10266256|Sewald|Kathrin||Schachgemeinschaft Porz e. V.||1104|2030|99|12964557|2009|
+u20w|8|10260165|Arnhold|Steffi||SC Einheit Bautzen||1007|2030|112|12931365|2038|
+u20w|9|10266163|Rogozenco|Teodora||Hamburger SK von 1830 eV||1117|2017|146|12938084|1979|WFM
+u20w|10|10287153|Müdder|Melanie||Schachgesellschaft Solingen e. V.||1159|2015|90|12994103|2045|
+u20w|11|10271695|Sanati|Charlotte||SG Trier||1116|2013|82|12907707|2041|
+u20w|12|10277282|Bardorz|Jana||TSV 1869 e. V. Rottendorf||47|2009|55|16208897|2000|
+u20w|13|10588793|Ricken|Katharina||Krefelder Schachklub Turm 1851 e. V.||1129|2003|57|16207017|2044|WCM
+u20w|14|10269140|Wächter|Nathalie||SV Rochade Magdeburg 96||1049|1990|103|12921033|2006|
+u20w|15|10404826|Lange|Cecilia||SV Mattnetz Berlin e.V.||167|1988|71|12976040|1965|
+u20w|16|10270139|Ratay|Meike||MTV 1876 Saalfeld||164|1980|94|12977608|1984|
+u20w|17|10286730|Leser|Katrin||SC Tettnang||173|1977|98|12997692|2004|
+u20w|18|10275542|Nguyen|Ha Thanh||SV Medizin Erfurt||205|1975|82|12942154|2019|
+u20w|19|10264282|Poetsch|Leonore||SK Langen||1150|1974|78|12940372|1984|
+u20w|20|10272046|Köhler|Inken||TuRa Harksheide von 1945 Norderstedt e.V||49|1967|124|12929301|1958|
+u20w|21|10261764|Halas|Julia||Schachgemeinschaft Leipzig||1187|1965|112|12931810|1996|
+u20w|22|10401353|Bashylina|Luisa||Schachgesellschaft Solingen e. V.||1083|1963|84|12983292|1975|WCM
+u20w|23|10287489|Mönster|Madita||SK Wildeshausen||1061|1948|100|12947156|1918|
+u20w|24|10269847|Reinecke|Katharina||SK Langen||1075|1938|89|12929727|1950|
+u20w|25|10286193|Browning|Rebecca||Märkischer Springer Halver-Schalksmühle e. V.||321|1933|96|12984027|1918|
+u20w|26|10587357|Wagner|Margarethe||Erfurter Schachklub||1054|1921|68|16236947|1907|
+u20w|27|10405763|Reitz|Theresa||VfR-SC Koblenz||1112|1920|87|12971901|1942|
+u20w|28|10270498|Kobald|Jacqueline||SV Stuttgart-Wolfbusch 1956 e.V.||1053|1919|89|12988162|1955|
+u20w|29|10432956|Dietz|Kristin||USV Halle||1117|1918|74|12993743|1913|
+u20w|30|10272895|Ley|Sabrina||SV Turm Lahnstein||232|1907|97|12938130|1871|
+u20w|31|10405235|Glinzner|Alva||Lübecker SV von 1873||33|1904|87|16206169|1855|
+u20w|32|10278060|Weimert|Miriam||SG Turm Leipzig||1058|1902|95|12966703|1902|
+u20w|33|10208652|Simon|Tessa||Muldental Wilkau-Haßlau||146|1901|124|12929395|1860|
+u20w|34|10278635|Bui|Ngoc Han Julia||SV Dresden-Leuben||1035|1891|102|12977055|1891|
+u20w|35|10278843|Berelowitsch|Dana||Schachgesellschaft Solingen e. V.||1112|1890|87|12977144|1843|
+u20w|36|10271198|Khamenya|Vitalia||SK Gräfelfing||1025|1888|108|12959260|1896|
+u20w|37|10491105|Reuter|Elisa||SV Empor Erfurt||1128|1887|109|12995444|1912|WCM
+u20w|38|10489528|Rudolph|Eva||Düsseldorfer Schachklub 14/25 e. V.||1131|1885|96|16200594|1836|
+u20w|39|10272750|Schnabel|Luise||SV Mattnetz Berlin e.V.||119|1879|111|12943347|1867|
+u20w|40|10278069|Könze|Heike||SV 1919 Grimma||1017|1879|118|12964476|1850|
+u20w|41|10270657|Möller|Lisa-Marie||SK Blauer Springer Paderborn 1926 e. V.||132|1878|109|12959367|1889|
+u20w|42|10433018|Brunner|Sophia||SK Nordhorn-Blanke||424|1877|106|12960683|1881|
+u20w|43|10598151|Peglau|Mirjam||Schachzentrum Seeblick e. V.||10|1870|56|16211138|1851|
+u20w|44|10278472|Ehmann|Johanna||SK Oberkirch||248|1870|106|12953130|1846|
+u20w|45|10489542|Zhou|Lepu Coco||SC Weisse Dame e.V.||1337|1867|71|16217136|1872|
+u20w|46|10280466|Heutling|Elina||Schachzwerge Magdeburg||65|1860|83|16244729|1833|
+u20w|47|10254521|Diener|Carolin Valeria||SK Bad Homburg 1927||1118|1859|104|24699063|1873|
+u20w|48|10282255|Hagenbeck-Hübert|Lara||SV 1919 Grimma||1019|1856|102|12964484|1882|
+u20w|49|10265459|Oberhofer|Marie||SC Bavaria Regensburg von 1881 e.V.||1028|1852|103|12938165|1771|
+u20w|50|10402766|Fock|Amina||SC Kreuzberg e.V.||1314|1850|58|12981982|1840|
+60+|1|10090572|Hübner|Robert|Dr.|Schachclub 1919 Siegburg e. V.||1078|2556|198|4600010|2574|GM
+60+|2|10097653|Jussupow|Artur||Schachgesellschaft Solingen e. V.||590|2528|94|4618777|2560|GM
 60+|3|10130522|Lobron|Eric||TSV Schott Mainz||1068|2492|117|4600037|2501|GM
 60+|4|10019674|Bönsch|Uwe||USV TU Dresden||1086|2481|211|4611268|2508|GM
-60+|5|10128176|Levin|Felix||SV Lingen||324|2450|195|4650905|2472|GM
-60+|6|10108281|Knaak|Rainer||SAbt SV Werder Bremen||293|2445|34|4611250|2478|GM
+60+|5|10128176|Levin|Felix||SV Lingen||324|2460|197|4650905|2480|GM
+60+|6|10108281|Knaak|Rainer||SAbt SV Werder Bremen||293|2445|35|4611250|2478|GM
 60+|7|10163795|Pfleger|Helmut|Dr.|SC 1868 Bamberg||123|2443|86|4600100|2477|GM
-60+|8|10098869|Kalinitschew|Sergey||Lübecker SV von 1873||285|2423|276|4637321|2439|GM
-60+|9|10140392|Meister|Jakob||SK Zehlendorf e.V.||599|2405|108|4102541|2433|GM
+60+|8|10098869|Kalinitschew|Sergey||Lübecker SV von 1873||285|2423|276|4637321|2437|GM
+60+|9|10140392|Meister|Jakob||SK Zehlendorf e.V.||599|2383|109|4102541|2427|GM
 60+|10|10004798|Aßmann|Thomas||Schachfreunde Sailauf||207|2368|75|4601823|2335|FM
+60+|11|10230502|Vogt|Lothar||SC Eppingen||289|2357|259|4611292|2352|GM
+60+|12|10010863|Beckemeyer|Werner||Schachklub Münster 32 e. V.|P|1179|2349|107|4601408|2384|IM
+60+|13|10209352|Skulener|Wladimir||DJK Aufwärts St. Josef Aachen 1920||1008|2345|62|24602159|2371|FM
+60+|14|10070084|Gutman|Lev||SV Lingen||234|2342|387|4600177|2406|GM
+60+|15|10089622|Hort|Vlastimil||Oberhausener Schachverein 1887 e. V.||362|2333|260|4600029|2397|GM
+60+|16|10194582|Schmittdiel|Eckhard||BCA Augsburg||14|2323|267|4600096|2402|GM
+60+|17|10068269|Grünberg|Hans-Ulrich||SF Schwerin||1160|2315|42|4611306|2373|IM
+60+|18|10097764|Kabatianski|Alexander||Schachclub Rochade Emsdetten||1060|2308|68|4630637|2358|IM
+60+|19|10134893|Maier|Christian||SC Emmendingen 1937 e.V.||1094|2307|195|4601955|2294|IM
+60+|20|10030386|Chevelevitch|Evgueni|Dr.|Hamburger SK von 1830 eV||6|2306|32|4684257|2391|IM
+60+|21|10051299|Fleck|Jürgen||Schwalbe|P|312|2301|84|4600614|2374|IM
+60+|22|10074913|Hartmann|Gerald||SC 1868 Bamberg||94|2299|27|4603729|2285|
+60+|23|10158460|Ostermeyer|Peter|Dr.|TSV 1869 e. V. Rottendorf||62|2295|149|4600355|2402|IM
+60+|24|10134867|Maier|Alexander||SC Gröbenzell||1055|2294|121|4617061|2280|IM
+60+|25|10180407|Rosen|Bernd||Schachfreunde Essen-Katernberg 04/32 e. V.||85|2293|168|4603060|2324|FM
+60+|26|10210586|Sonntag|Hans-Hubert||Aachener Schachverein 1856 e. V.||391|2289|89|4601025|2330|IM
+60+|27|10125872|Legde|Georg||Freibauer Mörlenbach-Birkenau||1035|2288|112|4605462|2333|FM
+60+|28|10165555|Plötz|Werner|Dr.|FC Bayern München e.V.||348|2287|48|4606027|2250|
+60+|29|10029885|Casper|Thomas||Erfurter Schachklub||63|2287|187|4611403|2346|IM
+60+|30|10044130|Ellrich|Paul||Schachgemeinschaft Porz e. V.||5|2285|6|4603940|2285|
+60+|31|10004379|Arnold|Lothar||Karlsruher SF 1853||483|2281|199|4604300|2330|IM
+60+|32|10076722|Hecht|Hans-Joachim||SAbt TuS Fürstenfeldbruck||125|2281|257|4600320|2303|GM
+60+|33|10020425|Boidman|Yuri||SC Heimbach-Weis/Neuwied e.V.||1056|2276|259|4643992|2335|IM
+60+|34|10077751|Heilemann|Manfred||SF Hannover||272|2275|97|4604423|2294|
+60+|35|10092413|Ingenerf|Stefan||Rheydter Schachverein 1920||1122|2273|63|4604750|2275|
+60+|36|10202290|Schulze|Ulrich||SC Blauer Turm Bad Wimpfen||1083|2273|198|4600525|2304|IM
+60+|37|10159340|Pähtz|Thomas||Erfurter Schachklub||1090|2272|279|4611349|2350|GM
+60+|38|10130229|Lisek|Jürgen||SC Rotation Pankow e.V.||14|2271|110|4614275|2230|
+60+|39|10199992|Schubert|Thomas||Schachgemeinschaft Leipzig||1166|2269|55|4643038|2317|FM
+60+|40|10197378|Schönthier|Frank||Langenfelder Schachfreunde 1933||1032|2268|64|4601645|2321|FM
+60+|41|10135460|Malcher|Werner||Brackweder Schachklub von 1924||1075|2267|13|4665368|2332|
+60+|42|10146859|Moufang|Rainer|Dr.|SC Haar 1931||1012|2266|13|12959073|0|
+60+|43|10108193|Klundt|Klaus||SC Heusenstamm||1064|2266|369|4600436|2299|IM
+60+|44|10177964|Rittmeier|Bernhard||Schachverein Velmede-Bestwig||22|2265|200|4620917|2303|
+60+|45|10058063|Gasthofer|Viktor||SF Bad Mergentheim||186|2262|93|4646207|2305|IM
+60+|46|10021335|Borik|Otto||Bremer SG von 1877||432|2259|114|4600762|2347|IM
+60+|47|10021501|Borngässer|Rene||Düsseldorfer Schachklub 14/25 e. V.||149|2258|139|4600940|2350|FM
+60+|48|10018253|Blübaum|Karl-Ernst||Schachverein Königsspringer Lemgo e. V.||1|2256|75|4605047|2281|
+60+|49|10184720|Sandner|Gunter||Schachklub König Plauen||33|2256|110|4646401|2275|FM
+60+|50|10181444|Rotstein|Jefim||SC Tornado 86 Hochneukirch||1011|2256|248|14101033|2330|FM
 60w+|1|10139641|Meier|Annemarie||DJK Stuttgart-Süd||213|2183|52|4640586|2258|
 60w+|2|10050174|Fischdick|Gisela||Düsseldorfer Schachklub 14/25 e. V.||1135|2155|122|4603966|2213|WGM
 60w+|3|10241738|Wieland|Ilse||SV Blau-Rot Pratau||1005|2134|7|4612507|2145|
-60w+|4|10028191|Burchardt|Brigitte||SC Rotation Pankow e.V.||4|2063|180|4612213|2091|WIM
-60w+|5|10232762|Wagner-Michel|Annett||SC Rotation Pankow e.V.||29|1990|198|4612205|2037|WIM
-60w+|6|10188986|Scheynin|Julia||Karlsruher SF 1853||384|1943|87|4124448|2000|
-60w+|7|10234800|Wapnitschnaja|Raisa||Schachgesellschaft Lasker Steglitz-Wilmersdorf||629|1940|22|||
-60w+|8|10103775|Kierzek|Mira||SC Fulda||157|1939|210|15002110|1983|WFM
-60w+|9|10052781|Frank|Michelle Viviane||SVG Oberhessen Echzell||47|1922|78|16225716|1885|
+60w+|4|10028191|Burchardt|Brigitte||SC Rotation Pankow e.V.||4|2074|182|4612213|2075|WIM
+60w+|5|10232762|Wagner-Michel|Annett||SC Rotation Pankow e.V.||29|1963|200|4612205|2025|WIM
+60w+|6|10103775|Kierzek|Mira||SC Fulda||157|1963|211|15002110|1983|WFM
+60w+|7|10188986|Scheynin|Julia||Karlsruher SF 1853||384|1943|87|4124448|1989|
+60w+|8|10234800|Wapnitschnaja|Raisa||Schachgesellschaft Lasker Steglitz-Wilmersdorf||629|1940|22|||
+60w+|9|10157959|Orlova|Liubov||TSV IFA Chemnitz||96|1940|56|24646660|1997|
 60w+|10|10155855|Nünchert|Eveline||USV Potsdam e.V., Abt. Schach||17|1922|175|4612540|1985|WFM
+60w+|11|10135437|Malachowski|Margrit||SC Dreiländereck||26|1910|150|4608666|2061|WFM
+60w+|12|10052781|Frank|Michelle Viviane||SVG Oberhessen Echzell||47|1905|79|16225716|1885|
+60w+|13|10205618|Seidemann|Ulricke||Düsseldorfer Schachverein 1854||1139|1882|82|4612639|2043|WFM
+60w+|14|10046348|Espig|Gesine||SC Rochade Zeulenroda||80|1875|103|4612523|2009|WFM
+60w+|15|10125969|Lehmann|Christina||SK Großlehna||97|1873|105|4612442|2080|
+60w+|16|10014058|Berglitz|Regina||Hamburger SK von 1830 eV||493|1869|176|4608771|1949|WFM
+60w+|17|10122447|Laakmann|Anni||Mönchfelder SV 1967||17|1868|43|4608658|2185|WFM
+60w+|18|10195401|Schneider|Birgit||SC Niefern-Öschelbronn||29|1844|149|4693760|1870|
+60w+|19|10154970|Nobis|Martina||SV Grün-W. Niederwiesa||88|1836|119|4612779|1860|
+60w+|20|10036730|Diller|Marianne||SK Rothenburg e.V.||104|1832|21|16244605|1901|
+60w+|21|10067670|Große-Honebrink|Brigitte||SC Kreuzberg e.V.||541|1830|137|4632087|1875|
+60w+|22|10119164|Kube|Hannelore||SV Medizin Erfurt||198|1819|192|4612760|1919|
+60w+|23|10023411|Braun|Regine||SG Eckturm||42|1817|76|||
+60w+|24|10018090|Grafl|Christine||SK Kelheim 1920||1098|1808|84|||
+60w+|25|10165338|Plauth-Herr|Sabine||Sfr.Mainz 1928||179|1807|87|1270353|1858|
+60w+|26|10055392|Fröhlich-Dill|Astrid||SV 1920 Hofheim||268|1807|249|4698240|1873|
+60w+|27|10140138|Meinke|Dietlind||MTV Leck von 1889||18|1804|187|24647934|1886|
+60w+|28|10099520|Kamrath|Ariane||SC Königsspringer Hagen/Wetter||8|1782|141|||
+60w+|29|10252179|Zwetz|Anita||TSV Kareth-Lappersdorf||147|1769|76|4613244|1853|
+60w+|30|10097666|Just|Gabriele|Dr.|Schachgemeinschaft Leipzig||1134|1730|311|4612558|1838|
+60w+|31|10035288|Despotovic-Bucan|Jovanka||Schachklub München Südost e.V.||1221|1729|7|||
+60w+|32|10058822|Gehrmann|Dorit||SV Eutin von 1875||8|1728|125|4654064|1817|
+60w+|33|10153166|Neumeyer|Hannelore||SC Leipzig-Lindenau||70|1725|123|4686284|1872|
+60w+|34|10207113|Seyffarth|Renate||SC GEMA St.Ingbert||101|1718|57|24676047|1907|
+60w+|35|10153316|Sand|Rosemarie||SF Pfullingen||535|1718|127|1270936|1812|
+60w+|36|10118805|Krum|Beate||SG Heidelberg-Kirchheim||49|1717|106|24691470|0|
+60w+|37|10094627|Janssen|Lieselotte||Schachfreunde Bad Lausick||1008|1716|157|4612515|2015|
+60w+|38|10149725|Münch|Ursula|Dr.|Schachges. Augsburg 1873||147|1704|109|4666348|1792|
+60w+|39|10071218|Häcker|Gabriele||SV Stuttgart-Wolfbusch 1956 e.V.||70|1701|120|24623318|1969|
+60w+|40|10128956|Liepert|Luise||Schachges. Augsburg 1873|P|1059|1697|78|1270832|0|
+60w+|41|10184591|Sander|Lucia||TG Biberach||89|1684|166|24622281|1877|
+60w+|42|10569125|Mathias|Vesna|Dr.|Schachfreunde Josefsheim Bigge||1030|1681|5|||
+60w+|43|10087413|Hofmann|Karina||Schachklub Weiden 1907||183|1678|76|24685330|1700|
+60w+|44|10143559|Mickmann|Helga||Burger SK Schwarz-Weiß||46|1677|91|||
+60w+|45|10178078|Rjakhovska|Olga||TuS Makkabi Wiesbaden||23|1675|31|24674370|0|
+60w+|46|10021610|Borries|Barbara||SC Taufkirchen||953|1652|133|24611891|1749|
+60w+|47|10006058|Bade|Heidrun||USV Potsdam e.V., Abt. Schach||3|1642|161|4612710|1790|
+60w+|48|10099601|Kanibalotska|Elisabeth||SV Lok Dresden||1072|1638|93|24638676|1834|
+60w+|49|10095653|Rickers|Hilke||SG Glückstadt von 1920||26|1636|145|24621617|1890|
+60w+|50|10250968|Krause|Marianne||SK Freilassing||180|1635|70|16219600|1615|

@@ -13,7 +13,7 @@
 
 $GLOBALS['BE_MOD']['content']['topwertungszahlen'] = array
 (
-	'tables'            => array('tl_topwertungszahlen', 'tl_topwertungszahlen_ratings')
+	'tables'            => array('tl_topwertungszahlen', 'tl_topwertungszahlen_ratings', 'tl_topwertungszahlen_photos')
 );
 
 /**

@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 	'config' => array
 	(
 		'dataContainer'             => 'Table',
-		//'ctable'                    => array('tl_topwertungszahlen_ratings'),
+		'ctable'                    => array('tl_topwertungszahlen_ratings'),
 		'enableVersioning'          => true,
 		'sql' => array
 		(
@@ -41,7 +41,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			'mode'                    => 1,
 			'fields'                  => array('nachname', 'vorname'),
 			'panelLayout'             => 'filter,sort;search,limit',
-			'flag'                    => 12,
+			'flag'                    => 11,
 			'disableGrouping'         => true,
 		),
 		'label' => array
@@ -66,7 +66,13 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['edit'],
 				'href'                => 'table=tl_topwertungszahlen_ratings',
-				'icon'                => 'edit.gif',
+				'icon'                => 'bundles/contaotopwertungszahlen/images/rating-icon.png',
+			),
+			'editphoto' => array
+			(
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['editphoto'],
+				'href'                => 'table=tl_topwertungszahlen_photos',
+				'icon'                => 'bundles/contaotopwertungszahlen/images/foto-icon.png',
 			),
 			'editheader' => array
 			(

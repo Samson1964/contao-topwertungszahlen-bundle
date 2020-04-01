@@ -22,7 +22,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 	'config' => array
 	(
 		'dataContainer'             => 'Table',
-		'ptable'					=> 'tl_topwertungszahlen',
+		'ptable'                    => 'tl_topwertungszahlen',
 		'enableVersioning'          => true,
 		'sql' => array
 		(
@@ -40,7 +40,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 		'sorting' => array
 		(
 			'mode'                    => 4,
-			'fields'                  => array('datum DESC'),
+			'fields'                  => array('date DESC'),
 			'flag'                    => 6,
 			'headerFields'            => array('nachname', 'vorname', 'geburtstag'), 
 			'panelLayout'             => 'sort,filter;search,limit',
@@ -117,7 +117,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 	'palettes' => array
 	(
 		'__selector__'                => array(''),
-		'default'                     => '{rating_legend},dwz,dwz_index,fide_id,fide_title,fide_title_w,fide_rating,fide_rating_rapid,fide_rating_blitz,datum;{publish_legend},published'
+		'default'                     => '{rating_legend},type,date,rank,rating,rating_info,rating_id;{fide_legend},fide_title,fide_title_w;{publish_legend},published'
 	),
 
 	// Subpalettes
@@ -141,9 +141,48 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 		(
 			'sql'                     => "int(10) unsigned NOT NULL default '0'"
 		),
-		'dwz' => array
+		'type' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['dwz'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['type'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array
+			(
+				'mandatory'           => false, 
+				'maxlength'           => 4,
+				'tl_class'            => 'w50'
+			),
+			'sql'                     => "varchar(4) NOT NULL default ''"
+		),
+		'date' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['date'],
+			'exclude'                 => true,
+			'inputType'               => 'text',
+			'flag'                    => 5,
+			'eval'                    => array
+			(
+				'tl_class'            => 'w50 clr' 
+			),
+			'sql'                     => "varchar(8) NOT NULL default ''" 
+		),
+		'rank' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rank'],
+			'exclude'                 => true,
+			'inputType'               => 'text',
+			'eval'                    => array
+			(
+				'mandatory'           => false, 
+				'maxlength'           => 4,
+				'tl_class'            => 'w50'
+			),
+			'sql'                     => "int(4) unsigned NOT NULL default '0'"
+		),
+		'rating' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -154,9 +193,9 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 			),
 			'sql'                     => "varchar(4) NOT NULL default ''"
 		),
-		'dwz_index' => array
+		'rating_info' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['dwz_index'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating_info'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -167,9 +206,9 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 			),
 			'sql'                     => "varchar(4) NOT NULL default ''"
 		),
-		'fide_id' => array
+		'rating_id' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_id'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating_id'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -207,60 +246,6 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 				'tl_class'            => 'w50'
 			),
 			'sql'                     => "varchar(3) NOT NULL default ''"
-		),
-		'fide_rating' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating'],
-			'exclude'                 => true,
-			'inputType'               => 'text',
-			'eval'                    => array
-			(
-				'mandatory'           => false, 
-				'maxlength'           => 4,
-				'tl_class'            => 'w50'
-			),
-			'sql'                     => "varchar(4) NOT NULL default ''"
-		),
-		'fide_rating_rapid' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating_rapid'],
-			'exclude'                 => true,
-			'inputType'               => 'text',
-			'eval'                    => array
-			(
-				'mandatory'           => false, 
-				'maxlength'           => 4,
-				'tl_class'            => 'w50'
-			),
-			'sql'                     => "varchar(4) NOT NULL default ''"
-		),
-		'fide_rating_blitz' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating_blitz'],
-			'exclude'                 => true,
-			'inputType'               => 'text',
-			'eval'                    => array
-			(
-				'mandatory'           => false, 
-				'maxlength'           => 4,
-				'tl_class'            => 'w50'
-			),
-			'sql'                     => "varchar(4) NOT NULL default ''"
-		),
-		'datum' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['datum'],
-			'exclude'                 => true,
-			'inputType'               => 'text',
-			'default'                 => date('d.m.Y'),
-			'flag'                    => 5,
-			'eval'                    => array
-			(
-				'rgxp'                => 'date',
-				'datepicker'          => true,
-				'tl_class'            => 'w50 clr wizard' 
-			),
-			'sql'                     => "varchar(11) NOT NULL default ''" 
 		),
 		'published' => array
 		(
@@ -372,9 +357,10 @@ class tl_topwertungszahlen_ratings extends Backend
     {
         $line = '';
         $line .= '<div>';
-        $line .= '<b>'.date('d.m.Y', $arrRow['datum']).'</b>';
-        if($arrRow['dwz']) $line .= ' - DWZ '.$arrRow['dwz'];
-        if($arrRow['fide_rating']) $line .= ' - Elo '.$arrRow['fide_rating'];
+        $line .= 'Datum '.$arrRow['date'];
+        if($arrRow['type']) $line .= ' - Liste '.$arrRow['type'];
+        if($arrRow['rank']) $line .= ' - Platz '.$arrRow['rank'];
+        if($arrRow['rating']) $line .= ' - Rating '.$arrRow['rating'];
         $line .= "</div>";
         $line .= "\n";
         return($line);
