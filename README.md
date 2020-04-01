@@ -1,3 +1,3 @@
-# DWZ-Ranglisten für den DSB
+# Topwertungszahlen für den DSB
 
 **Frank Hoppe**

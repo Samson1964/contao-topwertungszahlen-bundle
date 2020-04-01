@@ -1,7 +1,7 @@
 {
-    "name": "schachbulle/contao-dwzranglisten-bundle",
+    "name": "schachbulle/contao-topwertungszahlen-bundle",
     "type": "contao-bundle",
-    "description": "Verwaltung von DWZ-Ranglisten für Contao 4",
+    "description": "Verwaltung von Topwertungszahlen für Contao 4",
     "license": "LGPL-3.0-or-later",
     "authors": [
         {
@@ -22,15 +22,15 @@
         "doctrine/doctrine-cache-bundle": "^1.3"
     },
     "extra": {
-        "contao-manager-plugin": "Schachbulle\\ContaoDwzranglistenBundle\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "Schachbulle\\ContaoTopwertungszahlenBundle\\ContaoManager\\Plugin"
     },
     "autoload": {
         "psr-4": {
-            "Schachbulle\\ContaoDwzranglistenBundle\\": "src/"
+            "Schachbulle\\ContaoTopwertungszahlenBundle\\": "src/"
         }
     },
     "support": {
-        "issues": "https://github.com/Samson1964/contao-dwzranglisten-bundle/issues",
-        "source": "https://github.com/Samson1964/contao-dwzranglisten-bundle"
+        "issues": "https://github.com/Samson1964/contao-topwertungszahlen-bundle/issues",
+        "source": "https://github.com/Samson1964/contao-topwertungszahlen-bundle"
     }
 }

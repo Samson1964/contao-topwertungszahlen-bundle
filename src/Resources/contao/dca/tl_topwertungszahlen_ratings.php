@@ -13,16 +13,16 @@
 
 
 /**
- * Table tl_dwzranglisten_ratings
+ * Table tl_topwertungszahlen_ratings
  */
-$GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
+$GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 (
 
 	// Config
 	'config' => array
 	(
 		'dataContainer'             => 'Table',
-		'ptable'					=> 'tl_dwzranglisten',
+		'ptable'					=> 'tl_topwertungszahlen',
 		'enableVersioning'          => true,
 		'sql' => array
 		(
@@ -44,7 +44,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 			'flag'                    => 6,
 			'headerFields'            => array('nachname', 'vorname', 'geburtstag'), 
 			'panelLayout'             => 'sort,filter;search,limit',
-			'child_record_callback'   => array('tl_dwzranglisten_ratings', 'listPlayers'),
+			'child_record_callback'   => array('tl_topwertungszahlen_ratings', 'listPlayers'),
 			'child_record_class'      => 'no_padding',
 			'disableGrouping'         => true
 		),
@@ -68,33 +68,33 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		(
 			'edit' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['edit'],
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['edit'],
 				'href'                => 'act=edit',
 				'icon'                => 'edit.gif'
 			),
 			'copy' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['copy'],
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['copy'],
 				'href'                => 'act=copy',
 				'icon'                => 'copy.gif'
 			),
 			'delete' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['delete'],
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['delete'],
 				'href'                => 'act=delete',
 				'icon'                => 'delete.gif',
 				'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
 			),
 			'toggle' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['toggle'],
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['toggle'],
 				'icon'                => 'visible.gif',
 				'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-				'button_callback'     => array('tl_dwzranglisten_ratings', 'toggleIcon')
+				'button_callback'     => array('tl_topwertungszahlen_ratings', 'toggleIcon')
 			),
 			'show' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['show'],
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['show'],
 				'href'                => 'act=show',
 				'icon'                => 'show.gif'
 			)
@@ -143,7 +143,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'dwz' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['dwz'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['dwz'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -156,7 +156,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'dwz_index' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['dwz_index'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['dwz_index'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -169,7 +169,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'fide_id' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['fide_id'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_id'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -182,7 +182,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'fide_title' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['fide_title'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_title'],
 			'exclude'                 => true,
 			'filter'                  => true,
 			'inputType'               => 'text',
@@ -196,7 +196,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'fide_title_w' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['fide_title_w'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_title_w'],
 			'exclude'                 => true,
 			'filter'                  => true,
 			'inputType'               => 'text',
@@ -210,7 +210,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'fide_rating' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['fide_rating'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -223,7 +223,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'fide_rating_rapid' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['fide_rating_rapid'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating_rapid'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -236,7 +236,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'fide_rating_blitz' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['fide_rating_blitz'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating_blitz'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
@@ -249,7 +249,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'datum' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['datum'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['datum'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'default'                 => date('d.m.Y'),
@@ -264,7 +264,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 		),
 		'published' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dwzranglisten_ratings']['published'],
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['published'],
 			'exclude'                 => true,
 			'search'                  => false,
 			'sorting'                 => false,
@@ -283,7 +283,7 @@ $GLOBALS['TL_DCA']['tl_dwzranglisten_ratings'] = array
 /**
  * Provide miscellaneous methods that are used by the data configuration array
  */
-class tl_dwzranglisten_ratings extends Backend
+class tl_topwertungszahlen_ratings extends Backend
 {
 	 
 	/**
@@ -316,7 +316,7 @@ class tl_dwzranglisten_ratings extends Backend
 		}
 		
 		// Check permissions AFTER checking the tid, so hacking attempts are logged
-		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_dwzranglisten_ratings::published', 'alexf'))
+		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_topwertungszahlen_ratings::published', 'alexf'))
 		{
 			return '';
 		}
@@ -339,18 +339,18 @@ class tl_dwzranglisten_ratings extends Backend
 	public function toggleVisibility($intId, $blnPublished)
 	{
 		// Check permissions to publish
-		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_dwzranglisten_ratings::published', 'alexf'))
+		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_topwertungszahlen_ratings::published', 'alexf'))
 		{
-			$this->log('Not enough permissions to show/hide record ID "'.$intId.'"', 'tl_dwzranglisten_ratings toggleVisibility', TL_ERROR);
+			$this->log('Not enough permissions to show/hide record ID "'.$intId.'"', 'tl_topwertungszahlen_ratings toggleVisibility', TL_ERROR);
 			$this->redirect('contao/main.php?act=error');
 		}
 		
-		$this->createInitialVersion('tl_dwzranglisten_ratings', $intId);
+		$this->createInitialVersion('tl_topwertungszahlen_ratings', $intId);
 		
 		// Trigger the save_callback
-		if (is_array($GLOBALS['TL_DCA']['tl_dwzranglisten_ratings']['fields']['published']['save_callback']))
+		if (is_array($GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings']['fields']['published']['save_callback']))
 		{
-			foreach ($GLOBALS['TL_DCA']['tl_dwzranglisten_ratings']['fields']['published']['save_callback'] as $callback)
+			foreach ($GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings']['fields']['published']['save_callback'] as $callback)
 			{
 				$this->import($callback[0]);
 				$blnPublished = $this->$callback[0]->$callback[1]($blnPublished, $this);
@@ -358,9 +358,9 @@ class tl_dwzranglisten_ratings extends Backend
 		}
 		
 		// Update the database
-		$this->Database->prepare("UPDATE tl_dwzranglisten_ratings SET tstamp=". time() .", published='" . ($blnPublished ? '' : '1') . "' WHERE id=?")
+		$this->Database->prepare("UPDATE tl_topwertungszahlen_ratings SET tstamp=". time() .", published='" . ($blnPublished ? '' : '1') . "' WHERE id=?")
 		               ->execute($intId);
-		$this->createNewVersion('tl_dwzranglisten_ratings', $intId);
+		$this->createNewVersion('tl_topwertungszahlen_ratings', $intId);
 	}
 
     /**

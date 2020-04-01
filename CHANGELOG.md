@@ -1,4 +1,4 @@
-# DWZ-Ranglisten Changelog
+# Topwertungszahlen Changelog
 
 ## Version 0.0.4 (2020-02-18)
 

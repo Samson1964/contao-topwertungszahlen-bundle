@@ -11,9 +11,9 @@
  * @copyright Frank Hoppe 2014
  */
 
-$GLOBALS['BE_MOD']['content']['dwzranglisten'] = array
+$GLOBALS['BE_MOD']['content']['topwertungszahlen'] = array
 (
-	'tables'            => array('tl_dwzranglisten', 'tl_dwzranglisten_ratings')
+	'tables'            => array('tl_topwertungszahlen', 'tl_topwertungszahlen_ratings')
 );
 
 /**

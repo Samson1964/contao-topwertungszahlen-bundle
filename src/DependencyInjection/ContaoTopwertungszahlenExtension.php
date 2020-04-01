@@ -1,13 +1,13 @@
 <?php
 
-namespace Schachbulle\ContaoDwzranglistenBundle\DependencyInjection;
+namespace Schachbulle\ContaoTopwertungszahlenBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class ContaoDwzranglistenExtension extends Extension
+class ContaoTopwertungszahlenExtension extends Extension
 {
 	/**
 	 * {@inheritdoc}

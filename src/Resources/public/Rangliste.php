@@ -30,6 +30,7 @@ class Rangliste
 
 	public function run()
 	{
+		echo "Hallo";
 	}
 }
 
