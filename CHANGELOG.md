@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 0.0.5 (2020-04-01)
+
+Fix: Änderung Bundle-Name von dwzranglisten in topwertungszahlen
+
 ## Version 0.0.4 (2020-02-18)
 
 Fix: Public-Ordner
