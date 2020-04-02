@@ -5,15 +5,17 @@
  */
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating_legend'] = 'Wertungszahlen';
 
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['dwz'] = array('DWZ', 'Deutsche Wertungszahl (DWZ)');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['dwz_index'] = array('DWZ-Index', 'Index der DWZ');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_id'] = array('FIDE-ID', 'ID bei der FIDE');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['type'] = array('Listentyp', 'Typ der Rangliste');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['date'] = array('Datum', 'Datum der Liste im Format JJJJMMTT');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rank'] = array('Platz', 'Plazierung in der Rangliste');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating'] = array('Wertungszahl', 'Wertungszahl (DWZ oder Elo)');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating_info'] = array('Info', 'Information zur Wertungszahl');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['rating_id'] = array('ID', 'ID der Wertungszahl');
+
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_legend'] = 'FIDE-Daten';
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_title'] = array('FIDE-Titel Männer', 'FIDE-Titel Männer');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_title_w'] = array('FIDE-Titel Frauen', 'FIDE-Titel Frauen');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating'] = array('FIDE-Elo Standard', 'FIDE-Elo Standard');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating_rapid'] = array('FIDE-Elo Schnellschach', 'FIDE-Elo Schnellschach');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['fide_rating_blitz'] = array('FIDE-Elo Blitzschach', 'FIDE-Elo Blitzschach');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['datum'] = array('Datum', 'Datum des Eintrags');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['association'] = array('Verband', 'Name des Landesverbandes');
 
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['publish_legend'] = 'Veröffentlichung';
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['published'] = array('Veröffentlicht', 'Eintrag aktivieren oder deaktivieren');
@@ -29,3 +31,30 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['copy'] = array('Spieler kop
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['delete'] = array('Spieler löschen', 'Spieler %s löschen');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['toggle'] = array('Spieler aktivieren/deaktivieren', 'Spieler %s aktivieren/deaktivieren');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['show'] = array('Spielerdetails anzeigen', 'Details des Spielers %s anzeigen');
+
+/**
+ * Optionen für selects
+ */
+
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['associations'] = array
+(
+	'1' => 'Badischer Schachverband',
+	'2' => 'Bayerischer Schachbund',
+	'3' => 'Berliner Schachverband',
+	'4' => 'Hamburger Schachverband',
+	'5' => 'Hessischer Schachverband',
+	'6' => 'Schachbund Nordrhein-Westfalen',
+	'7' => 'Niedersächsischer Schachverband',
+	'8' => 'Schachbund Rheinland-Pfalz',
+	'9' => 'Saarländischer Schachverband',
+	'A' => 'Schachverband Schleswig-Holstein',
+	'B' => 'Landesschachbund Bremen',
+	'C' => 'Schachverband Württemberg',
+	'D' => 'Landesschachbund Brandenburg',
+	'E' => 'Landesschachverband Mecklenburg-Vorpommern',
+	'F' => 'Schachverband Sachsen',
+	'G' => 'Schachverband Sachsen-Anhalt',
+	'H' => 'Thüringer Schachbund',
+	'L' => 'Deutscher Blinden- und Sehbehinderten-Schachbund',
+	'M' => 'Schwalbe'
+);

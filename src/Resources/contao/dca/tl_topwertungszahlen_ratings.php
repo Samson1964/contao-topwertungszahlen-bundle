@@ -117,7 +117,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 	'palettes' => array
 	(
 		'__selector__'                => array(''),
-		'default'                     => '{rating_legend},type,date,rank,rating,rating_info,rating_id;{fide_legend},fide_title,fide_title_w;{publish_legend},published'
+		'default'                     => '{rating_legend},type,date,rank,rating,rating_info,rating_id,association;{fide_legend},fide_title,fide_title_w;{publish_legend},published'
 	),
 
 	// Subpalettes
@@ -218,6 +218,17 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 				'tl_class'            => 'w50 clr'
 			),
 			'sql'                     => "varchar(16) NOT NULL default ''"
+		),
+		'association' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['association'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'sorting'                 => true,
+			'inputType'               => 'select',
+			'options'                 => $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['associations'],
+			'eval'                    => array('includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(1) NOT NULL default ''"
 		),
 		'fide_title' => array
 		(

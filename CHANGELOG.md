@@ -1,5 +1,10 @@
 # Topwertungszahlen Changelog
 
+## Version 0.0.8 (2020-04-02)
+
+Add: Übersetzungen Rating-Formular
+Add: Landesverbände über Rangliste.php
+
 ## Version 0.0.7 (2020-04-02)
 
 Ausbau des Bundles mit Rangliste.php

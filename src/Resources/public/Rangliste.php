@@ -25,6 +25,29 @@ require($_SERVER['DOCUMENT_ROOT'].'/../system/initialize.php');
  */
 class Rangliste
 {
+	public $verbandsname = array
+	(
+		'1' => 'BAD',
+		'2' => 'BAY',
+		'3' => 'BER',
+		'4' => 'HAM',
+		'5' => 'HES',
+		'6' => 'NRW',
+		'7' => 'NDS',
+		'8' => 'RLP',
+		'9' => 'SAR',
+		'A' => 'SH',
+		'B' => 'BRE',
+		'C' => 'WÜR',
+		'D' => 'BRA',
+		'E' => 'MVP',
+		'F' => 'SAC',
+		'G' => 'SAA',
+		'H' => 'THÜ',
+		'L' => 'BSB',
+		'M' => 'SWA'
+	);
+
 	public function __construct()
 	{
 	}
@@ -163,6 +186,7 @@ class Rangliste
 							'rating_id'    => '',
 							'fide_title'   => $m->fideTitle ? $m->fideTitle : '',
 							'fide_title_w' => '',
+							'association'  => $this->Verbandskuerzel($m->pid, $client),
 							'published'    => 1
 						);
 						$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen_ratings %s")
@@ -193,6 +217,7 @@ class Rangliste
 						(
 							'vorname'    => $m->firstname,
 							'nachname'   => $m->surname,
+							'verband'    => $this->Verband($m->pid, $client),
 							'link'       => 'spieler/'.$m->pid.'.html',
 							'rating'     => $m->rating,
 							'title'      => $m->fideTitle,
@@ -378,6 +403,7 @@ class Rangliste
 									'rating_id'    => $objElo->fideid,
 									'fide_title'   => $objElo->title,
 									'fide_title_w' => $objElo->w_title,
+									'association'  => substr($m->vkz,0,1),
 									'published'    => 1
 								);
 								$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen_ratings %s")
@@ -408,6 +434,7 @@ class Rangliste
 								(
 									'vorname'    => $m->firstname,
 									'nachname'   => $m->surname,
+									'verband'    => $this->verbandsname[substr($m->vkz,0,1)],
 									'link'       => 'http://ratings.fide.com/profile/'.$m->idfide,
 									'rating'     => $objElo->rating,
 									'title'      => $objElo->title,
@@ -438,6 +465,56 @@ class Rangliste
 		echo "</pre>";
 
 	}
+
+
+	/**
+	 * Ermittelt zu einem Spieler den Landesverband
+	 * ============================================
+	 * param id       DeWIS-ID des Spielers
+	 * return string  Kurzkennzeichen des Verbandes
+	 */
+	private function Verband($id, $client)
+	{
+
+		$tcard = $client->tournamentCardForId($id);
+		// Mitgliedschaften prüfen
+		foreach ($tcard->memberships as $m)
+		{
+			if($m->state == 'P') $temp = $m->vkz;
+			else
+			{
+				$temp = $m->vkz;
+				break;
+			}
+		}
+
+		return $this->verbandsname[substr($temp,0,1)];
+	}
+
+	/**
+	 * Ermittelt zu einem Spieler den Landesverband
+	 * ============================================
+	 * param id       DeWIS-ID des Spielers
+	 * return string  Kurzkennzeichen des Verbandes
+	 */
+	private function Verbandskuerzel($id, $client)
+	{
+
+		$tcard = $client->tournamentCardForId($id);
+		// Mitgliedschaften prüfen
+		foreach ($tcard->memberships as $m)
+		{
+			if($m->state == 'P') $temp = $m->vkz;
+			else
+			{
+				$temp = $m->vkz;
+				break;
+			}
+		}
+
+		return substr($temp,0,1);
+	}
+
 }
 
 /**
