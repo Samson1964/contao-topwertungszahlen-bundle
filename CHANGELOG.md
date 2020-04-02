@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 0.0.7 (2020-04-02)
+
+Ausbau des Bundles mit Rangliste.php
+
 ## Version 0.0.6 (2020-04-01)
 
 Ausbau des Bundles mit Fotos und Rangliste.php

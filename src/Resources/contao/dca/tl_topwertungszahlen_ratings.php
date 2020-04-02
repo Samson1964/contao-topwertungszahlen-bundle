@@ -150,10 +150,10 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 			'eval'                    => array
 			(
 				'mandatory'           => false, 
-				'maxlength'           => 4,
+				'maxlength'           => 8,
 				'tl_class'            => 'w50'
 			),
-			'sql'                     => "varchar(4) NOT NULL default ''"
+			'sql'                     => "varchar(8) NOT NULL default ''"
 		),
 		'date' => array
 		(

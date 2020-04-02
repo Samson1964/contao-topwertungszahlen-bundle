@@ -43,16 +43,16 @@ class Rangliste
 					'connection_timeout' => 15,
 				)
 			);
-		
-			//$this->getRangliste_DWZ($client);
+
+			$this->getRangliste_DWZ($client);
 			$this->getRangliste_Elo($client);
-		
+
 		}
 		catch (SOAPFault $f) {
 			print $f->faultstring;
 		}
 	}
-	
+
 	private function getRangliste_DWZ($client)
 	{
 		$top = 50; // Anzahl der deutschen Spieler, die benötigt werden
@@ -65,22 +65,22 @@ class Rangliste
 			switch($x)
 			{
 				case 0: // Alle Spieler
-					$anzahl = 1000; $von = 0; $bis = 120; $geschlecht = ''; $liste = 'alle';
+					$anzahl = 1000; $von = 0; $bis = 120; $geschlecht = ''; $liste = 'dwz_alle';
 					break;
 				case 1: // Alle Frauen
-					$anzahl = 500; $von = 0; $bis = 120; $geschlecht = 'f'; $liste = 'w';
+					$anzahl = 500; $von = 0; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_w';
 					break;
 				case 2: // Alle U20
-					$anzahl = 1000; $von = 0; $bis = 20; $geschlecht = ''; $liste = 'u20';
+					$anzahl = 1000; $von = 0; $bis = 20; $geschlecht = ''; $liste = 'dwz_u20';
 					break;
 				case 3: // Alle U20w
-					$anzahl = 500; $von = 0; $bis = 20; $geschlecht = 'f'; $liste = 'u20w';
+					$anzahl = 500; $von = 0; $bis = 20; $geschlecht = 'f'; $liste = 'dwz_u20w';
 					break;
 				case 4: // Alle Ü60
-					$anzahl = 1000; $von = 60; $bis = 120; $geschlecht = ''; $liste = '60+';
+					$anzahl = 1000; $von = 60; $bis = 120; $geschlecht = ''; $liste = 'dwz_60+';
 					break;
 				case 5: // Alle Ü60w
-					$anzahl = 500; $von = 60; $bis = 120; $geschlecht = 'f'; $liste = '60w+';
+					$anzahl = 500; $von = 60; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_60w+';
 					break;
 				default:
 			}
@@ -100,7 +100,7 @@ class Rangliste
 					//[pid] => 10266090
 					//[surname] => Caruana
 					//[firstname] => Fabiano
-					//[title] => 
+					//[title] =>
 					//[gender] => m
 					//[yearOfBirth] => 1992
 					//[idfide] => 2020009
@@ -161,7 +161,7 @@ class Rangliste
 							'rating'       => $m->rating,
 							'rating_info'  => '',
 							'rating_id'    => '',
-							'fide_title'   => '',
+							'fide_title'   => $m->fideTitle ? $m->fideTitle : '',
 							'fide_title_w' => '',
 							'published'    => 1
 						);
@@ -195,6 +195,7 @@ class Rangliste
 							'nachname'   => $m->surname,
 							'link'       => 'spieler/'.$m->pid.'.html',
 							'rating'     => $m->rating,
+							'title'      => $m->fideTitle,
 							'foto'       => $bildid
 						);
 					}
@@ -218,7 +219,7 @@ class Rangliste
 		echo "<pre>";
 		print_r($ausgabeArr);
 		echo "</pre>";
-		
+
 	}
 
 	private function getRangliste_Elo($client)
@@ -232,10 +233,14 @@ class Rangliste
 		 * 4.1. Ratingplatz eintragen in tl_topwertungszahlen_ratings
 		 */
 
+		$startzeit = microtime(true); // Startzeit
 		// Aktuelle Elo-Liste ermitteln
 		$objActiv = \Database::getInstance()->prepare('SELECT * FROM tl_elo_listen WHERE published=? ORDER BY datum DESC')
 		                                    ->limit(1)
 		                                    ->execute(1);
+		$listendatum = date('Ymd', $objActiv->datum);
+		$ausgabeArr = array(); // Die Ranglisten werden hier als Array gespeichert
+		$top = 50; // Anzahl der Spieler, die benötigt werden
 
 		// Listentypen abarbeiten
 		for($x = 0; $x < 6; $x++)
@@ -244,71 +249,193 @@ class Rangliste
 			{
 				case 0: // Alle Spieler
 					$sql = 'ORDER BY rating DESC';
+					$liste = 'elo_alle';
 					break;
 				case 1: // Alle Frauen
 					$sql = 'AND sex=\'F\' ORDER BY rating DESC';
+					$liste = 'elo_w';
 					break;
 				case 2: // Alle U20
 					$jahr = date('Y') - 20;
 					$sql = 'AND birthday>='.$jahr.' ORDER BY rating DESC';
+					$liste = 'elo_u20';
 					break;
 				case 3: // Alle U20w
 					$sql = 'AND birthday>='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
+					$liste = 'elo_u20w';
 					break;
 				case 4: // Alle Ü60
 					$jahr = date('Y') - 60;
 					$sql = 'AND birthday<='.$jahr.' ORDER BY rating DESC';
+					$liste = 'elo_60+';
 					break;
 				case 5: // Alle Ü60w
 					$sql = 'AND birthday<='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
+					$liste = 'elo_60w+';
 					break;
 				default:
 			}
 
 			// Elo-Liste laden
 			$objElo = \Database::getInstance()->prepare('SELECT * FROM tl_elo WHERE pid=? AND published=? AND flag NOT LIKE ? '.$sql)
-			                                  ->limit(10)
+			                                  ->limit($top)
 			                                  ->execute($objActiv->id, 1, '%i%');
 
+			$rank = 0;
 			if($objElo->numRows)
 			{
-				// Spieler in DeWIS suchen
-				$result = $client->searchByName($objElo->surname, $objElo->prename);
-				if($result->members)
+				// Elo-Rangliste Spieler für Spieler abarbeiten
+				while($objElo->next())
 				{
-					// Spieler in DeWIS wahrscheinlich gefunden, jetzt die Treffer prüfen
-					foreach($result->members as $m)
+					$rank++;
+					$result = $client->searchByName($objElo->surname, $objElo->prename); // Spieler in DeWIS suchen
+					$found = FALSE; // Spieler in DeWIS auf "nicht gefunden" setzen
+					// Suchergebnis prüfen
+					if($result->members)
 					{
-						//[pid] => 10018254
-						//[surname] => Blübaum
-						//[firstname] => Matthias
-						//[title] => 
-						//[gender] => m
-						//[yearOfBirth] => 1997
-						//[membership] => 1101
-						//[vkz] => C0303
-						//[club] => SF Deizisau
-						//[state] => 
-						//[rating] => 2643
-						//[ratingIndex] => 174
-						//[tcode] => B944-K00-EOP
-						//[finishedOn] => 2019-11-02
-						//[idfide] => 24651516
-						//[nationfide] => GER
-						//[elo] => 2646
-						//[fideTitle] => GM
-						echo $m->surname;
-						echo $m->firstname;
+						// Spieler in DeWIS wahrscheinlich gefunden, jetzt die Treffer prüfen
+						foreach($result->members as $m)
+						{
+							// FIDE-ID vergleichen
+							if($m->idfide == $objElo->fideid)
+							{
+								// Spieler gefunden
+								$found = TRUE;
+								break;
+							}
+							//[pid] => 10018254
+							//[surname] => Blübaum
+							//[firstname] => Matthias
+							//[title] =>
+							//[gender] => m
+							//[yearOfBirth] => 1997
+							//[membership] => 1101
+							//[vkz] => C0303
+							//[club] => SF Deizisau
+							//[state] =>
+							//[rating] => 2643
+							//[ratingIndex] => 174
+							//[tcode] => B944-K00-EOP
+							//[finishedOn] => 2019-11-02
+							//[idfide] => 24651516
+							//[nationfide] => GER
+							//[elo] => 2646
+							//[fideTitle] => GM
+						}
+						if($found)
+						{
+							// Spieler gefunden, jetzt Datensatz aus tl_topwertungszahlen laden
+							echo "JA ".$m->surname.','.$m->firstname."<br>";
+							// Zuerst prüfen, ob es den Spieler bereits gibt
+							$player = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen WHERE dewis_id=?")
+							                                  ->limit(1)
+							                                  ->execute($m->pid);
+							if($player->numRows)
+							{
+								// Spieler schon vorhanden, dann nur die ID merken
+								$id = $player->id;
+							}
+							else
+							{
+								// Spieler nicht vorhanden
+								$set = array
+								(
+									'tstamp'     => time(),
+									'vorname'    => $m->firstname,
+									'nachname'   => $m->surname,
+									'titel'      => $m->title,
+									'geschlecht' => $m->gender,
+									'dewis_id'   => $m->pid,
+									'published'  => 1
+								);
+								$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen %s")
+								                                     ->set($set)
+								                                     ->execute();
+								$id = $objInsert->insertId; // Zugeordnete ID merken
+							}
+
+							// Wertungszahl und Rang eintragen
+							// Zuerst prüfen, ob es einen Eintrag bereits gibt
+							$rating = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_ratings WHERE pid=? AND type=? AND date=?")
+							                                  ->limit(1)
+							                                  ->execute($id, $liste, $listendatum);
+							if($rating->numRows)
+							{
+								// Eintrag schon vorhanden, ggfs. aktualisieren
+							}
+							else
+							{
+								// Eintrag nicht vorhanden
+								$set = array
+								(
+									'pid'          => $id,
+									'tstamp'       => time(),
+									'type'         => $liste,
+									'date'         => $listendatum,
+									'rank'         => $rank,
+									'rating'       => $objElo->rating,
+									'rating_info'  => '',
+									'rating_id'    => $objElo->fideid,
+									'fide_title'   => $objElo->title,
+									'fide_title_w' => $objElo->w_title,
+									'published'    => 1
+								);
+								$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen_ratings %s")
+								                                     ->set($set)
+								                                     ->execute();
+							}
+
+							// Ausgabe schreiben, wenn Top-10-Spieler
+							if($rank < 11)
+							{
+								// Aktuelles Spielerfoto ermitteln
+								$foto = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_photos WHERE pid=? AND date>=? ORDER BY date DESC")
+								                                ->limit(1)
+								                                ->execute($id, $listendatum);
+								if($foto->numRows)
+								{
+									// Foto vorhanden
+									$bildid = $foto->singleSRC;
+									$objFile = \FilesModel::findByPk($foto->singleSRC);
+									$bildid = $objFile->path;
+								}
+								else
+								{
+									// Kein Foto vorhanden
+									$bildid = '';
+								}
+								$ausgabeArr[$liste][$rank] = array
+								(
+									'vorname'    => $m->firstname,
+									'nachname'   => $m->surname,
+									'link'       => 'http://ratings.fide.com/profile/'.$m->idfide,
+									'rating'     => $objElo->rating,
+									'title'      => $objElo->title,
+									'foto'       => $bildid
+								);
+							}
+						}
+						else
+						{
+							echo "NEIN ".$m->surname.','.$m->firstname."<br>";
+						}
 					}
 				}
 			}
-
 		}
+
+		// JSON schreiben
+		$fp = fopen('elo.json', 'w');
+		fputs($fp, json_encode($ausgabeArr));
+		fclose($fp);
 
 		$stopzeit = microtime(true); // Stopzeit
 		$laufzeit = $stopzeit-$startzeit; // Berechnung
 		$laufzeit = str_replace(".", ",", $laufzeit); // Trennzeichen ersetzen
 		echo "Abfragezeit: $laufzeit Sekunden<br>\n";
+		echo "<pre>";
+		print_r($ausgabeArr);
+		echo "</pre>";
 
 	}
 }
