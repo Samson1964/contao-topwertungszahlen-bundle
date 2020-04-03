@@ -197,22 +197,7 @@ class Rangliste
 					// Ausgabe schreiben, wenn Top-10-Spieler
 					if($i < 11)
 					{
-						// Aktuelles Spielerfoto ermitteln
-						$foto = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_photos WHERE pid=? AND date>=? ORDER BY date DESC")
-						                                ->limit(1)
-						                                ->execute($id, $listendatum);
-						if($foto->numRows)
-						{
-							// Foto vorhanden
-							$bildid = $foto->singleSRC;
-							$objFile = \FilesModel::findByPk($foto->singleSRC);
-							$bildid = $objFile->path;
-						}
-						else
-						{
-							// Kein Foto vorhanden
-							$bildid = '';
-						}
+						$fotoArr = $this->Spielerfoto($id, $listendatum); // Foto laden
 						$ausgabeArr[$liste][$i] = array
 						(
 							'vorname'    => $m->firstname,
@@ -221,7 +206,8 @@ class Rangliste
 							'link'       => 'spieler/'.$m->pid.'.html',
 							'rating'     => $m->rating,
 							'title'      => $m->fideTitle,
-							'foto'       => $bildid
+							'foto'       => $fotoArr['pfad'],
+							'quelle'     => $fotoArr['quelle']
 						);
 					}
 
@@ -414,22 +400,7 @@ class Rangliste
 							// Ausgabe schreiben, wenn Top-10-Spieler
 							if($rank < 11)
 							{
-								// Aktuelles Spielerfoto ermitteln
-								$foto = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_photos WHERE pid=? AND date>=? ORDER BY date DESC")
-								                                ->limit(1)
-								                                ->execute($id, $listendatum);
-								if($foto->numRows)
-								{
-									// Foto vorhanden
-									$bildid = $foto->singleSRC;
-									$objFile = \FilesModel::findByPk($foto->singleSRC);
-									$bildid = $objFile->path;
-								}
-								else
-								{
-									// Kein Foto vorhanden
-									$bildid = '';
-								}
+								$fotoArr = $this->Spielerfoto($id, $listendatum); // Foto laden
 								$ausgabeArr[$liste][$rank] = array
 								(
 									'vorname'    => $m->firstname,
@@ -438,7 +409,8 @@ class Rangliste
 									'link'       => 'http://ratings.fide.com/profile/'.$m->idfide,
 									'rating'     => $objElo->rating,
 									'title'      => $objElo->title,
-									'foto'       => $bildid
+									'foto'       => $fotoArr['pfad'],
+									'quelle'     => $fotoArr['quelle']
 								);
 							}
 						}
@@ -464,6 +436,60 @@ class Rangliste
 		print_r($ausgabeArr);
 		echo "</pre>";
 
+	}
+
+
+	/**
+	 * Ermittelt zu einem Spieler das aktuelle Foto und dessen Quelle
+	 * ==============================================================
+	 * param id           DeWIS-ID des Spielers
+	 * param listendatum  Listendatum im Format JJJJMMTT
+	 * return array       array('pfad', 'quelle')
+	 */
+	private function Spielerfoto($id, $listendatum)
+	{
+		// Aktuelles Spielerfoto ermitteln
+		$foto = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_photos WHERE pid=? AND date<=? ORDER BY date DESC")
+		                                ->limit(1)
+		                                ->execute($id, $listendatum);
+		if($foto->numRows)
+		{
+			// Foto vorhanden
+			$bildid = $foto->singleSRC;
+			$objFile = \FilesModel::findByPk($foto->singleSRC);
+			$pfad = $objFile->path;
+			// Metadaten laden und Quelle aus Bildunterschrift extrahieren
+			$meta = deserialize($objFile->meta);
+			$caption = $meta['de']['caption']; // $GLOBALS['TL_LANGUAGE'] kann nicht benutzt werden, da dort "en" drinsteht
+			$quelle = $this->getCopyright($caption);
+		}
+		else
+		{
+			// Kein Foto vorhanden
+			$pfad = '';
+			$quelle = '';
+		}
+		return array('pfad' => $pfad, 'quelle' => $quelle);
+	}
+
+	/**
+	 * Holt aus der Bildunterschrift den String mit dem Copyright
+	 * @param mixed
+	 * @return mixed
+	 */
+	private function getCopyright($string)
+	{
+		static $begrenzer = array('[', ']');
+
+		// Nach Copyright per Regex suchen
+		$found = preg_match("/(\[.+\])/",$string,$treffer,PREG_OFFSET_CAPTURE);
+		if($found)
+		{
+			$cpstr = str_replace($begrenzer, '', $treffer[0][0]); // Begrenzer entfernen und Copyright zurückgeben
+		}
+		else $cpstr = ''; // Kein Copyright
+
+		return $cpstr;
 	}
 
 

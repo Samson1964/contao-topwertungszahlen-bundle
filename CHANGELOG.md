@@ -1,5 +1,10 @@
 # Topwertungszahlen Changelog
 
+## Version 0.0.9 (2020-04-03)
+
+Add: Metadaten aus Dateiverwaltung in Rangliste.php
+Fix: Optimierung Rangliste.php
+
 ## Version 0.0.8 (2020-04-02)
 
 Add: Übersetzungen Rating-Formular
