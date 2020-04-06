@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 0.0.10 (2020-04-06)
+
+Fix: Optimierung Rangliste.php - Platzziffer ist nicht mehr der Index
+
 ## Version 0.0.9 (2020-04-03)
 
 Add: Metadaten aus Dateiverwaltung in Rangliste.php

@@ -112,6 +112,8 @@ class Rangliste
 			$ratingList = $client->bestOfFederation("00000",$anzahl,$von,$bis,$geschlecht);
 			$i = 0;
 			$j = 0;
+			$altplatz = 0; // Speichert den letzten ermittelten Platz
+			$altrating = 0; // Speichert die letzte ermittelte Wertungszahl
 
 			// Rückgabe nach Deutschen durchsuchen und in Datei speichern
 			foreach($ratingList->members as $m)
@@ -120,18 +122,6 @@ class Rangliste
 				$tcard = $client->tournamentCardForId($m->pid);
 				if($tcard->member->fideNation == 'GER')
 				{
-					//[pid] => 10266090
-					//[surname] => Caruana
-					//[firstname] => Fabiano
-					//[title] =>
-					//[gender] => m
-					//[yearOfBirth] => 1992
-					//[idfide] => 2020009
-					//[fideNation] => USA
-					//[elo] => 2842
-					//[fideTitle] => GM
-					//[rating] => 2859
-					//[ratingIndex] => 135
 					$i++;
 					// Spieler in Contao eintragen
 					// Zuerst prüfen, ob es den Spieler bereits gibt
@@ -194,12 +184,24 @@ class Rangliste
 						                                     ->execute();
 					}
 
+					//echo "Vorher : altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
+
+					if($altrating != $m->rating)
+					{
+						// Wertungszahl des vorhergehenden Spielers ungleich mit Wertungszahl vom aktuellen Spieler
+						$altplatz = $i; // Platzziffer auf aktuellen Schleifenwert setzen
+						$altrating = $m->rating; // Neue Wertungszahl zuweisen
+					}
+					
+					//echo "Nachher: altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
+
 					// Ausgabe schreiben, wenn Top-10-Spieler
-					if($i < 11)
+					if($altplatz < 11)
 					{
 						$fotoArr = $this->Spielerfoto($id, $listendatum); // Foto laden
-						$ausgabeArr[$liste][$i] = array
+						$ausgabeArr[$liste][] = array
 						(
+							'rang'       => $altplatz,
 							'vorname'    => $m->firstname,
 							'nachname'   => $m->surname,
 							'verband'    => $this->Verband($m->pid, $client),
@@ -209,6 +211,7 @@ class Rangliste
 							'foto'       => $fotoArr['pfad'],
 							'quelle'     => $fotoArr['quelle']
 						);
+						//echo "Ausgabe: $m->surname, $m->firstname auf Platz $altplatz<br>";
 					}
 
 					if($i == $top) break; // Abbrechen, wenn Anzahl der Topspieler gefunden sind
@@ -293,6 +296,8 @@ class Rangliste
 			                                  ->execute($objActiv->id, 1, '%i%');
 
 			$rank = 0;
+			$altplatz = 0; // Speichert den letzten ermittelten Platz
+			$altrating = 0; // Speichert die letzte ermittelte Wertungszahl
 			if($objElo->numRows)
 			{
 				// Elo-Rangliste Spieler für Spieler abarbeiten
@@ -336,7 +341,7 @@ class Rangliste
 						if($found)
 						{
 							// Spieler gefunden, jetzt Datensatz aus tl_topwertungszahlen laden
-							echo "JA ".$m->surname.','.$m->firstname."<br>";
+							//echo "JA ".$m->surname.','.$m->firstname."<br>";
 							// Zuerst prüfen, ob es den Spieler bereits gibt
 							$player = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen WHERE dewis_id=?")
 							                                  ->limit(1)
@@ -397,12 +402,20 @@ class Rangliste
 								                                     ->execute();
 							}
 
+							if($altrating != $objElo->rating)
+							{
+								// Wertungszahl des vorhergehenden Spielers ungleich mit Wertungszahl vom aktuellen Spieler
+								$altplatz = $rank; // Platzziffer auf aktuellen Schleifenwert setzen
+								$altrating = $objElo->rating; // Neue Wertungszahl zuweisen
+							}
+
 							// Ausgabe schreiben, wenn Top-10-Spieler
-							if($rank < 11)
+							if($altplatz < 11)
 							{
 								$fotoArr = $this->Spielerfoto($id, $listendatum); // Foto laden
-								$ausgabeArr[$liste][$rank] = array
+								$ausgabeArr[$liste][] = array
 								(
+									'rang'       => $altplatz,
 									'vorname'    => $m->firstname,
 									'nachname'   => $m->surname,
 									'verband'    => $this->verbandsname[substr($m->vkz,0,1)],
@@ -416,7 +429,7 @@ class Rangliste
 						}
 						else
 						{
-							echo "NEIN ".$m->surname.','.$m->firstname."<br>";
+							//echo "NEIN ".$m->surname.','.$m->firstname."<br>";
 						}
 					}
 				}
