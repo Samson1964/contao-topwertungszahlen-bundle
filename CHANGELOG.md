@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 0.0.11 (2020-07-14)
+
+* Ratingliste.php Altersgrenze von 20 auf 18 geändert
+
 ## Version 0.0.10 (2020-04-06)
 
 Fix: Optimierung Rangliste.php - Platzziffer ist nicht mehr der Index
