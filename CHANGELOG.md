@@ -1,5 +1,10 @@
 # Topwertungszahlen Changelog
 
+## Version 1.3.0 (2020-07-15)
+
+* Abhängigkeit schachbulle/contao-helper-bundle hinzugefügt
+* Datumsfunktionen verbessert mit Helper-Klasse
+
 ## Version 1.2.0 (2020-07-15)
 
 * Ausgabe des aktuellen Fotos in der Spielerliste

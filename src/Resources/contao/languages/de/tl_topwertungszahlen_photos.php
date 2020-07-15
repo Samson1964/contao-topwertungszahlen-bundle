@@ -16,7 +16,7 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['show'] = array('Fotodetails 
  */
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['image_legend'] = 'Spielerfoto';
 
-$GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['date'] = array('Datumskennung', 'Datumskennung des Fotos im Format JJJJMMTT');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['date'] = array('Datum', 'Datum des Fotos im Format TT.MM.JJJJ, MM.JJJJ oder JJJJ');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['singleSRC'] = array('Foto', 'Foto auswählen');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['source'] = array('Quelle', 'Name des Fotografen. Bitte schreiben Sie davor z.B. "Foto:" um den Rechteinhaber besser im Frontend zu kennzeichnen.');
 

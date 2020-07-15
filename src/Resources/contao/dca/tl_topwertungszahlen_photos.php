@@ -144,9 +144,16 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 			'eval'                    => array
 			(
 				'mandatory'           => true,
-				'rgxp'                => 'digit',
 				'tl_class'            => 'w50 clr',
-				'maxlength'           => 8
+				'maxlength'           => 10
+			),
+			'load_callback'           => array
+			(
+				array('\Schachbulle\ContaoHelperBundle\Classes\Helper', 'getDate')
+			),
+			'save_callback' => array
+			(
+				array('\Schachbulle\ContaoHelperBundle\Classes\Helper', 'putDate')
 			),
 			'sql'                     => "varchar(8) NOT NULL default ''"
 		), 
@@ -210,7 +217,7 @@ class tl_topwertungszahlen_photos extends Backend
 		$temp = '<div class="tl_content_left" style="min-width:300px">';
 		$temp .= '<img src="' . $thumbnail . '" width="120" height="160" style="float:left; margin-right:5px" />';
 		$temp .= 'Datei: <b>' . $objFile->path . '</b><br>';
-		$temp .= 'Datumskennung: <b>' . $arrRow['date'] . '</b><br>';
+		$temp .= 'Datum: <b>' . \Schachbulle\ContaoHelperBundle\Classes\Helper::getDate($arrRow['date']) . '</b><br>';
 		$temp .= 'Quelle: <b>' . $arrRow['source'] . '</b>';
 		return $temp.'</div>';
 	}

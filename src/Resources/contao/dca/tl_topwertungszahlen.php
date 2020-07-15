@@ -386,7 +386,7 @@ class tl_topwertungszahlen extends Backend
 			$pfad = $objFile->path;
 			$quelle = $foto->source; // Nur das funktioniert im Moment
 			$thumbnail = \Image::get($objFile->path, 20, 20, 'crop');
-			$str = '<img src="' . $thumbnail . '" width="20" height="20" style="margin-right:5px">'.$foto->date;
+			$str = '<img src="' . $thumbnail . '" width="20" height="20" style="margin-right:5px">'.\Schachbulle\ContaoHelperBundle\Classes\Helper::getDate($foto->date);
 		}
 		else
 		{
