@@ -21,7 +21,7 @@ class Import extends \Backend
 	{
 
 		// jQuery einbinden
-		$GLOBALS['TL_JAVASCRIPT'][] = 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaotopwertungszahlen/js/jquery-3.5.1.min.js';
 
 		$content .= '<div id="rating_import" style="margin:10px;"><img src="bundles/contaotopwertungszahlen/images/ajax-loader.gif"></div>';
 
@@ -32,6 +32,7 @@ class Import extends \Backend
 		$content .= '<script>'."\n";
 		$content .= '$.ajax({'."\n";
 		$content .= '  url: "bundles/contaotopwertungszahlen/Rangliste.php",'."\n";
+		$content .= '  cache: false,'."\n";
 		$content .= '  success: function(response) {'."\n";
 		$content .= '    $("#rating_import").html(response);'."\n";
 		$content .= '  }'."\n";

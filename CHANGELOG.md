@@ -1,5 +1,10 @@
 # Topwertungszahlen Changelog
 
+## Version 1.1.1 (2020-07-15)
+
+* jQuery-Einbindung von Google auf Lokal geändert
+* Ajax Request nicht cachen
+
 ## Version 1.1.0 (2020-07-15)
 
 * BE-Liste Fotos: Quelle ergänzt
