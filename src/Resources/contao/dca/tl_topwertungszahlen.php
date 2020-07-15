@@ -60,6 +60,23 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 				'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
 			)
 		),
+		'global_operations' => array
+		(
+			'importRating' => array
+			(
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['importRating'],
+				'href'                => 'key=importRating',
+				'icon'                => 'bundles/contaotopwertungszahlen/images/import.png',
+				'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['tl_topwertungszahlen']['importRating_confirm'] . '\'))return false;Backend.getScrollOffset()"',
+			),
+			'all' => array
+			(
+				'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
+				'href'                => 'act=select',
+				'class'               => 'header_edit_all',
+				'attributes'          => 'onclick="Backend.getScrollOffset();"'
+			)
+		),
 		'operations' => array
 		(
 			'edit' => array
@@ -68,13 +85,13 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 				'href'                => 'table=tl_topwertungszahlen_ratings',
 				'icon'                => 'bundles/contaotopwertungszahlen/images/rating-icon.png',
 			),
-			'editphoto' => array
+			'editPhoto' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['editphoto'],
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['editPhoto'],
 				'href'                => 'table=tl_topwertungszahlen_photos',
 				'icon'                => 'bundles/contaotopwertungszahlen/images/foto-icon.png',
 			),
-			'editheader' => array
+			'editHeader' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['editHeader'],
 				'href'                => 'act=edit',

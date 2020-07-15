@@ -210,8 +210,9 @@ class tl_topwertungszahlen_photos extends Backend
 		$temp = '<div class="tl_content_left" style="min-width:300px">';
 		$temp .= '<img src="' . $thumbnail . '" width="120" height="160" style="float:left; margin-right:5px" />';
 		$temp .= 'Datei: <b>' . $objFile->path . '</b><br>';
-		$temp .= 'Datumskennung: <b>' . $arrRow['date'] . '</b>';
+		$temp .= 'Datumskennung: <b>' . $arrRow['date'] . '</b><br>';
+		$temp .= 'Quelle: <b>' . $arrRow['source'] . '</b>';
 		return $temp.'</div>';
 	}
-  
+
 }

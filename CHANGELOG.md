@@ -1,5 +1,10 @@
 # Topwertungszahlen Changelog
 
+## Version 1.1.0 (2020-07-15)
+
+* BE-Liste Fotos: Quelle ergänzt
+* Rangliste.php kann jetzt direkt aus dem Backend aufgerufen werden
+
 ## Version 1.0.0 (2020-07-15)
 
 * Eingabefeld für Fotoquelle hinzugefügt
