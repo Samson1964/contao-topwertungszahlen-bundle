@@ -33,3 +33,22 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen']['dewis_id'] = array('DeWIS-ID', 'ID 
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['publish_legend'] = 'Veröffentlichung';
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['published'] = array('Veröffentlicht', 'Spieler aktivieren oder deaktivieren');
 
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['foto'] = array('Foto', 'Aktuelles Foto des Spielers');
+
+/**
+ * Filter
+ */
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter'] = 'Spezialfilter';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_extended'] = 'Spezialfilter';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_alle'] = 'DWZ Top-15 / alle Spieler';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_alle'] = 'DWZ Top-15 / Frauen';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_u20']  = 'DWZ Top-15 / alle Spieler U18';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_u20']  = 'DWZ Top-15 / alle Spieler U18w';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_ab60'] = 'DWZ Top-15 / alle Spieler Ü60';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_ab60'] = 'DWZ Top-15 / alle Spieler Ü60w';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_alle'] = 'Elo Top-15 / alle Spieler';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_alle'] = 'Elo Top-15 / Frauen';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_u20']  = 'Elo Top-15 / alle Spieler U18';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_u20']  = 'Elo Top-15 / alle Spieler U18w';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_ab60'] = 'Elo Top-15 / alle Spieler Ü60';
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_ab60'] = 'Elo Top-15 / alle Spieler Ü60w';

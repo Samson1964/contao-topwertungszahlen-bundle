@@ -1,5 +1,10 @@
 # Topwertungszahlen Changelog
 
+## Version 1.2.0 (2020-07-15)
+
+* Ausgabe des aktuellen Fotos in der Spielerliste
+* Spezialfilter angelegt um die aktuellen Top-15 einer Kategorie anzuzeigen
+
 ## Version 1.1.1 (2020-07-15)
 
 * jQuery-Einbindung von Google auf Lokal geändert
