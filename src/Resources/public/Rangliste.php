@@ -473,10 +473,11 @@ class Rangliste
 			$bildid = $foto->singleSRC;
 			$objFile = \FilesModel::findByPk($foto->singleSRC);
 			$pfad = $objFile->path;
-			// Metadaten laden und Quelle aus Bildunterschrift extrahieren
+			// Metadaten laden und Quelle aus Bildunterschrift extrahieren (funktioniert nicht!)
 			$meta = deserialize($objFile->meta);
 			$caption = $meta['de']['caption']; // $GLOBALS['TL_LANGUAGE'] kann nicht benutzt werden, da dort "en" drinsteht
-			$quelle = $this->getCopyright($caption);
+			//$quelle = $this->getCopyright($caption);
+			$quelle = $foto->source; // Nur das funktioniert im Moment
 		}
 		else
 		{

@@ -1,47 +1,51 @@
 # Topwertungszahlen Changelog
 
+## Version 1.0.0 (2020-07-15)
+
+* Eingabefeld für Fotoquelle hinzugefügt
+
 ## Version 0.0.11 (2020-07-14)
 
 * Ratingliste.php Altersgrenze von 20 auf 18 geändert
 
 ## Version 0.0.10 (2020-04-06)
 
-Fix: Optimierung Rangliste.php - Platzziffer ist nicht mehr der Index
+* Fix: Optimierung Rangliste.php - Platzziffer ist nicht mehr der Index
 
 ## Version 0.0.9 (2020-04-03)
 
-Add: Metadaten aus Dateiverwaltung in Rangliste.php
-Fix: Optimierung Rangliste.php
+* Add: Metadaten aus Dateiverwaltung in Rangliste.php
+* Fix: Optimierung Rangliste.php
 
 ## Version 0.0.8 (2020-04-02)
 
-Add: Übersetzungen Rating-Formular
-Add: Landesverbände über Rangliste.php
+* Add: Übersetzungen Rating-Formular
+* Add: Landesverbände über Rangliste.php
 
 ## Version 0.0.7 (2020-04-02)
 
-Ausbau des Bundles mit Rangliste.php
+* Ausbau des Bundles mit Rangliste.php
 
 ## Version 0.0.6 (2020-04-01)
 
-Ausbau des Bundles mit Fotos und Rangliste.php
+* Ausbau des Bundles mit Fotos und Rangliste.php
 
 ## Version 0.0.5 (2020-04-01)
 
-Fix: Änderung Bundle-Name von dwzranglisten in topwertungszahlen
+* Fix: Änderung Bundle-Name von dwzranglisten in topwertungszahlen
 
 ## Version 0.0.4 (2020-02-18)
 
-Fix: Public-Ordner
+* Fix: Public-Ordner
 
 ## Version 0.0.3 (2020-02-18)
 
-DCA im Backend
+* DCA im Backend
 
 ## Version 0.0.2 (2020-02-18)
 
-Fix wegen falscher Verlinkung in Symphony-Komponente
+* Fix wegen falscher Verlinkung in Symphony-Komponente
 
 ## Version 0.0.1 (2020-02-17)
 
-Initiale Version
+* Initiale Version

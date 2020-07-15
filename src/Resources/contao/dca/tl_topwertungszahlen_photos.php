@@ -100,7 +100,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 	// Palettes
 	'palettes' => array
 	(
-		'default'                     => '{image_legend},date,singleSRC;{publish_legend},published'
+		'default'                     => '{image_legend},date,singleSRC,source;{publish_legend},published'
 	),
 
 	// Fields
@@ -150,6 +150,21 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 			),
 			'sql'                     => "varchar(8) NOT NULL default ''"
 		), 
+		'source' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['source'],
+			'exclude'                 => true,
+			'search'                  => true,
+			'default'                 => 'Foto: ',
+			'inputType'               => 'text',
+			'eval'                    => array
+			(
+				'mandatory'           => false,
+				'maxlength'           => 128,
+				'tl_class'            => 'long clr'
+			),
+			'sql'                     => "varchar(128) NOT NULL default ''"
+		),
 		'published' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['published'],
