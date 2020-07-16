@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.3.1 (2020-07-16)
+
+* Rangliste.php nun U19 statt U18, um auch noch in U18 startberechtigte 19-Jährige anzuzeigen
+
 ## Version 1.3.0 (2020-07-15)
 
 * Abhängigkeit schachbulle/contao-helper-bundle hinzugefügt
