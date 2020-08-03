@@ -1,8 +1,8 @@
 # Topwertungszahlen Changelog
 
-## Version 1.3.1 (2020-07-16)
+## Version 1.3.1 (2020-08-03)
 
-* Rangliste.php nun U19 statt U18, um auch noch in U18 startberechtigte 19-Jährige anzuzeigen
+* Vorschaubilder im Backend quadratisch gemacht: 160x160 statt 120x160
 
 ## Version 1.3.0 (2020-07-15)
 

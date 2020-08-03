@@ -212,10 +212,10 @@ class tl_topwertungszahlen_photos extends Backend
 	{
 		// Bild extrahieren
 		$objFile = \FilesModel::findByPk($arrRow['singleSRC']);
-		$thumbnail = Image::get($objFile->path, 120, 160, 'crop');
+		$thumbnail = Image::get($objFile->path, 160, 160, 'crop');
 
 		$temp = '<div class="tl_content_left" style="min-width:300px">';
-		$temp .= '<img src="' . $thumbnail . '" width="120" height="160" style="float:left; margin-right:5px" />';
+		$temp .= '<img src="' . $thumbnail . '" width="160" height="160" style="float:left; margin-right:5px" />';
 		$temp .= 'Datei: <b>' . $objFile->path . '</b><br>';
 		$temp .= 'Datum: <b>' . \Schachbulle\ContaoHelperBundle\Classes\Helper::getDate($arrRow['date']) . '</b><br>';
 		$temp .= 'Quelle: <b>' . $arrRow['source'] . '</b>';
