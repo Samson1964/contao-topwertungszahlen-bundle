@@ -67,8 +67,52 @@ class Rangliste
 				)
 			);
 
-			$this->getRangliste_DWZ($client);
-			$this->getRangliste_Elo($client);
+			if(\Input::get('type') == 'dwz')
+			{
+				// DWZ-Liste ermitteln
+				$this->getRangliste_DWZ($client, \Input::get('modus'));
+				$alles = false;
+			}
+			elseif(\Input::get('type') == 'elo') 
+			{
+				// Elo-Liste ermitteln
+				$this->getRangliste_Elo($client, \Input::get('modus'));
+				$alles = false;
+			}
+			else
+			{
+				// Cron-Modus, alles ermitteln
+				for($x = 1; $x <= 6; $x++)
+				{
+					$this->getRangliste_DWZ($client, $x);
+					$this->getRangliste_Elo($client, $x);
+				}
+				$alles = true;
+			}
+
+			// Endgültige Dateien schreiben, wenn letzte Liste erstellt
+			if((\Input::get('type') == 'elo' && \Input::get('modus') == 6) || $alles)
+			{
+				echo "JSON-Dateien schreiben<br>\n";
+				$datenDWZ = array();
+				$datenELO = array();
+				for($x = 1; $x <= 6; $x++)
+				{
+					$tempDWZ = unserialize(file_get_contents('dwz-'.$x.'.json'));
+					$tempELO = unserialize(file_get_contents('elo-'.$x.'.json'));
+					//print_r($tempDWZ);
+					$datenDWZ = array_merge($datenDWZ, $tempDWZ);
+					$datenELO = array_merge($datenELO, $tempELO);
+					unlink('dwz-'.$x.'.json');
+					unlink('elo-'.$x.'.json');
+				}
+				$fp = fopen('dwz.json', 'w');
+				fputs($fp, json_encode($datenDWZ));
+				fclose($fp);
+				$fp = fopen('elo.json', 'w');
+				fputs($fp, json_encode($datenELO));
+				fclose($fp);
+			}
 
 		}
 		catch (SOAPFault $f) {
@@ -76,14 +120,14 @@ class Rangliste
 		}
 	}
 
-	private function getRangliste_DWZ($client)
+	private function getRangliste_DWZ($client, $modus)
 	{
 		$top = 50; // Anzahl der deutschen Spieler, die benötigt werden
 		$listendatum = date('Ymd'); // Datum der Liste als JJJJMMTT (DWZ täglich)
 		$ausgabeArr = array(); // Die Ranglisten werden hier als Array gespeichert
 		$startzeit = microtime(true); // Startzeit
 
-		for($x = 0; $x < 6; $x++)
+		for($x = $modus - 1; $x < $modus; $x++)
 		{
 			switch($x)
 			{
@@ -218,25 +262,25 @@ class Rangliste
 				}
 			}
 			// Ausgabe
-			echo "Liste Top-$top: $liste (Abfrage $anzahl Spieler) - $j Spieler getestet - $i Deutsche gefunden<br>\n";
+			echo "Liste $modus/12 - Top-$top: <b>$liste</b> (Abfrage <b>$anzahl</b> Spieler) - <b>$j Spieler</b> getestet - <b>$i Deutsche</b> gefunden - ";
 		}
 
 		// JSON schreiben
-		$fp = fopen('dwz.json', 'w');
-		fputs($fp, json_encode($ausgabeArr));
+		$fp = fopen('dwz-'.$modus.'.json', 'w');
+		fputs($fp, serialize($ausgabeArr));
 		fclose($fp);
 
 		$stopzeit = microtime(true); // Stopzeit
 		$laufzeit = $stopzeit-$startzeit; // Berechnung
-		$laufzeit = str_replace(".", ",", $laufzeit); // Trennzeichen ersetzen
-		echo "Abfragezeit: $laufzeit Sekunden<br>\n";
-		echo "<pre>";
-		print_r($ausgabeArr);
-		echo "</pre>";
+		$laufzeit = str_replace(".", ",", sprintf('%.3f', $laufzeit)); // Trennzeichen ersetzen
+		echo "Zeit: $laufzeit Sekunden<br>\n";
+		//echo "<pre>";
+		//print_r($ausgabeArr);
+		//echo "</pre>";
 
 	}
 
-	private function getRangliste_Elo($client)
+	private function getRangliste_Elo($client, $modus)
 	{
 		/* Funktionsweise
 		 * ==============
@@ -257,7 +301,7 @@ class Rangliste
 		$top = 50; // Anzahl der Spieler, die benötigt werden
 
 		// Listentypen abarbeiten
-		for($x = 0; $x < 6; $x++)
+		for($x = $modus - 1; $x < $modus; $x++)
 		{
 			switch($x)
 			{
@@ -436,20 +480,22 @@ class Rangliste
 					}
 				}
 			}
+			echo "Liste ".($modus+6)."/12 - Top-$top: <b>$liste</b> (Abfrage <b>$anzahl</b> Spieler) - <b>$j Spieler</b> getestet - <b>$i Deutsche</b> gefunden - ";
 		}
 
 		// JSON schreiben
-		$fp = fopen('elo.json', 'w');
-		fputs($fp, json_encode($ausgabeArr));
+		$fp = fopen('elo-'.$modus.'.json', 'w');
+		fputs($fp, serialize($ausgabeArr));
 		fclose($fp);
 
 		$stopzeit = microtime(true); // Stopzeit
 		$laufzeit = $stopzeit-$startzeit; // Berechnung
-		$laufzeit = str_replace(".", ",", $laufzeit); // Trennzeichen ersetzen
-		echo "Abfragezeit: $laufzeit Sekunden<br>\n";
-		echo "<pre>";
-		print_r($ausgabeArr);
-		echo "</pre>";
+		$laufzeit = str_replace(".", ",", sprintf('%.3f', $laufzeit)); // Trennzeichen ersetzen
+		echo "Zeit: $laufzeit Sekunden<br>\n";
+
+		//echo "<pre>";
+		//print_r($ausgabeArr);
+		//echo "</pre>";
 
 	}
 

@@ -1,5 +1,11 @@
 # Topwertungszahlen Changelog
 
+## Version 1.4.0 (2020-08-04)
+
+* Debug-Ausgabe in Generierung JSON entfernt
+* Ajax-Ausgabe gesplittet, um schneller Informationen anzuzeigen
+* Rangliste.php ohne URL-Parameter generiert alle Listen auf einmal
+
 ## Version 1.3.2 (2020-08-03)
 
 * Vorschaubilder im Backend quadratisch gemacht: 160x160 statt 120x160
