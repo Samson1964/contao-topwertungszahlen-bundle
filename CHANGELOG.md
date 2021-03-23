@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.4.1 (2021-03-23)
+
+* Fix: public/Rangliste.php - SOAPClient-Aufruf ersetzt durch aktuellen Aufruf aus contao-dewis-bundle
+
 ## Version 1.4.0 (2020-08-04)
 
 * Debug-Ausgabe in Generierung JSON entfernt
