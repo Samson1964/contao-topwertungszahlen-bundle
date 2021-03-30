@@ -137,6 +137,7 @@ class Rangliste
 		$listendatum = date('Ymd'); // Datum der Liste als JJJJMMTT (DWZ täglich)
 		$ausgabeArr = array(); // Die Ranglisten werden hier als Array gespeichert
 		$startzeit = microtime(true); // Startzeit
+		$liste_pids = array(); // Nimmt die Spieler-IDs auf um Mehrfacheinträge eines Spielers zu verhindern
 
 		for($x = $modus - 1; $x < $modus; $x++)
 		{
@@ -168,7 +169,8 @@ class Rangliste
 			$i = 0;
 			$j = 0;
 			$altplatz = 0; // Speichert den letzten ermittelten Platz
-			$altrating = 0; // Speichert die letzte ermittelte Wertungszahl
+			$altrating = 0; // Speichert die letzte ermittelte Wertungszahl 
+			$liste_pids[$liste] = array();
 
 			// Rückgabe nach Deutschen durchsuchen und in Datei speichern
 			foreach($ratingList->members as $m)
@@ -177,99 +179,103 @@ class Rangliste
 				$tcard = $client->tournamentCardForId($m->pid);
 				if($tcard->member->fideNation == 'GER')
 				{
-					$i++;
-					// Spieler in Contao eintragen
-					// Zuerst prüfen, ob es den Spieler bereits gibt
-					$player = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen WHERE dewis_id=?")
-					                                  ->limit(1)
-					                                  ->execute($m->pid);
-					if($player->numRows)
+					if(!in_array($m->pid, $liste_pids[$liste]))
 					{
-						// Spieler schon vorhanden, dann nur die ID merken
-						$id = $player->id;
+						$liste_pids[$liste][] = $m->pid; // Spieler-ID noch nicht in Liste, hier hinzufügen
+						$i++;
+						// Spieler in Contao eintragen
+						// Zuerst prüfen, ob es den Spieler bereits gibt
+						$player = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen WHERE dewis_id=?")
+						                                  ->limit(1)
+						                                  ->execute($m->pid);
+						if($player->numRows)
+						{
+							// Spieler schon vorhanden, dann nur die ID merken
+							$id = $player->id;
+						}
+						else
+						{
+							// Spieler nicht vorhanden
+							$set = array
+							(
+								'tstamp'     => time(),
+								'vorname'    => $m->firstname,
+								'nachname'   => $m->surname,
+								'titel'      => $m->title,
+								'geschlecht' => $m->gender,
+								'dewis_id'   => $m->pid,
+								'published'  => 1
+							);
+							$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen %s")
+							                                     ->set($set)
+							                                     ->execute();
+							$id = $objInsert->insertId; // Zugeordnete ID merken
+						}
+                    	
+						// Wertungszahl und Rang eintragen
+						// Zuerst prüfen, ob es einen Eintrag bereits gibt
+						$rating = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_ratings WHERE pid=? AND type=? AND date=?")
+						                                  ->limit(1)
+						                                  ->execute($id, $liste, $listendatum);
+						if($rating->numRows)
+						{
+							// Eintrag schon vorhanden, ggfs. aktualisieren
+						}
+						else
+						{
+							// Eintrag nicht vorhanden
+							$set = array
+							(
+								'pid'          => $id,
+								'tstamp'       => time(),
+								'type'         => $liste,
+								'date'         => $listendatum,
+								'rank'         => $i,
+								'rating'       => $m->rating,
+								'rating_info'  => '',
+								'rating_id'    => '',
+								'fide_title'   => $m->fideTitle ? $m->fideTitle : '',
+								'fide_title_w' => '',
+								'association'  => $this->Verbandskuerzel($m->pid, $client),
+								'published'    => 1
+							);
+							$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen_ratings %s")
+							                                     ->set($set)
+							                                     ->execute();
+						}
+                    	
+						//echo "Vorher : altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
+                    	
+						if($altrating != $m->rating)
+						{
+							// Wertungszahl des vorhergehenden Spielers ungleich mit Wertungszahl vom aktuellen Spieler
+							$altplatz = $i; // Platzziffer auf aktuellen Schleifenwert setzen
+							$altrating = $m->rating; // Neue Wertungszahl zuweisen
+						}
+						
+						//echo "Nachher: altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
+                    	
+						// Ausgabe schreiben, wenn Top-10-Spieler
+						if($altplatz < 11)
+						{
+							$fotoArr = $this->Spielerfoto($id, $listendatum); // Foto laden
+							$ausgabeArr[$liste][] = array
+							(
+								'rang'       => $altplatz,
+								'vorname'    => $m->firstname,
+								'nachname'   => $m->surname,
+								'verband'    => $this->Verband($m->pid, $client),
+								'link'       => 'spieler/'.$m->pid.'.html',
+								'rating'     => $m->rating,
+								'title'      => $m->fideTitle,
+								'foto'       => $fotoArr['pfad'],
+								'quelle'     => $fotoArr['quelle']
+							);
+							//echo "Ausgabe: $m->surname, $m->firstname auf Platz $altplatz<br>";
+						}
+                    	
+						if($i == $top) break; // Abbrechen, wenn Anzahl der Topspieler gefunden sind
 					}
-					else
-					{
-						// Spieler nicht vorhanden
-						$set = array
-						(
-							'tstamp'     => time(),
-							'vorname'    => $m->firstname,
-							'nachname'   => $m->surname,
-							'titel'      => $m->title,
-							'geschlecht' => $m->gender,
-							'dewis_id'   => $m->pid,
-							'published'  => 1
-						);
-						$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen %s")
-						                                     ->set($set)
-						                                     ->execute();
-						$id = $objInsert->insertId; // Zugeordnete ID merken
-					}
-
-					// Wertungszahl und Rang eintragen
-					// Zuerst prüfen, ob es einen Eintrag bereits gibt
-					$rating = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_ratings WHERE pid=? AND type=? AND date=?")
-					                                  ->limit(1)
-					                                  ->execute($id, $liste, $listendatum);
-					if($rating->numRows)
-					{
-						// Eintrag schon vorhanden, ggfs. aktualisieren
-					}
-					else
-					{
-						// Eintrag nicht vorhanden
-						$set = array
-						(
-							'pid'          => $id,
-							'tstamp'       => time(),
-							'type'         => $liste,
-							'date'         => $listendatum,
-							'rank'         => $i,
-							'rating'       => $m->rating,
-							'rating_info'  => '',
-							'rating_id'    => '',
-							'fide_title'   => $m->fideTitle ? $m->fideTitle : '',
-							'fide_title_w' => '',
-							'association'  => $this->Verbandskuerzel($m->pid, $client),
-							'published'    => 1
-						);
-						$objInsert = \Database::getInstance()->prepare("INSERT INTO tl_topwertungszahlen_ratings %s")
-						                                     ->set($set)
-						                                     ->execute();
-					}
-
-					//echo "Vorher : altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
-
-					if($altrating != $m->rating)
-					{
-						// Wertungszahl des vorhergehenden Spielers ungleich mit Wertungszahl vom aktuellen Spieler
-						$altplatz = $i; // Platzziffer auf aktuellen Schleifenwert setzen
-						$altrating = $m->rating; // Neue Wertungszahl zuweisen
-					}
-					
-					//echo "Nachher: altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
-
-					// Ausgabe schreiben, wenn Top-10-Spieler
-					if($altplatz < 11)
-					{
-						$fotoArr = $this->Spielerfoto($id, $listendatum); // Foto laden
-						$ausgabeArr[$liste][] = array
-						(
-							'rang'       => $altplatz,
-							'vorname'    => $m->firstname,
-							'nachname'   => $m->surname,
-							'verband'    => $this->Verband($m->pid, $client),
-							'link'       => 'spieler/'.$m->pid.'.html',
-							'rating'     => $m->rating,
-							'title'      => $m->fideTitle,
-							'foto'       => $fotoArr['pfad'],
-							'quelle'     => $fotoArr['quelle']
-						);
-						//echo "Ausgabe: $m->surname, $m->firstname auf Platz $altplatz<br>";
-					}
-
-					if($i == $top) break; // Abbrechen, wenn Anzahl der Topspieler gefunden sind
 				}
 			}
 			// Ausgabe

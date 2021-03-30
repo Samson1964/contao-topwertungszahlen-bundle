@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.4.2 (2021-03-30)
+
+* Fix: public/Rangliste.php - Spieler mit gleicher ID wurden in dwz.json geschrieben, so daß Spieler doppelt ausgegeben wurden
+
 ## Version 1.4.1 (2021-03-23)
 
 * Fix: public/Rangliste.php - SOAPClient-Aufruf ersetzt durch aktuellen Aufruf aus contao-dewis-bundle
