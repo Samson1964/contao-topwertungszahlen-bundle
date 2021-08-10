@@ -61,6 +61,28 @@ class Import extends \Backend
 		$content .= '                      cache: false,'."\n";
 		$content .= '                      success: function(response) {'."\n";
 		$content .= '                        $("#rating_import").append(response);'."\n";
+
+		$content .= '                    $.ajax({'."\n";
+		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=7&type=dwz",'."\n";
+		$content .= '                      cache: false,'."\n";
+		$content .= '                      success: function(response) {'."\n";
+		$content .= '                        $("#rating_import").append(response);'."\n";
+		$content .= '                    $.ajax({'."\n";
+		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=8&type=dwz",'."\n";
+		$content .= '                      cache: false,'."\n";
+		$content .= '                      success: function(response) {'."\n";
+		$content .= '                        $("#rating_import").append(response);'."\n";
+		$content .= '                    $.ajax({'."\n";
+		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=9&type=dwz",'."\n";
+		$content .= '                      cache: false,'."\n";
+		$content .= '                      success: function(response) {'."\n";
+		$content .= '                        $("#rating_import").append(response);'."\n";
+		$content .= '                    $.ajax({'."\n";
+		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=10&type=dwz",'."\n";
+		$content .= '                      cache: false,'."\n";
+		$content .= '                      success: function(response) {'."\n";
+		$content .= '                        $("#rating_import").append(response);'."\n";
+
 		$content .= '                        $.ajax({'."\n";
 		$content .= '                          url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=1&type=elo",'."\n";
 		$content .= '                          cache: false,'."\n";
@@ -91,7 +113,47 @@ class Import extends \Backend
 		$content .= '                                              cache: false,'."\n";
 		$content .= '                                              success: function(response) {'."\n";
 		$content .= '                                                $("#rating_import").append(response);'."\n";
+
+		$content .= '                                            $.ajax({'."\n";
+		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=7&type=elo",'."\n";
+		$content .= '                                              cache: false,'."\n";
+		$content .= '                                              success: function(response) {'."\n";
+		$content .= '                                                $("#rating_import").append(response);'."\n";
+		$content .= '                                            $.ajax({'."\n";
+		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=8&type=elo",'."\n";
+		$content .= '                                              cache: false,'."\n";
+		$content .= '                                              success: function(response) {'."\n";
+		$content .= '                                                $("#rating_import").append(response);'."\n";
+		$content .= '                                            $.ajax({'."\n";
+		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=9&type=elo",'."\n";
+		$content .= '                                              cache: false,'."\n";
+		$content .= '                                              success: function(response) {'."\n";
+		$content .= '                                                $("#rating_import").append(response);'."\n";
+		$content .= '                                            $.ajax({'."\n";
+		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=10&type=elo",'."\n";
+		$content .= '                                              cache: false,'."\n";
+		$content .= '                                              success: function(response) {'."\n";
+		$content .= '                                                $("#rating_import").append(response);'."\n";
+
 		$content .= '                                                $("#rating_import_status").html("<b>Fertig</b>");'."\n";
+
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+		$content .= '                                              }'."\n";
+		$content .= '                                            });'."\n";
+
 		$content .= '                                              }'."\n";
 		$content .= '                                            });'."\n";
 		$content .= '                                          }'."\n";

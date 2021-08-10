@@ -419,14 +419,22 @@ class tl_topwertungszahlen extends Backend
 					'2'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_alle'],
 					'3'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_u20'],
 					'4'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_u20'],
-					'5'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_ab60'],
-					'6'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_ab60'],
-					'7'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_alle'],
-					'8'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_alle'],
-					'9'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_u20'],
-					'10'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_u20'],
-					'11'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_ab60'],
-					'12'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_ab60'],
+					'5'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_ab50'],
+					'6'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_ab50'],
+					'7'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_ab65'],
+					'8'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_ab65'],
+					'9'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_m_ab75'],
+					'10'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_dwz_w_ab75'],
+					'11'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_alle'],
+					'12'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_alle'],
+					'13'   => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_u20'],
+					'14'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_u20'],
+					'15'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_ab50'],
+					'16'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_ab50'],
+					'17'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_ab65'],
+					'18'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_ab65'],
+					'19'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_m_ab75'],
+					'20'  => $GLOBALS['TL_LANG']['tl_topwertungszahlen']['filter_elo_w_ab75'],
 				)
 			),
 		);
@@ -501,14 +509,22 @@ class tl_topwertungszahlen extends Backend
 			case '2': $typ = 'dwz_w'; break; // Alle Frauen
 			case '3': $typ = 'dwz_u20'; break; // Alle U18
 			case '4': $typ = 'dwz_u20w'; break; // Alle U18w
-			case '5': $typ = 'dwz_60+'; break; // Alle Ü60
-			case '6': $typ = 'dwz_60w+'; break; // Alle Ü60w
-			case '7': $typ = 'elo_alle'; break; // Alle Spieler
-			case '8': $typ = 'elo_w'; break; // Alle Frauen
-			case '9': $typ = 'elo_u20'; break; // Alle U18
-			case '10': $typ = 'elo_u20w'; break; // Alle U18w
-			case '11': $typ = 'elo_60+'; break; // Alle Ü60+
-			case '12': $typ = 'elo_60w+'; break; // Alle Ü60w+
+			case '5': $typ = 'dwz_50+'; break; // Alle Ü50
+			case '6': $typ = 'dwz_50w+'; break; // Alle Ü50w
+			case '7': $typ = 'dwz_65+'; break; // Alle Ü65
+			case '8': $typ = 'dwz_65w+'; break; // Alle Ü65w
+			case '9': $typ = 'dwz_75+'; break; // Alle Ü75
+			case '10': $typ = 'dwz_75w+'; break; // Alle Ü75w
+			case '11': $typ = 'elo_alle'; break; // Alle Spieler
+			case '12': $typ = 'elo_w'; break; // Alle Frauen
+			case '13': $typ = 'elo_u20'; break; // Alle U18
+			case '14': $typ = 'elo_u20w'; break; // Alle U18w
+			case '15': $typ = 'elo_50+'; break; // Alle Ü50+
+			case '16': $typ = 'elo_50w+'; break; // Alle Ü50w+
+			case '17': $typ = 'elo_65+'; break; // Alle Ü65+
+			case '18': $typ = 'elo_65w+'; break; // Alle Ü65w+
+			case '19': $typ = 'elo_75+'; break; // Alle Ü75+
+			case '20': $typ = 'elo_75w+'; break; // Alle Ü75w+
 			default: $typ = '';
 		}
 

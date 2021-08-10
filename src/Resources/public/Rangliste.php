@@ -84,7 +84,7 @@ class Rangliste
 				$this->getRangliste_DWZ($client, \Input::get('modus'));
 				$alles = false;
 			}
-			elseif(\Input::get('type') == 'elo') 
+			elseif(\Input::get('type') == 'elo')
 			{
 				// Elo-Liste ermitteln
 				$this->getRangliste_Elo($client, \Input::get('modus'));
@@ -93,21 +93,24 @@ class Rangliste
 			else
 			{
 				// Cron-Modus, alles ermitteln
-				for($x = 1; $x <= 6; $x++)
+				for($x = 1; $x <= 10; $x++)
 				{
 					$this->getRangliste_DWZ($client, $x);
+				}
+				for($x = 1; $x <= 10; $x++)
+				{
 					$this->getRangliste_Elo($client, $x);
 				}
 				$alles = true;
 			}
 
 			// Endgültige Dateien schreiben, wenn letzte Liste erstellt
-			if((\Input::get('type') == 'elo' && \Input::get('modus') == 6) || $alles)
+			if((\Input::get('type') == 'elo' && \Input::get('modus') == 10) || $alles)
 			{
 				echo "JSON-Dateien schreiben<br>\n";
 				$datenDWZ = array();
 				$datenELO = array();
-				for($x = 1; $x <= 6; $x++)
+				for($x = 1; $x <= 10; $x++)
 				{
 					$tempDWZ = unserialize(file_get_contents('dwz-'.$x.'.json'));
 					$tempELO = unserialize(file_get_contents('elo-'.$x.'.json'));
@@ -155,11 +158,23 @@ class Rangliste
 				case 3: // Alle U20w
 					$anzahl = 500; $von = 0; $bis = 19; $geschlecht = 'f'; $liste = 'dwz_u20w';
 					break;
-				case 4: // Alle Ü60
-					$anzahl = 1000; $von = 60; $bis = 120; $geschlecht = ''; $liste = 'dwz_60+';
+				case 4: // Alle Ü50
+					$anzahl = 1000; $von = 50; $bis = 120; $geschlecht = ''; $liste = 'dwz_50+';
 					break;
-				case 5: // Alle Ü60w
-					$anzahl = 500; $von = 60; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_60w+';
+				case 5: // Alle Ü50w
+					$anzahl = 500; $von = 50; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_50w+';
+					break;
+				case 6: // Alle Ü65
+					$anzahl = 1000; $von = 65; $bis = 120; $geschlecht = ''; $liste = 'dwz_65+';
+					break;
+				case 7: // Alle Ü65w
+					$anzahl = 500; $von = 65; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_65w+';
+					break;
+				case 8: // Alle Ü75
+					$anzahl = 1000; $von = 75; $bis = 120; $geschlecht = ''; $liste = 'dwz_75+';
+					break;
+				case 9: // Alle Ü75w
+					$anzahl = 500; $von = 75; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_75w+';
 					break;
 				default:
 			}
@@ -169,7 +184,7 @@ class Rangliste
 			$i = 0;
 			$j = 0;
 			$altplatz = 0; // Speichert den letzten ermittelten Platz
-			$altrating = 0; // Speichert die letzte ermittelte Wertungszahl 
+			$altrating = 0; // Speichert die letzte ermittelte Wertungszahl
 			$liste_pids[$liste] = array();
 
 			// Rückgabe nach Deutschen durchsuchen und in Datei speichern
@@ -211,7 +226,7 @@ class Rangliste
 							                                     ->execute();
 							$id = $objInsert->insertId; // Zugeordnete ID merken
 						}
-                    	
+
 						// Wertungszahl und Rang eintragen
 						// Zuerst prüfen, ob es einen Eintrag bereits gibt
 						$rating = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_ratings WHERE pid=? AND type=? AND date=?")
@@ -243,18 +258,18 @@ class Rangliste
 							                                     ->set($set)
 							                                     ->execute();
 						}
-                    	
+
 						//echo "Vorher : altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
-                    	
+
 						if($altrating != $m->rating)
 						{
 							// Wertungszahl des vorhergehenden Spielers ungleich mit Wertungszahl vom aktuellen Spieler
 							$altplatz = $i; // Platzziffer auf aktuellen Schleifenwert setzen
 							$altrating = $m->rating; // Neue Wertungszahl zuweisen
 						}
-						
+
 						//echo "Nachher: altplatz = $altplatz | i = $i | altrating = $altrating | m-rating = $m->rating<br>";
-                    	
+
 						// Ausgabe schreiben, wenn Top-10-Spieler
 						if($altplatz < 11)
 						{
@@ -273,13 +288,13 @@ class Rangliste
 							);
 							//echo "Ausgabe: $m->surname, $m->firstname auf Platz $altplatz<br>";
 						}
-                    	
+
 						if($i == $top) break; // Abbrechen, wenn Anzahl der Topspieler gefunden sind
 					}
 				}
 			}
 			// Ausgabe
-			echo "Liste $modus/12 - Top-$top: <b>$liste</b> (Abfrage <b>$anzahl</b> Spieler) - <b>$j Spieler</b> getestet - <b>$i Deutsche</b> gefunden - ";
+			echo "Liste $modus/20 - Top-$top: <b>$liste</b> (Abfrage <b>$anzahl</b> Spieler) - <b>$j Spieler</b> getestet - <b>$i Deutsche</b> gefunden - ";
 		}
 
 		// JSON schreiben
@@ -340,15 +355,35 @@ class Rangliste
 					$sql = 'AND birthday>='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
 					$liste = 'elo_u20w';
 					break;
-				case 4: // Alle Ü60
-					$jahr = date('Y') - 60;
+				case 4: // Alle Ü50
+					$jahr = date('Y') - 50;
 					$sql = 'AND birthday<='.$jahr.' ORDER BY rating DESC';
-					$liste = 'elo_60+';
+					$liste = 'elo_50+';
 					break;
-				case 5: // Alle Ü60w
-					$jahr = date('Y') - 60;
+				case 5: // Alle Ü50w
+					$jahr = date('Y') - 50;
 					$sql = 'AND birthday<='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
-					$liste = 'elo_60w+';
+					$liste = 'elo_50w+';
+					break;
+				case 6: // Alle Ü65
+					$jahr = date('Y') - 65;
+					$sql = 'AND birthday<='.$jahr.' ORDER BY rating DESC';
+					$liste = 'elo_65+';
+					break;
+				case 7: // Alle Ü65w
+					$jahr = date('Y') - 65;
+					$sql = 'AND birthday<='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
+					$liste = 'elo_65w+';
+					break;
+				case 8: // Alle Ü75
+					$jahr = date('Y') - 75;
+					$sql = 'AND birthday<='.$jahr.' ORDER BY rating DESC';
+					$liste = 'elo_75+';
+					break;
+				case 9: // Alle Ü75w
+					$jahr = date('Y') - 75;
+					$sql = 'AND birthday<='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
+					$liste = 'elo_75w+';
 					break;
 				default:
 			}
@@ -497,7 +532,7 @@ class Rangliste
 					}
 				}
 			}
-			echo "Liste ".($modus+6)."/12 - Top-$top: <b>$liste</b> (Abfrage <b>$anzahl</b> Spieler) - <b>$j Spieler</b> getestet - <b>$i Deutsche</b> gefunden - ";
+			echo "Liste ".($modus+10)."/20 - Top-$top: <b>$liste</b> (Abfrage <b>$anzahl</b> Spieler) - <b>$j Spieler</b> getestet - <b>$i Deutsche</b> gefunden - ";
 		}
 
 		// JSON schreiben

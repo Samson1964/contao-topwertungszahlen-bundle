@@ -1,5 +1,11 @@
 # Topwertungszahlen Changelog
 
+## Version 1.5.0 (2021-08-10)
+
+* Change: public/Rangliste.php - Senioren 60+ ersetzt durch 50+, 65+ und 75+
+* Add: Import.php umd Optionen 7 bis 9, Elo/DWZ erweitert
+* Add: tl_topwertungszahlen.php - Filter 60+ entfernt, 50+, 65+ und 75+ hinzugefügt
+
 ## Version 1.4.2 (2021-03-30)
 
 * Fix: public/Rangliste.php - Spieler mit gleicher ID wurden in dwz.json geschrieben, so daß Spieler doppelt ausgegeben wurden
