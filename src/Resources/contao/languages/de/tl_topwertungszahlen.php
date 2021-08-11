@@ -34,6 +34,7 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen']['publish_legend'] = 'Veröffentlichu
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['published'] = array('Veröffentlicht', 'Spieler aktivieren oder deaktivieren');
 
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['foto'] = array('Foto', 'Aktuelles Foto des Spielers');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['platz'] = array('Platz', 'Platzierung in der aktuellen Rangliste');
 
 /**
  * Filter

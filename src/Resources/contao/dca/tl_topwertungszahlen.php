@@ -42,7 +42,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 	(
 		'sorting' => array
 		(
-			'mode'                    => 1,
+			'mode'                    => 2,
 			'fields'                  => array('nachname', 'vorname'),
 			'panelLayout'             => 'myfilter;filter;search,sort,limit',
 			'panel_callback'          => array('myfilter' => array('tl_topwertungszahlen', 'generateAdvancedFilter')),
@@ -51,7 +51,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 		),
 		'label' => array
 		(
-			'fields'                  => array('nachname', 'vorname', 'geburtstag', 'foto'),
+			'fields'                  => array('platz', 'nachname', 'vorname', 'geburtstag', 'foto'),
 			'showColumns'             => true,
 			'format'                  => '%s',
 			'label_callback'          => array('tl_topwertungszahlen', 'viewLabels'),
@@ -177,6 +177,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['vorname'],
 			'exclude'                 => true,
 			'search'                  => true,
+			'sorting'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
 			(
@@ -191,6 +192,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['nachname'],
 			'exclude'                 => true,
 			'search'                  => true,
+			'sorting'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array
 			(
@@ -274,6 +276,10 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 		'foto' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['foto'],
+		),
+		'platz' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['platz'],
 		),
 	)
 );
@@ -394,7 +400,9 @@ class tl_topwertungszahlen extends Backend
 			$str = '';
 		}
 
-		$args[3] = $str;
+		$args[4] = $str; // Fotostring zuordnen
+		$args[0] = $GLOBALS['topwertungszahlen_rangliste'][$row['id']] + 1; // Platz zuweisen
+		
 		// Datensatz komplett zurückgeben
 		return $args;
 	}
@@ -545,6 +553,9 @@ class tl_topwertungszahlen extends Backend
 		log_message($log, 'topwertungszahlen.log');
 
 		$GLOBALS['TL_DCA']['tl_topwertungszahlen']['list']['sorting']['root'] = $arrPlayers;
+
+		// ID und Platz (Index) tauschen für Anzeige im Backend
+		$GLOBALS['topwertungszahlen_rangliste'] = array_flip($arrPlayers);
 
 	}
 
