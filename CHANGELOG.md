@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.5.2 (2022-01-03)
+
+* Change: public/Rangliste.php - Altersgrenze U20/U20w von 19 auf 20 geändert (Lara Schulze, Annmarie Mütsch, Jana Schneider wurden nicht mehr angezeigt)
+
 ## Version 1.5.1 (2021-08-11)
 
 * Add: tl_topwertungszahlen.php - Ausgabe des Platzes und Sortiermöglichkeiten ergänzt
