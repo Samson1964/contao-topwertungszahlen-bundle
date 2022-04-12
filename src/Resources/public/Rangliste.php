@@ -519,7 +519,7 @@ class Rangliste
 									'verband'    => $this->verbandsname[substr($m->vkz,0,1)],
 									'link'       => 'http://ratings.fide.com/profile/'.$m->idfide,
 									'rating'     => $objElo->rating,
-									'title'      => $objElo->title,
+									'title'      => self::getFideTitel($objElo->title, $objElo->w_title),
 									'foto'       => $fotoArr['pfad'],
 									'quelle'     => $fotoArr['quelle']
 								);
@@ -604,6 +604,43 @@ class Rangliste
 		else $cpstr = ''; // Kein Copyright
 
 		return $cpstr;
+	}
+
+	/**
+	 * Gibt den höherwertigeren FIDE-Titel zurück
+	 * @param
+	 * @return
+	 */
+	private function getFideTitel($titel1, $titel2 = false)
+	{
+		$maxwert = 0;
+		$maxtitel = '';
+		for($x = 0; $x < 2; $x++)
+		{
+			if($x == 0) $titel = $titel1;
+			elseif($x == 1) $titel = $titel2;
+			
+			switch($titel)
+			{
+				case 'WCM': $wert = 1; break;
+				case 'WFM': $wert = 2; break;
+				case 'CM': $wert = 3; break;
+				case 'WIM': $wert = 4; break;
+				case 'FM': $wert = 5; break;
+				case 'WGM': $wert = 6; break;
+				case 'IM': $wert = 7; break;
+				case 'GM': $wert = 8; break;
+				default: $wert = 0;
+			}
+
+			if($wert > $maxwert)
+			{
+				$maxwert = $wert;
+				$maxtitel = $titel;
+			}
+
+		}
+		return $maxtitel;
 	}
 
 

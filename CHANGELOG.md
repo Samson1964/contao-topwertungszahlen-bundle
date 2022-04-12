@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.5.3 (2022-04-12)
+
+* Fix: public/Rangliste.php lädt nur den Männer-FIDE-Titel, stattdessen muß der höherwertigere Titel verwendet werden -> konnte für Elo gelöst werden, für DWZ nicht
+
 ## Version 1.5.2 (2022-01-03)
 
 * Change: public/Rangliste.php - Altersgrenze U20/U20w von 19 auf 20 geändert (Lara Schulze, Annmarie Mütsch, Jana Schneider wurden nicht mehr angezeigt)
