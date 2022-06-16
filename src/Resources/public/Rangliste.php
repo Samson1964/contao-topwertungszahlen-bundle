@@ -112,13 +112,15 @@ class Rangliste
 				$datenELO = array();
 				for($x = 1; $x <= 10; $x++)
 				{
-					$tempDWZ = unserialize(file_get_contents('dwz-'.$x.'.json'));
-					$tempELO = unserialize(file_get_contents('elo-'.$x.'.json'));
+					if(file_exists('dwz-'.$x.'.json')) $tempDWZ = unserialize(file_get_contents('dwz-'.$x.'.json'));
+					else $tempDWZ = array();
+					if(file_exists('elo-'.$x.'.json')) $tempELO = unserialize(file_get_contents('elo-'.$x.'.json'));
+					else $tempELO = array();
 					//print_r($tempDWZ);
 					$datenDWZ = array_merge($datenDWZ, $tempDWZ);
 					$datenELO = array_merge($datenELO, $tempELO);
-					unlink('dwz-'.$x.'.json');
-					unlink('elo-'.$x.'.json');
+					if(file_exists('dwz-'.$x.'.json')) unlink('dwz-'.$x.'.json');
+					if(file_exists('elo-'.$x.'.json')) unlink('elo-'.$x.'.json');
 				}
 				$fp = fopen('dwz.json', 'w');
 				fputs($fp, json_encode($datenDWZ));

@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.5.4 (2022-06-16)
+
+* Fix: public/Rangliste.php - elo-9.json wird nicht erstellt, deshalb Zugriffsfehler in Zeilen 116, 119 und 121
+
 ## Version 1.5.3 (2022-04-12)
 
 * Fix: public/Rangliste.php lädt nur den Männer-FIDE-Titel, stattdessen muß der höherwertigere Titel verwendet werden -> konnte für Elo gelöst werden, für DWZ nicht
