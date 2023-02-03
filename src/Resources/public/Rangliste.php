@@ -155,10 +155,10 @@ class Rangliste
 					$anzahl = 500; $von = 0; $bis = 120; $geschlecht = 'f'; $liste = 'dwz_w';
 					break;
 				case 2: // Alle U20
-					$anzahl = 1000; $von = 0; $bis = 20; $geschlecht = ''; $liste = 'dwz_u20';
+					$anzahl = 1000; $von = 0; $bis = 21; $geschlecht = ''; $liste = 'dwz_u20';
 					break;
 				case 3: // Alle U20w
-					$anzahl = 500; $von = 0; $bis = 20; $geschlecht = 'f'; $liste = 'dwz_u20w';
+					$anzahl = 500; $von = 0; $bis = 21; $geschlecht = 'f'; $liste = 'dwz_u20w';
 					break;
 				case 4: // Alle Ü50
 					$anzahl = 1000; $von = 50; $bis = 120; $geschlecht = ''; $liste = 'dwz_50+';
@@ -348,12 +348,12 @@ class Rangliste
 					$liste = 'elo_w';
 					break;
 				case 2: // Alle U20
-					$jahr = date('Y') - 20;
+					$jahr = date('Y') - 21;
 					$sql = 'AND birthday>='.$jahr.' ORDER BY rating DESC';
 					$liste = 'elo_u20';
 					break;
 				case 3: // Alle U20w
-					$jahr = date('Y') - 20;
+					$jahr = date('Y') - 21;
 					$sql = 'AND birthday>='.$jahr.' AND sex=\'F\' ORDER BY rating DESC';
 					$liste = 'elo_u20w';
 					break;

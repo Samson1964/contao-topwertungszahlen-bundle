@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.5.5 (2023-02-03)
+
+* Change: U20 von 20 auf 21 Jahre gesetzt
+
 ## Version 1.5.4 (2022-06-16)
 
 * Fix: public/Rangliste.php - elo-9.json wird nicht erstellt, deshalb Zugriffsfehler in Zeilen 116, 119 und 121
