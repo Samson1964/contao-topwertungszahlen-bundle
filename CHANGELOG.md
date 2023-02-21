@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.5.6 (2023-02-21)
+
+* Change: U20 wieder von 21 auf 20 Jahre gesetzt -> war eine Fehlinterpretation
+
 ## Version 1.5.5 (2023-02-03)
 
 * Change: U20 von 20 auf 21 Jahre gesetzt
