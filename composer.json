@@ -10,9 +10,10 @@
         }
     ],
     "require": {
-        "php": "^5.6 || ^7.0",
+        "php": "^5.6 || ^7.0 || ^8.0",
         "contao/core-bundle": "^4",
-        "schachbulle/contao-helper-bundle": ">=0"
+        "codefog/contao-haste": "*",
+        "schachbulle/contao-helper-bundle": "*"
     },
     "conflict": {
         "contao/core": "*",

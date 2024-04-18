@@ -1,5 +1,11 @@
 # Topwertungszahlen Changelog
 
+## Version 1.6.0 (2024-04-18)
+
+* Add: codefog/contao-haste
+* Change: Haste-Toggler statt des normalen Togglers
+* Add: Kompatibilität PHP 8
+
 ## Version 1.5.6 (2023-02-21)
 
 * Change: U20 wieder von 21 auf 20 Jahre gesetzt -> war eine Fehlinterpretation
