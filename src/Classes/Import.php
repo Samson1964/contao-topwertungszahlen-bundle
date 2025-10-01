@@ -2,10 +2,10 @@
 
 namespace Schachbulle\ContaoTopwertungszahlenBundle\Classes;
 
-if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+if(!defined('TL_ROOT')) die('You cannot access this file directly!');
 
 /**
- * Class dsb_trainerlizenzImport
+ * Class Import
   */
 class Import extends \Backend
 {
@@ -15,7 +15,7 @@ class Import extends \Backend
 	}
 
 	/**
-	 * Exportiert alle noch nicht übertragenen Lizenzen zum DOSB
+	 * Importiert die Wertungszahlen
 	 */
 	public function run()
 	{
@@ -23,7 +23,7 @@ class Import extends \Backend
 		// jQuery einbinden
 		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaotopwertungszahlen/js/jquery-3.5.1.min.js';
 
-		$content .= '<div id="rating_import" style="margin:10px;"></div>';
+		$content = '<div id="rating_import" style="margin:10px;"></div>';
 		$content .= '<div id="rating_import_status" style="margin:10px;"><img src="bundles/contaotopwertungszahlen/images/ajax-loader.gif"></div>';
 
 		// Zurücklink generieren

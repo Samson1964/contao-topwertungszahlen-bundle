@@ -233,7 +233,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 			'filter'                  => true,
 			'sorting'                 => true,
 			'inputType'               => 'select',
-			'options'                 => $GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['associations'],
+			'options'                 => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['associations'],
 			'eval'                    => array('includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(1) NOT NULL default ''"
 		),

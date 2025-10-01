@@ -1,5 +1,13 @@
 # Topwertungszahlen Changelog
 
+## Version 1.6.1 (2025-10-01)
+
+* Fix: Warning: Undefined array key "associations" in src/Resources/contao/dca/tl_topwertungszahlen_ratings.php (line 236) 
+* Fix: Warning: Undefined array key "tl_topwertungszahlenFilter" in src/Resources/contao/dca/tl_topwertungszahlen.php (line 403) 
+* Fix: Warning: Undefined variable $content in src/Classes/Import.php (line 26) 
+* Fix: An exception occurred while executing a query: SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'titel' at row 1 (beim Erstellen der Wertungslisten)
+* Fix: Warning: Undefined variable $anzahl in src/Resources/public/Rangliste.php (line 537) 
+
 ## Version 1.6.0 (2024-04-18)
 
 * Add: codefog/contao-haste

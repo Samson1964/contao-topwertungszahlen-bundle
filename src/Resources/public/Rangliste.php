@@ -143,6 +143,7 @@ class Rangliste
 		$ausgabeArr = array(); // Die Ranglisten werden hier als Array gespeichert
 		$startzeit = microtime(true); // Startzeit
 		$liste_pids = array(); // Nimmt die Spieler-IDs auf um Mehrfacheinträge eines Spielers zu verhindern
+		$anzahl = 0; // Anzahl zu prüfender Spieler festlegen
 
 		for($x = $modus - 1; $x < $modus; $x++)
 		{
@@ -218,7 +219,7 @@ class Rangliste
 								'tstamp'     => time(),
 								'vorname'    => $m->firstname,
 								'nachname'   => $m->surname,
-								'titel'      => $m->title,
+								'titel'      => substr(trim($m->title), 0, 3),
 								'geschlecht' => $m->gender,
 								'dewis_id'   => $m->pid,
 								'published'  => 1
@@ -333,7 +334,8 @@ class Rangliste
 		$listendatum = date('Ymd', $objActiv->datum);
 		$ausgabeArr = array(); // Die Ranglisten werden hier als Array gespeichert
 		$top = 50; // Anzahl der Spieler, die benötigt werden
-
+		$anzahl = 0;
+		
 		// Listentypen abarbeiten
 		for($x = $modus - 1; $x < $modus; $x++)
 		{
@@ -459,7 +461,7 @@ class Rangliste
 									'tstamp'     => time(),
 									'vorname'    => $m->firstname,
 									'nachname'   => $m->surname,
-									'titel'      => $m->title,
+									'titel'      => substr(trim($m->title), 0, 3),
 									'geschlecht' => $m->gender,
 									'dewis_id'   => $m->pid,
 									'published'  => 1
@@ -526,10 +528,6 @@ class Rangliste
 									'quelle'     => $fotoArr['quelle']
 								);
 							}
-						}
-						else
-						{
-							//echo "NEIN ".$m->surname.','.$m->firstname."<br>";
 						}
 					}
 				}

@@ -400,7 +400,10 @@ class tl_topwertungszahlen extends Backend
             // Generate options
             foreach ($arrFilter['options'] as $k => $v)
             {
-                $strOptions .= '  <option value="' . $k . '"' . (($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']] === (string) $k) ? ' selected' : '') . '>' . $v . '</option>' . "\n";
+            	if(isset($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']]))
+            	{
+                	$strOptions .= '  <option value="' . $k . '"' . (($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']] === (string) $k) ? ' selected' : '') . '>' . $v . '</option>' . "\n";
+            	}
             }
 
             $strBuffer .= '<select name="' . $arrFilter['name'] . '" id="' . $arrFilter['name'] . '" class="tl_select' . (isset($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']]) ? ' active' : '') . '">
