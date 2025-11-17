@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.6.2 (2025-11-17)
+
+* Fix: Warning: Undefined array key "importRating_confirm" in src/Resources/contao/dca/tl_topwertungszahlen.php (line 76) -> Sprachvariable ausgelagert in default.php
+
 ## Version 1.6.1 (2025-10-01)
 
 * Fix: Warning: Undefined array key "associations" in src/Resources/contao/dca/tl_topwertungszahlen_ratings.php (line 236) 
