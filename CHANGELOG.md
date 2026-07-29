@@ -1,5 +1,9 @@
 # Topwertungszahlen Changelog
 
+## Version 1.6.3 (2026-07-29)
+
+* Fix: Warning: Undefined array key "deleteConfirm", "importRating_confirm" bei contao:migrate -> Lesezugriffe auf $GLOBALS['TL_LANG'] in den DCA-Dateien mit `?? null` bzw. `?? array()` abgesichert, da der DcaLoader die Sprachdateien noch nicht geladen hat
+
 ## Version 1.6.2 (2025-11-17)
 
 * Fix: Warning: Undefined array key "importRating_confirm" in src/Resources/contao/dca/tl_topwertungszahlen.php (line 76) -> Sprachvariable ausgelagert in default.php
