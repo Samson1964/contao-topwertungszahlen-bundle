@@ -1,7 +1,15 @@
 {
     "name": "schachbulle/contao-topwertungszahlen-bundle",
     "type": "contao-bundle",
-    "description": "Verwaltung von Topwertungszahlen für Contao 4",
+    "description": "Stellt die Spitzenwertungszahlen des Deutschen Schachbundes als Ranglisten dar.",
+    "keywords": [
+        "contao",
+        "schach",
+        "dwz",
+        "wertungszahl",
+        "rangliste"
+    ],
+    "homepage": "https://github.com/Samson1964/contao-topwertungszahlen-bundle",
     "license": "LGPL-3.0-or-later",
     "authors": [
         {

@@ -3,6 +3,7 @@
 ## Version 1.6.3 (2026-07-29)
 
 * Fix: Warning: Undefined array key "deleteConfirm", "importRating_confirm" bei contao:migrate -> Lesezugriffe auf $GLOBALS['TL_LANG'] in den DCA-Dateien mit `?? null` bzw. `?? array()` abgesichert, da der DcaLoader die Sprachdateien noch nicht geladen hat
+* Change: Beschreibung, Keywords und Homepage in der composer.json ergänzt, damit Packagist das Paket verständlich darstellt und über die Suche auffindbar macht
 
 ## Version 1.6.2 (2025-11-17)
 
