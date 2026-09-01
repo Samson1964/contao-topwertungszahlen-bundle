@@ -14,7 +14,9 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen']['editHeader'] = array("Spieler %s be
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['editPhoto'] = array("Fotos des Spielers %s bearbeiten", "Fotos des Spielers %s bearbeiten");
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['copy'] = array("Spieler %s kopieren", "Spieler %s kopieren");
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['delete'] = array("Spieler %s löschen", "Spieler %s löschen");
-$GLOBALS['TL_LANG']['tl_topwertungszahlen']['toggle'] = array("Spieler %s aktivieren/deaktivieren", "Spieler %s aktivieren/deaktivieren");
+// Ohne %s in der Beschriftung: Diese Schaltfläche erzeugt Haste selbst und
+// läuft deshalb nicht über den button_callback, der den Namen einsetzt.
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['toggle'] = array("Spieler aktivieren/deaktivieren", "Spieler %s aktivieren/deaktivieren");
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['show'] = array("Spielerdetails von %s anzeigen", "Details des Spielers %s anzeigen");
 
 /**
@@ -25,7 +27,7 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen']['name_legend'] = 'Personendaten';
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['nachname'] = array('Nachname', 'Nachname des Spielers');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['vorname'] = array('Vorname', 'Vorname des Spielers');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['titel'] = array('Titel', 'Titel, z.B. Dr.');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen']['geschlecht'] = array('Geschlecht', 'Geschlecht, z.B. M oder F');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['geschlecht'] = array('Geschlecht', 'Männlich, weiblich oder divers. Die alten Kürzel m und f wurden mit Version 1.7.3 einmalig umgestellt.');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['geburtstag'] = array('Geburtstag', 'Geburtstag des Spielers');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['pkz'] = array('PKZ', 'Personenkennziffer des Spielers im Wertungsportal');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['dewis_id'] = array('DeWIS-ID', 'ID des Spielers im abgeschalteten DeWIS. Wird nicht mehr gefüllt und bleibt nur als Verlaufsangabe stehen.');

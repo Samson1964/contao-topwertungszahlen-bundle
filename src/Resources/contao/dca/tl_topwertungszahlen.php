@@ -56,16 +56,9 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			'format'                  => '%s',
 			'label_callback'          => array('tl_topwertungszahlen', 'viewLabels'),
 		),
-		'global_operations' => array
-		(
-			'all' => array
-			(
-				'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
-				'href'                => 'act=select',
-				'class'               => 'header_edit_all',
-				'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
-			)
-		),
+		// Hinweis: Hier stand bis Version 1.7.3 ein ZWEITER, gleichnamiger
+		// Block 'global_operations' mit nur 'all' darin. PHP behält bei
+		// doppeltem Schlüssel den letzten — der erste war also wirkungslos.
 		'global_operations' => array
 		(
 			'importRating' => array
@@ -85,36 +78,46 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 		),
 		'operations' => array
 		(
+			// Alle Schaltflächen mit einem Ziel laufen über denselben
+			// button_callback. Er setzt den Spielernamen in das %s der
+			// Beschriftung ein — Contao selbst tut das nur im Titel, und dort
+			// nur mit der Datensatz-ID. Die Umschaltfläche bleibt außen vor:
+			// Sie hat kein href, sondern wird von Haste erzeugt.
 			'edit' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['edit'],
 				'href'                => 'table=tl_topwertungszahlen_ratings',
 				'icon'                => 'bundles/contaotopwertungszahlen/images/rating-icon.png',
+				'button_callback'     => array('tl_topwertungszahlen', 'spielerknopf'),
 			),
 			'editPhoto' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['editPhoto'],
 				'href'                => 'table=tl_topwertungszahlen_photos',
 				'icon'                => 'bundles/contaotopwertungszahlen/images/foto-icon.png',
+				'button_callback'     => array('tl_topwertungszahlen', 'spielerknopf'),
 			),
 			'editHeader' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['editHeader'],
 				'href'                => 'act=edit',
 				'icon'                => 'header.gif',
+				'button_callback'     => array('tl_topwertungszahlen', 'spielerknopf'),
 			), 
 			'copy' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['copy'],
 				'href'                => 'act=copy',
-				'icon'                => 'copy.gif'
+				'icon'                => 'copy.gif',
+				'button_callback'     => array('tl_topwertungszahlen', 'spielerknopf'),
 			),
 			'delete' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['delete'],
 				'href'                => 'act=delete',
 				'icon'                => 'delete.gif',
-				'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"'
+				'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"',
+				'button_callback'     => array('tl_topwertungszahlen', 'spielerknopf'),
 			),
 			'toggle' => array
 			(
@@ -134,7 +137,8 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['show'],
 				'href'                => 'act=show',
-				'icon'                => 'show.gif'
+				'icon'                => 'show.gif',
+				'button_callback'     => array('tl_topwertungszahlen', 'spielerknopf'),
 			)
 		)
 	),
@@ -322,6 +326,46 @@ class tl_topwertungszahlen extends Backend
 	{
 		parent::__construct();
 		$this->import('BackendUser', 'User');
+	}
+
+	/**
+	 * Baut eine Schaltfläche der Spielerliste mit dem Namen darin.
+	 *
+	 * Der Grund für diesen Umweg: Contao ersetzt das `%s` in einer
+	 * Schaltflächenbeschriftung nur an einer Stelle und nur durch eine Zahl.
+	 * Index 0 der Sprachvariablen — der Text am Symbol — wird gar nicht
+	 * behandelt und zeigte das rohe „%s"; Index 1 — der Titel beim Überfahren
+	 * mit der Maus — bekommt die Datensatz-ID. Der Name des Spielers, der dort
+	 * eigentlich hingehört, ist Contao unbekannt.
+	 *
+	 * Hier ist er bekannt: Der ganze Datensatz steht in $row. Beide Texte
+	 * werden deshalb aus Index 0 gebaut, damit sie zusammenpassen.
+	 *
+	 * @param array  $row        Datensatz der Zeile
+	 * @param string $href       Ziel der Schaltfläche ohne die ID
+	 * @param string $label      Beschriftung, enthält in der Regel ein %s
+	 * @param string $title      Von Contao bereits mit der ID gefüllt und
+	 *                           deshalb hier unbenutzt
+	 * @param string $icon       Pfad oder Name des Symbols
+	 * @param string $attributes Zusätzliche Attribute, etwa die Rückfrage
+	 *                           beim Löschen
+	 *
+	 * @return string Fertiges a-Element samt Symbol
+	 */
+	public function spielerknopf($row, $href, $label, $title, $icon, $attributes)
+	{
+		$name = trim(trim((string) ($row['nachname'] ?? '')).', '.trim((string) ($row['vorname'] ?? '')), ' ,');
+
+		// Ein Datensatz ohne Namen soll wenigstens die ID zeigen, sonst stünde
+		// dort „Spieler  bearbeiten" mit einer Lücke
+		if ('' === $name)
+		{
+			$name = 'ID '.$row['id'];
+		}
+
+		$text = false !== strpos((string) $label, '%s') ? sprintf((string) $label, $name) : (string) $label;
+
+		return '<a href="'.$this->addToUrl($href.'&amp;id='.$row['id']).'" title="'.\Contao\StringUtil::specialchars($text).'"'.$attributes.'>'.\Contao\Image::getHtml($icon, $text).'</a> ';
 	}
 
 	/**

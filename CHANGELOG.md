@@ -1,5 +1,36 @@
 # Topwertungszahlen Changelog
 
+## Version 1.7.3 (2026-09-01)
+
+* Fix: **Das Geschlecht wurde im Backend nicht erkannt.** Bis 1.6.3 übernahm
+  der Ranglistenlauf den Wert so, wie DeWIS ihn lieferte — als einzelnen
+  Buchstaben. Das Auswahlfeld kennt aber `male`, `female` und `other`, ein `m`
+  oder `f` traf also keine Möglichkeit: Das Feld stand leer, und beim Speichern
+  wäre der Wert verschwunden. Eine Migration schreibt die Kürzel einmalig um
+  (`m`, `f`, `w`, `d`); **`contao:migrate` ist erforderlich**
+* Fix: **In den Schaltflächen der Spielerliste stand ein rohes `%s`** statt des
+  Namens — bei allen sieben, nicht nur beim Info-Knopf. Contao ersetzt den
+  Platzhalter nur im Titel und nur durch die Datensatz-ID; der Text am Symbol
+  bleibt unangetastet. Ein `button_callback` setzt jetzt den Spielernamen in
+  beide Texte ein („Spielerdetails von Keymer, Vincent anzeigen"). Ein
+  Datensatz ohne Namen zeigt seine ID. Die Umschaltfläche erzeugt Haste selbst
+  und läuft nicht über den Callback — dort steht der Name nicht mehr in der
+  Beschriftung, dafür auch kein Platzhalter mehr
+* Add: **Hinweis auf die Anforderungen an ein Spielerfoto** über der
+  Dateiauswahl: quadratischer Ausschnitt, Kopf von der Bildmitte bis kurz vor
+  den oberen Rand, Oberkörper bis zur Brust, Blick in die Kamera, Arme nicht
+  angeschnitten. Daneben eine schematische Zeichnung des Bildausschnitts mit
+  den beiden Hilfslinien und ein Verweis auf ein Beispielfoto. Die Zeichnung
+  ist ein eingebettetes SVG — kein `contao:assets:install` nötig
+* Fix: `dewis_id` ist kein Pflichtfeld mehr. DeWIS ist abgeschaltet, neu
+  angelegte Spieler haben nur eine PKZ; als Pflichtfeld hätte es jede
+  Bearbeitung im Backend blockiert
+* Change: In `tl_topwertungszahlen` stand der Block `global_operations`
+  **zweimal**. PHP behält bei doppeltem Schlüssel den letzten, der erste war
+  also wirkungslos — er ist jetzt weg
+* Change: Die Beschreibung des Feldes „Geschlecht" nannte als Beispiel noch
+  „M oder F"
+
 ## Version 1.7.2 (2026-09-01)
 
 * Fix: **Zwei Sprachdateien waren ISO-8859-1 statt UTF-8**, und zwar die

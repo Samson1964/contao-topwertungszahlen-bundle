@@ -20,6 +20,11 @@ services:
         arguments:
             $projektverzeichnis: '%kernel.project_dir%'
 
+    # Einmalige Umschreibung der alten Geschlechtskürzel. Contao erkennt
+    # Migrationen über autoconfigure am AbstractMigration und ruft sie beim
+    # contao:migrate auf.
+    Schachbulle\ContaoTopwertungszahlenBundle\Migration\GeschlechtMigration: ~
+
     # Der Befehlsname steht im Tag und nicht in der Klasse: Die Eigenschaft
     # $defaultName gibt es in Symfony 7 nicht mehr, und das Attribut
     # #[AsCommand] setzt PHP 8 voraus. So läuft dieselbe Datei unter

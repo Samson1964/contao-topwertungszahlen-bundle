@@ -108,7 +108,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 	// Palettes
 	'palettes' => array
 	(
-		'default'                     => '{image_legend},date,singleSRC,source;{publish_legend},published'
+		'default'                     => '{image_legend},hinweis,date,singleSRC,source;{publish_legend},published'
 	),
 
 	// Fields
@@ -125,6 +125,14 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 		'tstamp' => array
 		(
 			'sql'                     => "int(10) unsigned NOT NULL default '0'"
+		),
+		// Reines Anzeigefeld ohne Datenbankspalte: Es erklärt oberhalb der
+		// Dateiauswahl, wie ein brauchbares Spielerfoto aussieht. Ohne
+		// 'exclude', damit es jeder Redakteur sieht — es gibt daran nichts zu
+		// berechtigen.
+		'hinweis' => array
+		(
+			'input_field_callback'    => array('tl_topwertungszahlen_photos', 'fotohinweis')
 		),
 		'singleSRC' => array
 		(
@@ -214,6 +222,90 @@ class tl_topwertungszahlen_photos extends Backend
 	{
 		parent::__construct();
 		$this->import('BackendUser', 'User');
+	}
+
+	/**
+	 * Zeigt über der Dateiauswahl, welche Anforderungen an ein Spielerfoto
+	 * gestellt werden.
+	 *
+	 * Die Vorgaben stehen als Liste in der Sprachdatei, daneben eine
+	 * schematische Zeichnung des Bildausschnitts. Die Zeichnung ist bewußt ein
+	 * eingebettetes SVG und keine Bilddatei: So braucht es kein
+	 * `contao:assets:install` nach dem Einspielen, und die Maßangaben in der
+	 * Zeichnung bleiben bei jeder Bildschirmgröße scharf.
+	 *
+	 * @param Contao\DataContainer $dc     Wird nicht ausgewertet — das Feld
+	 *                                     zeigt für jeden Datensatz dasselbe
+	 * @param string               $xlabel Zusatz, den Contao an Beschriftungen
+	 *                                     hängt (hier ohne Bedeutung)
+	 *
+	 * @return string HTML-Block für das Eingabeformular
+	 */
+	public function fotohinweis($dc = null, $xlabel = '')
+	{
+		$lang = $GLOBALS['TL_LANG']['tl_topwertungszahlen_photos'] ?? array();
+
+		$str = '<div class="widget long clr" style="margin-bottom:18px;">';
+		$str .= '<h3 style="margin-bottom:6px;">'.($lang['hinweis_legend'] ?? 'Anforderungen an das Foto').'</h3>';
+		$str .= '<div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;">';
+		$str .= '<div style="flex:0 0 auto;">'.$this->fotoschema().'</div>';
+		$str .= '<div style="flex:1 1 320px;min-width:280px;">';
+		$str .= '<ul style="margin:0 0 8px 18px;padding:0;list-style:disc;line-height:1.7;">';
+
+		foreach (($lang['hinweis_punkte'] ?? array()) as $punkt)
+		{
+			$str .= '<li>'.$punkt.'</li>';
+		}
+
+		$str .= '</ul>';
+		$str .= '<p class="tl_help" style="margin:0;">'.($lang['hinweis_beispiel'] ?? '').'</p>';
+		$str .= '</div></div></div>';
+
+		return $str;
+	}
+
+	/**
+	 * Zeichnet den gewünschten Bildausschnitt als SVG.
+	 *
+	 * Maßstäblich zu den Vorgaben: Der Kopf reicht von der Bildmitte bis kurz
+	 * unter den oberen Rand, der Oberkörper endet an der Brust am unteren
+	 * Rand, und links wie rechts bleibt neben den Armen Platz.
+	 *
+	 * @return string SVG-Element, 200 mal 200 Pixel
+	 */
+	private function fotoschema()
+	{
+		$svg = '<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schema des Bildausschnitts">';
+		$svg .= '<rect x="0.5" y="0.5" width="199" height="199" fill="#f7f7f7" stroke="#a3a3a3"/>';
+
+		// Arme: heller als der Rumpf, damit sie sich davon abheben, und mit
+		// Abstand zum Bildrand — genau das ist die Vorgabe
+		$svg .= '<path d="M52 132 h-18 a10 10 0 0 0 -10 10 v58 h28 z" fill="#dfe9f0" stroke="#7b98ad"/>';
+		$svg .= '<path d="M148 132 h18 a10 10 0 0 1 10 10 v58 h-28 z" fill="#dfe9f0" stroke="#7b98ad"/>';
+
+		// Der freie Streifen neben den Armen, damit der Abstand ins Auge fällt
+		$svg .= '<line x1="24" y1="176" x2="0" y2="176" stroke="#3f7ba7" stroke-width="1"/>';
+		$svg .= '<line x1="176" y1="176" x2="200" y2="176" stroke="#3f7ba7" stroke-width="1"/>';
+		$svg .= '<circle cx="12" cy="176" r="2" fill="#3f7ba7"/><circle cx="188" cy="176" r="2" fill="#3f7ba7"/>';
+
+		// Oberkörper bis zur Brust am unteren Rand
+		$svg .= '<path d="M60 200 v-64 a16 16 0 0 1 12 -15 l28 -7 l28 7 a16 16 0 0 1 12 15 v64 z" fill="#c8d6e0" stroke="#7b98ad"/>';
+
+		// Hals und Kopf, Kopf endet unten genau auf der Bildmitte
+		$svg .= '<rect x="88" y="90" width="24" height="26" fill="#e6d3c4" stroke="#b79c88"/>';
+		$svg .= '<circle cx="100" cy="62" r="38" fill="#e6d3c4" stroke="#b79c88"/>';
+
+		// Augen: Blick in die Kamera
+		$svg .= '<circle cx="87" cy="56" r="3.5" fill="#4a4a4a"/><circle cx="113" cy="56" r="3.5" fill="#4a4a4a"/>';
+
+		// Hilfslinien mit Beschriftung
+		$svg .= '<line x1="0" y1="100" x2="200" y2="100" stroke="#3f7ba7" stroke-width="1" stroke-dasharray="5 4"/>';
+		$svg .= '<text x="4" y="112" font-size="11" fill="#3f7ba7">Bildmitte</text>';
+		$svg .= '<line x1="0" y1="24" x2="200" y2="24" stroke="#3f7ba7" stroke-width="1" stroke-dasharray="5 4"/>';
+		$svg .= '<text x="4" y="19" font-size="11" fill="#3f7ba7">Scheitel kurz vor dem Rand</text>';
+		$svg .= '</svg>';
+
+		return $svg;
 	}
 
 	public function listImages($arrRow)
