@@ -13,8 +13,18 @@ abgeschalteten DeWIS-Schnittstelle.
 ## Einen Lauf anstoßen
 
 **Im Backend:** *Inhalte → Topwertungszahlen → Wertungen importieren*. Der Lauf
-beginnt sofort beim Aufruf der Maske; die Meldungen erscheinen, sobald er
-fertig ist.
+beginnt sofort beim Aufruf der Maske. Er ist in 21 Schritte zerlegt — zwanzig
+Listen und das Schreiben der Dateien —, die nacheinander abgerufen werden;
+darüber laufen ein Fortschrittsbalken und ein Protokoll mit einer Zeile je
+Schritt. Bricht ein Schritt ab, hält der Lauf an und die Meldung steht rot im
+Protokoll.
+
+Die Schrittfolge ist kein Selbstzweck: Bei kaltem Zwischenspeicher des
+Wertungsportals kostet jede Liste einen Abruf an die Schnittstelle, und ein
+Lauf kann dann eine Minute dauern. Gestreamte Ausgabe wäre eleganter, aber
+unzuverlässig — Zwischenspeicher in PHP, im Webserver und im Vorschaltserver
+halten die Teilausgabe zurück, und die Anzeige stünde wieder bis zum Schluß
+still.
 
 **Auf der Kommandozeile**, etwa aus dem Cron des Servers:
 
@@ -88,6 +98,45 @@ stehen. In den Elo-Listen zeigt `link` auf das FIDE-Profil.
 
 Geschrieben wird über eine Zwischendatei und `rename()`. Ein Seitenaufruf, der
 genau während des Laufs liest, bekommt dadurch nie einen halben Datenbestand.
+
+## Warum nur Deutsche in den Listen stehen
+
+`Ranglisten::dwz()` des Wertungsportal-Bundles filtert gegen
+`tl_wertungsportal_persons.nation`, und dort zählt ein **leerer Wert als
+deutsch**. Das ist dort richtig: Das Feld stammt allein aus der
+Vereinsmitglieder-CSV und ist für einen großen Teil des Bestands leer — wer
+Leerwerte ausschlösse, verlöre die halbe Verbandsrangliste.
+
+Für die Spitzenwertungszahlen des DSB ist es falsch. In Version 1.7.0 standen
+dadurch Ausländer in allen zehn DWZ-Listen.
+
+Seit 1.7.1 prüft der Lauf deshalb nach dem Abruf zusätzlich die
+**FIDE-Föderation** — dasselbe Merkmal, das die alte DeWIS-Fassung benutzte
+(`member->fideNation == 'GER'`):
+
+1. `tl_wertungsportal_persons.fideNation`,
+2. ersatzweise über die FIDE-ID `tl_wertungsportal_elo.country`.
+
+Verworfen wird nur, wer eine **bekannte andere** Föderation trägt. Wer gar
+keine hat, bleibt in der Liste — sonst verschwänden alle Spieler ohne
+FIDE-Eintrag, und das sind in den unteren Altersklassen die meisten. Wie viele
+das jeweils sind, steht in der Meldung des Schritts:
+
+```
+dwz_alle: 50 Plätze, 11 in der Ausgabe (Quelle: api) – 3 Nichtdeutsche verworfen, 12 ohne Föderation (bleiben drin)
+```
+
+Steht dort dauerhaft eine hohe Zahl bei „ohne Föderation", ist der Elo-Import
+des Wertungsportal-Bundles nicht gelaufen — dann greift die Prüfung nur über
+`fideNation`.
+
+Weil die Prüfung Zeilen wegnimmt, werden die DWZ-Listen **doppelt so lang**
+angefordert wie gebraucht, und die geteilten Platzziffern werden anschließend
+neu vergeben. Ohne das entstünden Lücken (1, 2, 4, 7 statt 1, 2, 2, 4).
+
+Die **Elo-Listen** brauchen das nicht: Sie werden von der FIDE-Tabelle
+angeführt, in der die Föderation immer gefüllt ist, und das Wertungsportal
+filtert sie dort bereits richtig.
 
 ## Wie Spieler zugeordnet werden
 

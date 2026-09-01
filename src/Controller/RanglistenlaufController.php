@@ -6,10 +6,12 @@ namespace Schachbulle\ContaoTopwertungszahlenBundle\Controller;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Schachbulle\ContaoTopwertungszahlenBundle\Classes\Ranglistenlauf;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Backend-Route, die einen Ranglistenlauf auslöst.
+ * Backend-Route, die einen Ranglistenlauf schrittweise ausführt.
  *
  * Tritt an die Stelle des früheren Direktaufrufs von
  * `bundles/contaotopwertungszahlen/Rangliste.php`. Zwei Gründe für den
@@ -19,8 +21,14 @@ use Symfony\Component\HttpFoundation\Response;
  * damit der Anmeldung im Backend unterworfen.
  *
  * Aufgerufen wird sie von der Importmaske
- * (@see \Schachbulle\ContaoTopwertungszahlenBundle\Classes\Import) per Ajax.
- * Die Antwort ist ein HTML-Bruchstück, das dort angehängt wird.
+ * (@see \Schachbulle\ContaoTopwertungszahlenBundle\Classes\Import) — einmal je
+ * Schritt, damit dort ein Fortschritt zu sehen ist. Die Antwort ist JSON.
+ *
+ * Der Parameter `schritt`:
+ *
+ *   0 … 19     eine einzelne Liste
+ *   'dateien'  die Bruchstücke zu den Ausgabedateien zusammensetzen
+ *   fehlt      alles auf einmal, für den Aufruf von Hand
  */
 class RanglistenlaufController
 {
@@ -48,40 +56,101 @@ class RanglistenlaufController
 	}
 
 	/**
-	 * Führt den Lauf aus und gibt die Meldungen als HTML zurück.
+	 * Führt den angeforderten Schritt aus.
 	 *
-	 * Der Lauf dauert seit der Umstellung auf das Wertungsportal wenige
-	 * Sekunden. Deshalb wird die Antwort am Stück gesendet und nicht mehr
-	 * — wie früher nötig — in zwanzig Einzelaufrufe zerlegt.
+	 * @param Request $request Ausgewertet wird allein der Parameter `schritt`
 	 *
-	 * @return Response HTML-Bruchstück mit einer Zeile je Liste. Bei einem
-	 *                  Fehler steht die Meldung im Text und der Statuscode ist
-	 *                  500, damit der Aufrufer den Fehlschlag bemerkt
+	 * @return JsonResponse Bei Erfolg mit `ok: true` und einer Meldung, sonst
+	 *                      mit `ok: false`, der Fehlermeldung und Statuscode
+	 *                      500. Die Importmaske zeigt die Meldung in beiden
+	 *                      Fällen an — bei einem Fehlschlag ist sie das
+	 *                      Nützlichste, was sie hat
 	 */
-	public function __invoke(): Response
+	public function __invoke(Request $request): JsonResponse
 	{
 		$this->framework->initialize();
 
-		$zeilen = [];
+		$schritt = $request->query->get('schritt');
 
 		try {
 			$lauf = new Ranglistenlauf($this->projektverzeichnis);
 
-			$bericht = $lauf->lauf(
-				static function (string $meldung) use (&$zeilen): void {
-					$zeilen[] = htmlspecialchars($meldung, ENT_QUOTES, 'UTF-8');
-				}
+			if (null === $schritt || '' === $schritt) {
+				return new JsonResponse($this->allesAufEinmal($lauf));
+			}
+
+			if ('dateien' === $schritt) {
+				$ergebnis = $lauf->dateienSchreiben();
+
+				return new JsonResponse([
+					'ok'      => true,
+					'meldung' => $ergebnis['meldung'],
+					'dateien' => $ergebnis['dateien'],
+					'fehlend' => $ergebnis['fehlend'],
+				]);
+			}
+
+			// Nur Ziffern zulassen: Alles andere ist ein Aufrufefehler und
+			// soll nicht als Schritt 0 durchgehen
+			if (!ctype_digit((string) $schritt)) {
+				return new JsonResponse(
+					['ok' => false, 'meldung' => 'Unbekannter Schritt: '.$schritt],
+					Response::HTTP_BAD_REQUEST
+				);
+			}
+
+			$ergebnis = $lauf->schrittLaufen((int) $schritt);
+
+			return new JsonResponse([
+				'ok'         => true,
+				'meldung'    => $ergebnis['meldung'],
+				'name'       => $ergebnis['name'],
+				'liste'      => $ergebnis['liste'],
+				'beschafft'  => $ergebnis['beschafft'],
+				'ausgabe'    => $ergebnis['ausgabe'],
+				'quelle'     => $ergebnis['quelle'],
+				'neu'        => $ergebnis['neu'],
+				'zugeordnet' => $ergebnis['zugeordnet'],
+			]);
+		} catch (\OutOfRangeException $e) {
+			return new JsonResponse(
+				['ok' => false, 'meldung' => $e->getMessage()],
+				Response::HTTP_BAD_REQUEST
 			);
 		} catch (\Throwable $e) {
-			$zeilen[] = '<b style="color:#c33">Fehler: '.htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8').'</b>';
-
-			return new Response(implode("<br>\n", $zeilen), Response::HTTP_INTERNAL_SERVER_ERROR);
+			return new JsonResponse(
+				['ok' => false, 'meldung' => $e->getMessage()],
+				Response::HTTP_INTERNAL_SERVER_ERROR
+			);
 		}
+	}
 
-		foreach ($bericht['dateien'] as $art => $pfad) {
-			$zeilen[] = 'Datei geschrieben: <b>'.htmlspecialchars($pfad, ENT_QUOTES, 'UTF-8').'</b>';
-		}
+	/**
+	 * Führt einen vollständigen Lauf aus und sammelt die Meldungen ein.
+	 *
+	 * Dieser Weg ist für den Aufruf der Route von Hand gedacht. Die
+	 * Importmaske benutzt ihn nicht — sie geht Schritt für Schritt vor, damit
+	 * sie einen Fortschritt anzeigen kann.
+	 *
+	 * @param Ranglistenlauf $lauf Der vorbereitete Lauf
+	 *
+	 * @return array{ok:bool,meldung:string,meldungen:array<int,string>,dateien:array<string,string>}
+	 */
+	private function allesAufEinmal(Ranglistenlauf $lauf): array
+	{
+		$meldungen = [];
 
-		return new Response(implode("<br>\n", $zeilen));
+		$bericht = $lauf->lauf(
+			static function (string $meldung) use (&$meldungen): void {
+				$meldungen[] = $meldung;
+			}
+		);
+
+		return [
+			'ok'        => true,
+			'meldung'   => 'Lauf beendet.',
+			'meldungen' => $meldungen,
+			'dateien'   => $bericht['dateien'],
+		];
 	}
 }

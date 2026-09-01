@@ -1,5 +1,35 @@
 # Topwertungszahlen Changelog
 
+## Version 1.7.1 (2026-09-01)
+
+* Fix: **In den DWZ-Listen standen Ausländer** — in allen zehn, also auch bei
+  den Frauen und in den Jugendlisten. `Ranglisten::dwz()` des
+  Wertungsportal-Bundles filtert gegen `tl_wertungsportal_persons.nation`, und
+  dort zählt ein LEERER Wert als deutsch. Für eine Verbandsrangliste ist das
+  richtig, für die Spitzenwertungszahlen des DSB nicht. Der Lauf prüft jetzt
+  nach dem Abruf zusätzlich die **FIDE-Föderation** — genau wie es die alte
+  DeWIS-Fassung tat (`member->fideNation == 'GER'`) — und verwirft, wer eine
+  bekannte andere Föderation trägt. Die Föderation kommt aus
+  `tl_wertungsportal_persons.fideNation`, ersatzweise über die FIDE-ID aus
+  `tl_wertungsportal_elo.country`. Wer gar keine trägt, bleibt in der Liste;
+  die Meldung des Schritts nennt beide Zahlen
+* Change: Die geteilten Platzziffern werden nach dieser Prüfung **neu
+  vergeben**, sonst entstünden Lücken (1, 2, 4, 7 statt 1, 2, 2, 4)
+* Change: Die DWZ-Listen werden doppelt so lang angefordert wie gebraucht,
+  damit sie nach dem Verwerfen noch die vollen 50 Plätze hergeben
+* Add: **Fortschrittsbalken in der Importmaske.** Der Lauf wird in 21 Schritte
+  zerlegt — zwanzig Listen und das Schreiben der Dateien —, die einzeln über
+  die Route abgerufen werden. Angezeigt werden der laufende Schritt, ein
+  Balken, die verstrichene Zeit und je Schritt eine Zeile mit Anzahl, Quelle
+  und verworfenen Spielern. Bricht ein Schritt ab, hält der Lauf an und die
+  Meldung steht rot im Protokoll
+* Change: Die Route beantwortet jetzt JSON statt HTML und kennt den Parameter
+  `schritt` (`0`…`19`, `dateien`, oder gar nichts für einen Lauf am Stück).
+  Der Console-Befehl ist unverändert
+* Change: Zwischen den Schritten liegen Bruchstücke unter
+  `var/topwertungszahlen/`. Sie werden zu Beginn eines Laufs und nach dem
+  Schreiben der Ausgabedateien gelöscht
+
 ## Version 1.7.0 (2026-09-01)
 
 * Change: **Die Ranglisten kommen aus dem Wertungsportal statt aus DeWIS.**

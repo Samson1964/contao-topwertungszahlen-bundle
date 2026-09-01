@@ -24,9 +24,12 @@ use Schachbulle\ContaoWertungsportalBundle\Helper\Ranglisten;
  * Nation, einmal für den Landesverband), die Namenssuche `searchByName()` für
  * die Elo-Zuordnung und die Berechnung der geteilten Platzziffern.
  *
- * Weil ein Lauf damit Sekunden statt Minuten braucht, entfällt auch die
- * Aufteilung in zwanzig Einzelaufrufe mit Zwischendateien: Alle Listen
- * entstehen in einem Durchgang im Arbeitsspeicher.
+ * Ein Lauf ist in zwanzig Schritte zerlegt — einen je Liste. Auf der
+ * Kommandozeile laufen sie in einem Rutsch durch (@see lauf()); die
+ * Importmaske ruft sie einzeln auf und zeigt dazwischen den Fortschritt an
+ * (@see schrittLaufen()). Die Zwischenergebnisse liegen solange als
+ * Bruchstücke unter SCHRITTORDNER und werden am Ende zu den beiden
+ * Ausgabedateien zusammengesetzt (@see dateienSchreiben()).
  */
 class Ranglistenlauf
 {
@@ -45,6 +48,23 @@ class Ranglistenlauf
 	public const AUSGABE = 10;
 
 	/**
+	 * Föderation, für die die Ranglisten gelten. Geprüft wird gegen die
+	 * FIDE-Föderation des Spielers — so hielt es auch die alte DeWIS-Fassung
+	 * (`member->fideNation`).
+	 */
+	public const NATION = 'GER';
+
+	/**
+	 * Faktor, um den die DWZ-Listen überzogen angefordert werden.
+	 *
+	 * Die Nationsprüfung nimmt hinterher Zeilen weg. Ohne Überzug bliebe eine
+	 * Liste, aus der zehn Ausländer fielen, um zehn Plätze zu kurz. Das
+	 * Doppelte reicht mit Abstand: In der Spitze des deutschen Bestands sind
+	 * Ausländer die Ausnahme.
+	 */
+	public const UEBERZUG = 2;
+
+	/**
 	 * Ablageort der fertigen Dateien, relativ zum Projektverzeichnis.
 	 *
 	 * Bis Version 1.6.3 lagen sie in `web/bundles/contaotopwertungszahlen/`.
@@ -53,6 +73,17 @@ class Ranglistenlauf
 	 * Aktualisierungen und laufen in die Sicherung mit.
 	 */
 	public const AUSGABEORDNER = 'files/topwertungszahlen';
+
+	/**
+	 * Ablageort der Bruchstücke zwischen den Schritten, relativ zum
+	 * Projektverzeichnis.
+	 *
+	 * Bewußt unterhalb von `var/` und nicht unter `files/`: Ein halbfertiger
+	 * Stand darf nicht über das Web erreichbar sein. Die Bruchstücke werden
+	 * beim ersten Schritt eines Laufs und nach dem Schreiben der Dateien
+	 * gelöscht.
+	 */
+	public const SCHRITTORDNER = 'var/topwertungszahlen';
 
 	/**
 	 * Absoluter Pfad zum Projektverzeichnis der Contao-Installation.
@@ -118,10 +149,10 @@ class Ranglistenlauf
 	public function lauf(?callable $melder = null): array
 	{
 		$this->melder = $melder;
-		$this->spielerCache = [];
 
 		$startzeit = microtime(true);
-		$listendatum = date('Ymd');
+		$neu = 0;
+		$zugeordnet = 0;
 
 		$bericht = [
 			'listen'     => [],
@@ -132,51 +163,423 @@ class Ranglistenlauf
 			'zugeordnet' => 0,
 		];
 
-		$typen = Ranglisten::listentypen();
+		foreach (self::schritte() as $nummer => $schritt) {
+			$ergebnis = $this->schrittLaufen($nummer);
 
-		foreach (['dwz', 'elo'] as $art) {
-			$ausgabe = [];
+			$bericht['listen'][$schritt['liste']] = $ergebnis['beschafft'];
+			$bericht['quelle'][$schritt['liste']] = $ergebnis['quelle'];
+			$neu += $ergebnis['neu'];
+			$zugeordnet += $ergebnis['zugeordnet'];
 
-			foreach ($typen as $schluessel => $typ) {
-				$liste = $art.'_'.$schluessel;
-
-				$ergebnis = 'dwz' === $art
-					? Ranglisten::dwz(array_merge($typ['params'], ['limit' => self::TOP]))
-					: Ranglisten::elo(array_merge($typ['params'], ['limit' => self::TOP]));
-
-				$zeilen = $ergebnis['liste'] ?? [];
-				$bericht['quelle'][$liste] = (string) ($ergebnis['quelle'] ?? '');
-
-				$ergebnisListe = $this->listeSpeichern($art, $liste, $zeilen, $listendatum, $bericht);
-
-				if ([] !== $ergebnisListe) {
-					$ausgabe[$liste] = $ergebnisListe;
-				}
-
-				$bericht['listen'][$liste] = \count($zeilen);
-
-				$this->melden(sprintf(
-					'%s: %d Plätze beschafft, %d in der Ausgabe (Quelle: %s)',
-					$liste,
-					\count($zeilen),
-					\count($ergebnisListe),
-					$bericht['quelle'][$liste] ?: 'unbekannt'
-				));
-			}
-
-			$bericht['dateien'][$art] = $this->dateiSchreiben($art.'.json', $ausgabe);
+			$this->melden($ergebnis['meldung']);
 		}
 
+		$abschluss = $this->dateienSchreiben();
+
+		$bericht['dateien'] = $abschluss['dateien'];
+		$bericht['neu'] = $neu;
+		$bericht['zugeordnet'] = $zugeordnet;
 		$bericht['dauer'] = round(microtime(true) - $startzeit, 3);
 
 		$this->melden(sprintf(
 			'Fertig in %s Sekunden. %d Spieler neu angelegt, %d über den Namen zugeordnet.',
 			str_replace('.', ',', (string) $bericht['dauer']),
-			$bericht['neu'],
-			$bericht['zugeordnet']
+			$neu,
+			$zugeordnet
 		));
 
 		return $bericht;
+	}
+
+	/**
+	 * Gibt die zwanzig Schritte eines Laufs in ihrer festen Reihenfolge zurück.
+	 *
+	 * Erst die zehn DWZ-Listen, dann die zehn Elo-Listen — dieselbe Folge wie
+	 * seit jeher, damit die Meldungen auf dem Bildschirm vergleichbar bleiben.
+	 *
+	 * Die Reihenfolge muß stabil sein: Die Importmaske spricht die Schritte
+	 * über ihre Nummer an, und die Bruchstücke im Zwischenverzeichnis werden
+	 * in dieser Folge zusammengesetzt.
+	 *
+	 * @return array<int,array{art:string,schluessel:string,liste:string,name:string}>
+	 *               Nullbasiert durchnumeriert. `liste` ist der Schlüssel in
+	 *               der Auswertungstabelle ('dwz_u20w'), `name` die Beschriftung
+	 *               für die Anzeige ('DWZ – U20 weiblich')
+	 */
+	public static function schritte(): array
+	{
+		$schritte = [];
+
+		foreach (['dwz' => 'DWZ', 'elo' => 'Elo'] as $art => $beschriftung) {
+			foreach (Ranglisten::listentypen() as $schluessel => $typ) {
+				$schritte[] = [
+					'art'        => $art,
+					'schluessel' => (string) $schluessel,
+					'liste'      => $art.'_'.$schluessel,
+					'name'       => $beschriftung.' – '.($typ['name'] ?? $schluessel),
+				];
+			}
+		}
+
+		return $schritte;
+	}
+
+	/**
+	 * Führt einen einzelnen Schritt aus: eine Liste beschaffen, speichern,
+	 * das Bruchstück für die Ausgabedatei ablegen.
+	 *
+	 * Ein Lauf ist in zwanzig Schritte zerlegt, damit die Importmaske einen
+	 * Fortschritt anzeigen kann. Der Weg über gestreamte Ausgabe wäre
+	 * eleganter, aber unzuverlässig: Zwischenspeicher in PHP, im Webserver und
+	 * im Vorschaltserver halten die Teilausgabe zurück, und die Anzeige stünde
+	 * wieder bis zum Schluß still.
+	 *
+	 * Beim ersten Schritt wird das Zwischenverzeichnis geleert, damit
+	 * Bruchstücke eines abgebrochenen Laufs nicht in die neuen Dateien geraten.
+	 *
+	 * @param int $nummer Nullbasierte Schrittnummer aus schritte()
+	 *
+	 * @return array{liste:string,name:string,beschafft:int,ausgabe:int,quelle:string,neu:int,zugeordnet:int,meldung:string}
+	 *               Was der Schritt bewirkt hat. `beschafft` ist die Anzahl der
+	 *               gelieferten Plätze, `ausgabe` die davon in die Datei
+	 *               übernommenen
+	 *
+	 * @throws \OutOfRangeException wenn es den Schritt nicht gibt
+	 */
+	public function schrittLaufen(int $nummer): array
+	{
+		$schritte = self::schritte();
+
+		if (!isset($schritte[$nummer])) {
+			throw new \OutOfRangeException('Schritt '.$nummer.' gibt es nicht.');
+		}
+
+		if (0 === $nummer) {
+			$this->zwischenverzeichnisLeeren();
+		}
+
+		$schritt = $schritte[$nummer];
+		$typen = Ranglisten::listentypen();
+		$params = $typen[$schritt['schluessel']]['params'];
+
+		if ('dwz' === $schritt['art']) {
+			// Überzogen anfordern, weil die Nationsprüfung unten noch Zeilen
+			// wegnimmt und die Liste sonst zu kurz ausfiele
+			$params['limit'] = self::TOP * self::UEBERZUG;
+			$ergebnis = Ranglisten::dwz($params);
+			$geliefert = $ergebnis['liste'] ?? [];
+
+			$pruefung = $this->nurDeutsche($geliefert);
+			$zeilen = \array_slice($this->platzziffern($pruefung['zeilen'], 'dwz'), 0, self::TOP);
+		} else {
+			// Die Elo-Listen führt die FIDE-Tabelle an, und dort ist die
+			// Föderation immer gefüllt — das Wertungsportal filtert sie
+			// bereits richtig. Kein Nachfiltern nötig
+			$params['limit'] = self::TOP;
+			$ergebnis = Ranglisten::elo($params);
+			$zeilen = $ergebnis['liste'] ?? [];
+			$pruefung = ['verworfen' => 0, 'ohneNation' => 0, 'hinweis' => ''];
+		}
+
+		$quelle = (string) ($ergebnis['quelle'] ?? '');
+
+		$zaehler = ['neu' => 0, 'zugeordnet' => 0];
+		$ausgabe = $this->listeSpeichern($schritt['art'], $schritt['liste'], $zeilen, date('Ymd'), $zaehler);
+
+		$this->bruchstueckSchreiben($schritt['liste'], $ausgabe);
+
+		$meldung = sprintf(
+			'%s: %d Plätze, %d in der Ausgabe (Quelle: %s)',
+			$schritt['liste'],
+			\count($zeilen),
+			\count($ausgabe),
+			$quelle ?: 'unbekannt'
+		);
+
+		if ($pruefung['verworfen'] > 0) {
+			$meldung .= sprintf(' – %d Nichtdeutsche verworfen', $pruefung['verworfen']);
+		}
+
+		if ($pruefung['ohneNation'] > 0) {
+			$meldung .= sprintf(', %d ohne Föderation (bleiben drin)', $pruefung['ohneNation']);
+		}
+
+		if ('' !== $pruefung['hinweis']) {
+			$meldung .= ' – '.$pruefung['hinweis'];
+		}
+
+		return [
+			'liste'      => $schritt['liste'],
+			'name'       => $schritt['name'],
+			'beschafft'  => \count($zeilen),
+			'ausgabe'    => \count($ausgabe),
+			'quelle'     => $quelle,
+			'verworfen'  => $pruefung['verworfen'],
+			'ohneNation' => $pruefung['ohneNation'],
+			'neu'        => $zaehler['neu'],
+			'zugeordnet' => $zaehler['zugeordnet'],
+			'meldung'    => $meldung,
+		];
+	}
+
+	/**
+	 * Wirft aus einer DWZ-Liste die Spieler heraus, die nachweislich nicht für
+	 * Deutschland spielen.
+	 *
+	 * **Warum das hier nötig ist.** `Ranglisten::dwz()` filtert gegen
+	 * `tl_wertungsportal_persons.nation`, und dort zählt ein LEERER Wert als
+	 * deutsch. Für eine Verbandsrangliste ist das richtig — das Feld stammt
+	 * allein aus der Vereinsmitglieder-CSV und ist für einen großen Teil des
+	 * Bestands leer; wer Leerwerte ausschlösse, verlöre die halbe Liste. Für
+	 * die Spitzenwertungszahlen des DSB ist es falsch: Dort standen dadurch
+	 * Ausländer in der Top-10.
+	 *
+	 * Geprüft wird deshalb die **FIDE-Föderation**, genau wie es die alte
+	 * DeWIS-Fassung tat (`member->fideNation == 'GER'`). Sie steht in
+	 * `tl_wertungsportal_persons.fideNation`; ist sie dort leer, wird sie über
+	 * die FIDE-ID aus `tl_wertungsportal_elo.country` nachgeschlagen. Auf
+	 * genau diesen Weg verweist auch der Quelltext des Wertungsportals.
+	 *
+	 * Verworfen wird nur, wer eine **bekannte andere** Föderation trägt. Wer
+	 * gar keine hat, bleibt drin — sonst verschwänden alle Spieler ohne
+	 * FIDE-Eintrag, und das sind in den unteren Altersklassen die meisten. Wie
+	 * viele das sind, steht in der Rückgabe und damit in der Meldung des
+	 * Schritts.
+	 *
+	 * @param array<int,array> $zeilen Zeilen aus Ranglisten::dwz()
+	 *
+	 * @return array{zeilen:array<int,array>,verworfen:int,ohneNation:int,hinweis:string}
+	 *               `hinweis` ist gesetzt, wenn die Prüfung nicht stattfinden
+	 *               konnte — dann bleiben alle Zeilen stehen, und die Meldung
+	 *               sagt es
+	 */
+	private function nurDeutsche(array $zeilen): array
+	{
+		if ([] === $zeilen) {
+			return ['zeilen' => [], 'verworfen' => 0, 'ohneNation' => 0, 'hinweis' => ''];
+		}
+
+		try {
+			$foederationen = $this->foederationen($zeilen);
+		} catch (\Throwable $e) {
+			// Lieber die vollständige Liste mit sichtbarem Hinweis als eine
+			// stillschweigend ungeprüfte
+			return [
+				'zeilen'     => $zeilen,
+				'verworfen'  => 0,
+				'ohneNation' => 0,
+				'hinweis'    => 'Nationsprüfung nicht möglich: '.$e->getMessage(),
+			];
+		}
+
+		$behalten = [];
+		$verworfen = 0;
+		$ohneNation = 0;
+
+		foreach ($zeilen as $zeile) {
+			$pkz = (string) ($zeile['pkz'] ?? '');
+			$foederation = strtoupper(trim((string) ($foederationen[$pkz] ?? '')));
+
+			// Die Nation aus der Mitgliederdatei zählt mit, wenn sie gefüllt
+			// ist: Sie ist der zweite Beleg und im Zweifel der neuere
+			$nation = strtoupper(trim((string) ($zeile['nation'] ?? '')));
+
+			if ('' !== $foederation && self::NATION !== $foederation) {
+				++$verworfen;
+
+				continue;
+			}
+
+			if ('' !== $nation && '-' !== $nation && self::NATION !== $nation) {
+				++$verworfen;
+
+				continue;
+			}
+
+			if ('' === $foederation) {
+				++$ohneNation;
+			}
+
+			$behalten[] = $zeile;
+		}
+
+		return [
+			'zeilen'     => $behalten,
+			'verworfen'  => $verworfen,
+			'ohneNation' => $ohneNation,
+			'hinweis'    => '',
+		];
+	}
+
+	/**
+	 * Schlägt die FIDE-Föderation der Spieler einer Liste nach.
+	 *
+	 * Zwei Abfragen für die ganze Liste statt einer je Spieler: Die alte
+	 * DeWIS-Fassung rief für jeden Spieler einzeln `tournamentCardForId()`
+	 * auf, nur um an diesen einen Wert zu kommen — das war der Grund für die
+	 * Laufzeiten von Minuten.
+	 *
+	 * @param array<int,array> $zeilen Zeilen aus Ranglisten::dwz()
+	 *
+	 * @return array<string,string> PKZ => Föderation ('GER', 'ISR', …). Nicht
+	 *                              gefundene Spieler fehlen im Ergebnis
+	 *
+	 * @throws \Throwable wenn die Spiegeltabellen des Wertungsportals fehlen
+	 */
+	private function foederationen(array $zeilen): array
+	{
+		$pkzListe = [];
+		$fideZuPkz = [];
+
+		foreach ($zeilen as $zeile) {
+			$pkz = (string) ($zeile['pkz'] ?? '');
+
+			if ('' === $pkz) {
+				continue;
+			}
+
+			$pkzListe[$pkz] = true;
+
+			if ((int) ($zeile['fide_id'] ?? 0) > 0) {
+				$fideZuPkz[(int) $zeile['fide_id']] = $pkz;
+			}
+		}
+
+		if ([] === $pkzListe) {
+			return [];
+		}
+
+		$db = \Database::getInstance();
+		$ergebnis = [];
+
+		// 1. Föderation aus der Mitgliederdatei
+		$pkzWerte = array_keys($pkzListe);
+		$platzhalter = implode(',', array_fill(0, \count($pkzWerte), '?'));
+
+		$objPerson = $db
+			->prepare("SELECT nuLigaPersonId, fideNation FROM tl_wertungsportal_persons WHERE nuLigaPersonId IN ($platzhalter)")
+			->execute(...$pkzWerte)
+		;
+
+		while ($objPerson->next()) {
+			$wert = trim((string) $objPerson->fideNation);
+
+			if ('' !== $wert) {
+				$ergebnis[(string) $objPerson->nuLigaPersonId] = $wert;
+			}
+		}
+
+		// 2. Für die noch offenen Spieler die Föderation der FIDE-Tabelle
+		$offen = [];
+
+		foreach ($fideZuPkz as $fideId => $pkz) {
+			if (!isset($ergebnis[$pkz])) {
+				$offen[] = $fideId;
+			}
+		}
+
+		if ([] !== $offen) {
+			$platzhalter = implode(',', array_fill(0, \count($offen), '?'));
+
+			$objElo = $db
+				->prepare("SELECT fideid, country FROM tl_wertungsportal_elo WHERE fideid IN ($platzhalter)")
+				->execute(...$offen)
+			;
+
+			while ($objElo->next()) {
+				$wert = trim((string) $objElo->country);
+				$pkz = $fideZuPkz[(int) $objElo->fideid] ?? '';
+
+				if ('' !== $wert && '' !== $pkz) {
+					$ergebnis[$pkz] = $wert;
+				}
+			}
+		}
+
+		return $ergebnis;
+	}
+
+	/**
+	 * Vergibt die geteilten Platzziffern neu.
+	 *
+	 * Nach dem Herausnehmen der Nichtdeutschen stimmen die Ziffern des
+	 * Wertungsportals nicht mehr — es hätte sonst Lücken (1, 2, 4, 7). Bei
+	 * gleicher Wertungszahl teilen sich die Spieler den Platz, und der nächste
+	 * überspringt die verbrauchten Ziffern: 1, 2, 2, 4.
+	 *
+	 * @param array<int,array> $zeilen Zeilen in ihrer sortierten Reihenfolge
+	 * @param string           $art    'dwz' oder 'elo' — bestimmt, welches Feld
+	 *                                 die Wertungszahl trägt
+	 *
+	 * @return array<int,array> Dieselben Zeilen mit neuen Werten in `platz`
+	 *                          und `rang`
+	 */
+	private function platzziffern(array $zeilen, string $art): array
+	{
+		$feld = 'dwz' === $art ? 'dwz' : 'elo';
+		$platz = 0;
+		$letzteWertung = null;
+		$nummer = 0;
+
+		foreach ($zeilen as $i => $zeile) {
+			++$nummer;
+			$wertung = (int) ($zeile[$feld] ?? 0);
+
+			if ($wertung !== $letzteWertung) {
+				$platz = $nummer;
+				$letzteWertung = $wertung;
+			}
+
+			$zeilen[$i]['platz'] = $platz;
+			$zeilen[$i]['rang'] = $platz;
+		}
+
+		return $zeilen;
+	}
+
+	/**
+	 * Setzt die Bruchstücke aller Schritte zu den beiden Ausgabedateien
+	 * zusammen und räumt das Zwischenverzeichnis auf.
+	 *
+	 * Fehlt das Bruchstück eines Schritts — weil er nie lief oder abbrach —,
+	 * steht die betreffende Liste in der Datei mit einem leeren Feld. So bleibt
+	 * der Aufbau der Datei verläßlich, und dem Leser fällt auf, was fehlt.
+	 *
+	 * @return array{dateien:array<string,string>,fehlend:array<int,string>,meldung:string}
+	 *               `dateien` nennt die geschriebenen Pfade, `fehlend` die
+	 *               Listen ohne Bruchstück
+	 */
+	public function dateienSchreiben(): array
+	{
+		$daten = ['dwz' => [], 'elo' => []];
+		$fehlend = [];
+
+		foreach (self::schritte() as $schritt) {
+			$bruchstueck = $this->bruchstueckLesen($schritt['liste']);
+
+			if (null === $bruchstueck) {
+				$fehlend[] = $schritt['liste'];
+				$bruchstueck = [];
+			}
+
+			$daten[$schritt['art']][$schritt['liste']] = $bruchstueck;
+		}
+
+		$dateien = [];
+
+		foreach ($daten as $art => $inhalt) {
+			$dateien[$art] = $this->dateiSchreiben($art.'.json', $inhalt);
+		}
+
+		$this->zwischenverzeichnisLeeren();
+
+		$meldung = 'Dateien geschrieben: '.implode(', ', $dateien);
+
+		if ([] !== $fehlend) {
+			$meldung .= ' – ohne Daten geblieben: '.implode(', ', $fehlend);
+		}
+
+		return ['dateien' => $dateien, 'fehlend' => $fehlend, 'meldung' => $meldung];
 	}
 
 	/**
@@ -189,19 +592,19 @@ class Ranglistenlauf
 	 * @param string               $liste       Listenschlüssel, etwa 'dwz_u20w'
 	 * @param array<int,array>     $zeilen      Zeilen aus Ranglisten::dwz()/elo()
 	 * @param string               $listendatum Datum als JJJJMMTT
-	 * @param array                $bericht     Wird für die Zähler `neu` und
+	 * @param array                $zaehler     Wird für die Schlüssel `neu` und
 	 *                                          `zugeordnet` fortgeschrieben
 	 *
 	 * @return array<int,array> Ausgabezeilen für die JSON-Datei, höchstens die
 	 *                          besten AUSGABE Plätze. Leer, wenn die Liste
 	 *                          nichts hergab
 	 */
-	private function listeSpeichern(string $art, string $liste, array $zeilen, string $listendatum, array &$bericht): array
+	private function listeSpeichern(string $art, string $liste, array $zeilen, string $listendatum, array &$zaehler): array
 	{
 		$ausgabe = [];
 
 		foreach ($zeilen as $zeile) {
-			$id = $this->spielerId($zeile, $bericht);
+			$id = $this->spielerId($zeile, $zaehler);
 
 			// Ohne Personenbezug kein Datensatz: Bei den Elo-Listen kann eine
 			// Zeile zu einem Spieler gehören, den die Mitgliederdatei nicht
@@ -317,12 +720,12 @@ class Ranglistenlauf
 	 * zugeordnetes Foto ist schwerer zu bemerken als ein doppelter Spieler.
 	 *
 	 * @param array $zeile   Zeile aus Ranglisten::dwz()/elo()
-	 * @param array $bericht Wird für die Zähler `neu` und `zugeordnet` fortgeschrieben
+	 * @param array $zaehler Wird für die Schlüssel `neu` und `zugeordnet` fortgeschrieben
 	 *
 	 * @return int Datensatz-ID, oder 0 wenn die Zeile keine PKZ trägt (bei
 	 *             Elo-Zeilen ohne zugeordnete Person möglich)
 	 */
-	private function spielerId(array $zeile, array &$bericht): int
+	private function spielerId(array $zeile, array &$zaehler): int
 	{
 		$pkz = trim((string) ($zeile['pkz'] ?? ''));
 
@@ -355,7 +758,7 @@ class Ranglistenlauf
 
 			if ($treffer->numRows) {
 				$this->pkzNachtragen((int) $treffer->id, $pkz);
-				++$bericht['zugeordnet'];
+				++$zaehler['zugeordnet'];
 
 				return $this->spielerCache[$pkz] = (int) $treffer->id;
 			}
@@ -366,7 +769,7 @@ class Ranglistenlauf
 
 		if ($id > 0) {
 			$this->pkzNachtragen($id, $pkz);
-			++$bericht['zugeordnet'];
+			++$zaehler['zugeordnet'];
 
 			return $this->spielerCache[$pkz] = $id;
 		}
@@ -386,7 +789,7 @@ class Ranglistenlauf
 			->execute()
 		;
 
-		++$bericht['neu'];
+		++$zaehler['neu'];
 
 		return $this->spielerCache[$pkz] = (int) $objInsert->insertId;
 	}
@@ -502,6 +905,88 @@ class Ranglistenlauf
 		}
 
 		return ['pfad' => (string) $objFile->path, 'quelle' => (string) $foto->source];
+	}
+
+	/**
+	 * Legt das Bruchstück eines Schritts im Zwischenverzeichnis ab.
+	 *
+	 * @param string           $liste   Listenschlüssel, etwa 'dwz_u20w'
+	 * @param array<int,array> $zeilen  Ausgabezeilen dieser Liste
+	 *
+	 * @throws \RuntimeException wenn sich das Bruchstück nicht schreiben läßt.
+	 *                           Der Schritt gilt dann als gescheitert — sonst
+	 *                           liefe der Lauf durch und die Liste fehlte am
+	 *                           Ende stillschweigend in der Datei
+	 */
+	private function bruchstueckSchreiben(string $liste, array $zeilen): void
+	{
+		$ordner = $this->projektverzeichnis.'/'.self::SCHRITTORDNER;
+
+		if (!is_dir($ordner) && !mkdir($ordner, 0775, true) && !is_dir($ordner)) {
+			throw new \RuntimeException('Das Verzeichnis '.$ordner.' ließ sich nicht anlegen.');
+		}
+
+		$inhalt = json_encode($zeilen, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+		if (false === $inhalt || false === file_put_contents($ordner.'/'.$liste.'.json', $inhalt)) {
+			throw new \RuntimeException('Das Bruchstück '.$liste.' ließ sich nicht schreiben.');
+		}
+	}
+
+	/**
+	 * Liest das Bruchstück eines Schritts zurück.
+	 *
+	 * @param string $liste Listenschlüssel, etwa 'dwz_u20w'
+	 *
+	 * @return array<int,array>|null Die Ausgabezeilen, oder null wenn es kein
+	 *                               Bruchstück gibt oder es unlesbar ist. Der
+	 *                               Aufrufer behandelt beides gleich: Die Liste
+	 *                               bleibt in der Ausgabedatei leer
+	 */
+	private function bruchstueckLesen(string $liste): ?array
+	{
+		$pfad = $this->projektverzeichnis.'/'.self::SCHRITTORDNER.'/'.$liste.'.json';
+
+		if (!is_file($pfad)) {
+			return null;
+		}
+
+		$inhalt = file_get_contents($pfad);
+
+		if (false === $inhalt) {
+			return null;
+		}
+
+		$daten = json_decode($inhalt, true);
+
+		return \is_array($daten) ? $daten : null;
+	}
+
+	/**
+	 * Löscht alle Bruchstücke im Zwischenverzeichnis.
+	 *
+	 * Wird vor dem ersten Schritt eines Laufs und nach dem Schreiben der
+	 * Ausgabedateien aufgerufen. Ohne das erste Leeren geriete das Bruchstück
+	 * eines abgebrochenen Laufs in die nächsten Dateien.
+	 *
+	 * Gelöscht wird nur, was dem Namensmuster der Bruchstücke entspricht —
+	 * fremde Dateien im selben Verzeichnis bleiben unangetastet.
+	 */
+	private function zwischenverzeichnisLeeren(): void
+	{
+		$ordner = $this->projektverzeichnis.'/'.self::SCHRITTORDNER;
+
+		if (!is_dir($ordner)) {
+			return;
+		}
+
+		foreach (self::schritte() as $schritt) {
+			$pfad = $ordner.'/'.$schritt['liste'].'.json';
+
+			if (is_file($pfad)) {
+				@unlink($pfad);
+			}
+		}
 	}
 
 	/**
