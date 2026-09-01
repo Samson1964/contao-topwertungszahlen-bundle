@@ -7,3 +7,25 @@ services:
         Symfony\Component\DependencyInjection\ContainerAwareInterface:
             calls:
                 - ["setContainer", ["@service_container"]]
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Controller dürfen unter ihrem vollständigen Klassennamen als Service-ID
+    # stehen; der Router löst den _controller-Eintrag der routing.yml darüber
+    # auf. Deshalb muß der Service öffentlich sein.
+    Schachbulle\ContaoTopwertungszahlenBundle\Controller\RanglistenlaufController:
+        public: true
+        arguments:
+            $projektverzeichnis: '%kernel.project_dir%'
+
+    # Der Befehlsname steht im Tag und nicht in der Klasse: Die Eigenschaft
+    # $defaultName gibt es in Symfony 7 nicht mehr, und das Attribut
+    # #[AsCommand] setzt PHP 8 voraus. So läuft dieselbe Datei unter
+    # Contao 4.13 und 5.
+    Schachbulle\ContaoTopwertungszahlenBundle\Command\RanglistenlaufCommand:
+        arguments:
+            $projektverzeichnis: '%kernel.project_dir%'
+        tags:
+            - { name: console.command, command: 'topwertungszahlen:rangliste' }

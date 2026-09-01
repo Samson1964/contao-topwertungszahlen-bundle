@@ -155,7 +155,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 	'palettes' => array
 	(
 		'__selector__'                => array(''),
-		'default'                     => '{name_legend},vorname,nachname,geburtstag,geschlecht,dewis_id;{publish_legend},published'
+		'default'                     => '{name_legend},vorname,nachname,geburtstag,geschlecht,pkz,dewis_id;{publish_legend},published'
 	),
 
 	// Subpalettes
@@ -252,14 +252,32 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			),
 			'sql'                     => "varchar(32) NOT NULL default ''" 
 		),
+		// Personenkennziffer aus dem Wertungsportal (nuLigaPersonId). Seit
+		// Version 1.7.0 das führende Merkmal des Spielers; dewis_id bleibt
+		// als Verlaufsangabe daneben stehen.
+		'pkz' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['pkz'],
+			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array
+			(
+				'maxlength'           => 32,
+				'tl_class'            => 'w50'
+			),
+			'sql'                     => "varchar(32) NOT NULL default ''"
+		),
 		'dewis_id' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['dewis_id'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
+			// Nicht mehr verpflichtend: DeWIS ist abgeschaltet, neu angelegte
+			// Spieler haben nur noch eine PKZ. Ein Pflichtfeld hätte jede
+			// Bearbeitung im Backend blockiert
 			'eval'                    => array
 			(
-				'mandatory'           => true,
 				'maxlength'           => 16,
 				'tl_class'            => 'w50'
 			),

@@ -18,10 +18,11 @@
         }
     ],
     "require": {
-        "php": "^5.6 || ^7.0 || ^8.0",
-        "contao/core-bundle": "^4",
+        "php": "^7.4 || ^8.0",
+        "contao/core-bundle": "^4.13",
         "codefog/contao-haste": "*",
-        "schachbulle/contao-helper-bundle": "*"
+        "schachbulle/contao-helper-bundle": "*",
+        "schachbulle/contao-wertungsportal-bundle": "^1.34"
     },
     "conflict": {
         "contao/core": "*",

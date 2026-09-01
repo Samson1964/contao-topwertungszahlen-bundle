@@ -1,5 +1,48 @@
 # Topwertungszahlen Changelog
 
+## Version 1.7.0 (2026-09-01)
+
+* Change: **Die Ranglisten kommen aus dem Wertungsportal statt aus DeWIS.**
+  Die Beschaffung liegt vollständig in `Helper\Ranglisten` des
+  `contao-wertungsportal-bundle` (ab dessen Version 1.34.0), das damit als
+  Abhängigkeit dazukommt. Weggefallen sind der SOAP-Aufbau, `bestOfFederation()`,
+  `searchByName()` und vor allem der Einzelabruf `tournamentCardForId()` je
+  Spieler — der lief bisher **zweimal** pro Spieler, einmal für die Nation und
+  einmal für den Landesverband
+* Change: **`Rangliste.php` gibt es nicht mehr.** Die Logik steht jetzt in
+  `Classes/Ranglistenlauf.php`, angestoßen über die Backend-Route
+  `/contao/topwertungszahlen/ranglistenlauf` oder über den neuen Befehl
+  `topwertungszahlen:rangliste`. Grund: Die alte Datei fuhr Contao über
+  `system/initialize.php` selbst hoch — die Datei gibt es in Contao 5 nicht
+  mehr — und lag ohne jede Zugangsprüfung im Web-Verzeichnis
+* Change: **Ein Aufruf statt zwanzig.** Die Importmaske legte bisher zwanzig
+  ineinander verschachtelte Ajax-Aufrufe an, weil jede einzelne Liste über
+  DeWIS Minuten brauchte. Ein Lauf ist jetzt in Sekunden erledigt und braucht
+  weder die Aufteilung noch die Zwischendateien `dwz-1.json` … `elo-10.json`
+* Change: **Die Ausgabedateien liegen in `files/topwertungszahlen/`.** Bisher
+  landeten `dwz.json` und `elo.json` in `web/bundles/contaotopwertungszahlen/`
+  — einem Symlink ins vendor-Verzeichnis, aus dem sie jedes `composer install`
+  entfernte. **Wer die Dateien von außen liest, muß die URL umstellen** auf
+  `/files/topwertungszahlen/dwz.json` bzw. `elo.json`
+* Add: Feld `pkz` in `tl_topwertungszahlen` (Personenkennziffer des
+  Wertungsportals). Es ist das neue führende Merkmal des Spielers; `dewis_id`
+  bleibt als Verlaufsangabe stehen und ist kein Pflichtfeld mehr.
+  **`contao:migrate` ist erforderlich**
+* Add: Vorhandene Spieler werden beim ersten Lauf automatisch übernommen —
+  zuerst über `dewis_id` (falls dieselbe Nummer), sonst über Nachname, Vorname
+  und Geburtsjahr; die PKZ wird dabei nachgetragen. Bei Namensgleichheit wird
+  bewußt nicht geraten, sondern ein neuer Datensatz angelegt. Wie der Bestand
+  liegt, zeigt vorab `tools/pruefe-spielerkennung.php`
+* Change: `rank` in `tl_topwertungszahlen_ratings` führt jetzt die **geteilte
+  Platzziffer** statt einer laufenden Nummer — denselben Wert also, den die
+  Anzeige schon immer zeigte. Ältere Einträge behalten ihre laufende Nummer
+* Change: jQuery wird nicht mehr eingebunden; `jquery-3.5.1.min.js` und
+  `ajax-loader.gif` sind aus dem Paket entfernt. Die Importmaske kommt mit
+  `fetch()` aus
+* Change: Mindestanforderung ist PHP 7.4 (bisher 5.6) und Contao 4.13 (bisher
+  4.0)
+* Fix: Der Link zum FIDE-Profil in `elo.json` benutzt jetzt `https`
+
 ## Version 1.6.3 (2026-07-29)
 
 * Fix: Warning: Undefined array key "deleteConfirm", "importRating_confirm" bei contao:migrate -> Lesezugriffe auf $GLOBALS['TL_LANG'] in den DCA-Dateien mit `?? null` bzw. `?? array()` abgesichert, da der DcaLoader die Sprachdateien noch nicht geladen hat

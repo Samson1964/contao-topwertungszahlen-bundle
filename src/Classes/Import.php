@@ -1,186 +1,66 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Schachbulle\ContaoTopwertungszahlenBundle\Classes;
 
-if(!defined('TL_ROOT')) die('You cannot access this file directly!');
-
 /**
- * Class Import
-  */
+ * Importmaske für die Ranglisten.
+ *
+ * Wird als globale Operation `importRating` aus dem Backend-Modul aufgerufen
+ * (siehe `Resources/contao/config/config.php`) und stößt den Ranglistenlauf
+ * über die Backend-Route an.
+ *
+ * Bis Version 1.6.3 baute diese Klasse eine Verschachtelung aus zwanzig
+ * ineinandergelegten Ajax-Aufrufen — einen je Liste. Das war nötig, weil jede
+ * einzelne Liste über DeWIS Minuten brauchte und ein Aufruf am Stück in die
+ * Zeitschranke des Servers gelaufen wäre. Seit die Daten aus dem
+ * Wertungsportal kommen, ist der ganze Lauf in Sekunden erledigt und es
+ * genügt ein einziger Aufruf. Damit entfällt auch die Einbindung von jQuery.
+ */
 class Import extends \Backend
 {
-
-	function __construct()
-	{
-	}
-
 	/**
-	 * Importiert die Wertungszahlen
+	 * Baut die Importmaske und startet den Lauf.
+	 *
+	 * Der Lauf beginnt sofort beim Aufruf der Maske — so verhielt sich die
+	 * Vorgängerfassung auch, und ein zusätzlicher Klick brächte nichts, weil
+	 * die Maske keinen anderen Zweck hat.
+	 *
+	 * @return string HTML der Maske samt Startskript. Die Meldungen des Laufs
+	 *                trägt das Skript nach, sobald die Route geantwortet hat
 	 */
-	public function run()
+	public function run(): string
 	{
+		$url = \System::getContainer()->get('router')->generate('topwertungszahlen_ranglistenlauf');
 
-		// jQuery einbinden
-		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaotopwertungszahlen/js/jquery-3.5.1.min.js';
-
-		$content = '<div id="rating_import" style="margin:10px;"></div>';
-		$content .= '<div id="rating_import_status" style="margin:10px;"><img src="bundles/contaotopwertungszahlen/images/ajax-loader.gif"></div>';
-
-		// Zurücklink generieren
+		// Zurücklink auf die Übersicht: derselbe Aufruf ohne den Schlüssel
+		// der globalen Operation
 		$backlink = str_replace('&key=importRating', '', \Environment::get('request'));
-		$content .= '<div style="margin:10px;"><a href="'.$backlink.'">Zurück</a> | Alternativ: <a href="bundles/contaotopwertungszahlen/Rangliste.php" target="_blank">Rangliste.php im neuen Fenster ausführen</div>';
+
+		$content = '<div id="rating_import" style="margin:10px;"></div>'."\n";
+		$content .= '<div id="rating_import_status" style="margin:10px;">Der Lauf wurde gestartet, bitte warten …</div>'."\n";
+		$content .= '<div style="margin:10px;"><a href="'.$backlink.'">Zurück</a></div>'."\n";
 
 		$content .= '<script>'."\n";
-		$content .= '$.ajax({'."\n";
-		$content .= '  url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=1&type=dwz",'."\n";
-		$content .= '  cache: false,'."\n";
-		$content .= '  success: function(response) {'."\n";
-		$content .= '    $("#rating_import").append(response);'."\n";
-		$content .= '    $.ajax({'."\n";
-		$content .= '      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=2&type=dwz",'."\n";
-		$content .= '      cache: false,'."\n";
-		$content .= '      success: function(response) {'."\n";
-		$content .= '        $("#rating_import").append(response);'."\n";
-		$content .= '        $.ajax({'."\n";
-		$content .= '          url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=3&type=dwz",'."\n";
-		$content .= '          cache: false,'."\n";
-		$content .= '          success: function(response) {'."\n";
-		$content .= '            $("#rating_import").append(response);'."\n";
-		$content .= '            $.ajax({'."\n";
-		$content .= '              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=4&type=dwz",'."\n";
-		$content .= '              cache: false,'."\n";
-		$content .= '              success: function(response) {'."\n";
-		$content .= '                $("#rating_import").append(response);'."\n";
-		$content .= '                $.ajax({'."\n";
-		$content .= '                  url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=5&type=dwz",'."\n";
-		$content .= '                  cache: false,'."\n";
-		$content .= '                  success: function(response) {'."\n";
-		$content .= '                    $("#rating_import").append(response);'."\n";
-		$content .= '                    $.ajax({'."\n";
-		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=6&type=dwz",'."\n";
-		$content .= '                      cache: false,'."\n";
-		$content .= '                      success: function(response) {'."\n";
-		$content .= '                        $("#rating_import").append(response);'."\n";
-
-		$content .= '                    $.ajax({'."\n";
-		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=7&type=dwz",'."\n";
-		$content .= '                      cache: false,'."\n";
-		$content .= '                      success: function(response) {'."\n";
-		$content .= '                        $("#rating_import").append(response);'."\n";
-		$content .= '                    $.ajax({'."\n";
-		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=8&type=dwz",'."\n";
-		$content .= '                      cache: false,'."\n";
-		$content .= '                      success: function(response) {'."\n";
-		$content .= '                        $("#rating_import").append(response);'."\n";
-		$content .= '                    $.ajax({'."\n";
-		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=9&type=dwz",'."\n";
-		$content .= '                      cache: false,'."\n";
-		$content .= '                      success: function(response) {'."\n";
-		$content .= '                        $("#rating_import").append(response);'."\n";
-		$content .= '                    $.ajax({'."\n";
-		$content .= '                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=10&type=dwz",'."\n";
-		$content .= '                      cache: false,'."\n";
-		$content .= '                      success: function(response) {'."\n";
-		$content .= '                        $("#rating_import").append(response);'."\n";
-
-		$content .= '                        $.ajax({'."\n";
-		$content .= '                          url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=1&type=elo",'."\n";
-		$content .= '                          cache: false,'."\n";
-		$content .= '                          success: function(response) {'."\n";
-		$content .= '                            $("#rating_import").append(response);'."\n";
-		$content .= '                            $.ajax({'."\n";
-		$content .= '                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=2&type=elo",'."\n";
-		$content .= '                              cache: false,'."\n";
-		$content .= '                              success: function(response) {'."\n";
-		$content .= '                                $("#rating_import").append(response);'."\n";
-		$content .= '                                $.ajax({'."\n";
-		$content .= '                                  url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=3&type=elo",'."\n";
-		$content .= '                                  cache: false,'."\n";
-		$content .= '                                  success: function(response) {'."\n";
-		$content .= '                                    $("#rating_import").append(response);'."\n";
-		$content .= '                                    $.ajax({'."\n";
-		$content .= '                                      url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=4&type=elo",'."\n";
-		$content .= '                                      cache: false,'."\n";
-		$content .= '                                      success: function(response) {'."\n";
-		$content .= '                                        $("#rating_import").append(response);'."\n";
-		$content .= '                                        $.ajax({'."\n";
-		$content .= '                                          url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=5&type=elo",'."\n";
-		$content .= '                                          cache: false,'."\n";
-		$content .= '                                          success: function(response) {'."\n";
-		$content .= '                                            $("#rating_import").append(response);'."\n";
-		$content .= '                                            $.ajax({'."\n";
-		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=6&type=elo",'."\n";
-		$content .= '                                              cache: false,'."\n";
-		$content .= '                                              success: function(response) {'."\n";
-		$content .= '                                                $("#rating_import").append(response);'."\n";
-
-		$content .= '                                            $.ajax({'."\n";
-		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=7&type=elo",'."\n";
-		$content .= '                                              cache: false,'."\n";
-		$content .= '                                              success: function(response) {'."\n";
-		$content .= '                                                $("#rating_import").append(response);'."\n";
-		$content .= '                                            $.ajax({'."\n";
-		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=8&type=elo",'."\n";
-		$content .= '                                              cache: false,'."\n";
-		$content .= '                                              success: function(response) {'."\n";
-		$content .= '                                                $("#rating_import").append(response);'."\n";
-		$content .= '                                            $.ajax({'."\n";
-		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=9&type=elo",'."\n";
-		$content .= '                                              cache: false,'."\n";
-		$content .= '                                              success: function(response) {'."\n";
-		$content .= '                                                $("#rating_import").append(response);'."\n";
-		$content .= '                                            $.ajax({'."\n";
-		$content .= '                                              url: "bundles/contaotopwertungszahlen/Rangliste.php?modus=10&type=elo",'."\n";
-		$content .= '                                              cache: false,'."\n";
-		$content .= '                                              success: function(response) {'."\n";
-		$content .= '                                                $("#rating_import").append(response);'."\n";
-
-		$content .= '                                                $("#rating_import_status").html("<b>Fertig</b>");'."\n";
-
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-
-		$content .= '                                              }'."\n";
-		$content .= '                                            });'."\n";
-		$content .= '                                          }'."\n";
-		$content .= '                                        });'."\n";
-		$content .= '                                      }'."\n";
-		$content .= '                                    });'."\n";
-		$content .= '                                  }'."\n";
-		$content .= '                                });'."\n";
-		$content .= '                              }'."\n";
-		$content .= '                            });'."\n";
-		$content .= '                          }'."\n";
-		$content .= '                        });'."\n";
-		$content .= '                      }'."\n";
-		$content .= '                    });'."\n";
-		$content .= '                  }'."\n";
-		$content .= '                });'."\n";
-		$content .= '              }'."\n";
-		$content .= '            });'."\n";
-		$content .= '          }'."\n";
-		$content .= '        });'."\n";
-		$content .= '      }'."\n";
+		$content .= 'fetch('.json_encode($url).', {credentials: "same-origin", cache: "no-store"})'."\n";
+		$content .= '  .then(function(antwort) {'."\n";
+		// Der Text wird in jedem Fall angezeigt — auch bei Statuscode 500.
+		// Dort steht die Fehlermeldung des Laufs, und die ist nützlicher als
+		// ein pauschales "fehlgeschlagen"
+		$content .= '    return antwort.text().then(function(text) {'."\n";
+		$content .= '      document.getElementById("rating_import").innerHTML = text;'."\n";
+		$content .= '      document.getElementById("rating_import_status").innerHTML = antwort.ok'."\n";
+		$content .= '        ? "<b>Fertig</b>"'."\n";
+		$content .= '        : "<b style=\'color:#c33\'>Abgebrochen (HTTP " + antwort.status + ")</b>";'."\n";
 		$content .= '    });'."\n";
-		$content .= '  }'."\n";
-		$content .= '});'."\n";
+		$content .= '  })'."\n";
+		$content .= '  .catch(function(fehler) {'."\n";
+		$content .= '    document.getElementById("rating_import_status").innerHTML ='."\n";
+		$content .= '      "<b style=\'color:#c33\'>Die Route war nicht erreichbar: </b>" + fehler;'."\n";
+		$content .= '  });'."\n";
 		$content .= '</script>'."\n";
 
 		return $content;
-
 	}
 }

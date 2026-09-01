@@ -1,9 +1,9 @@
-# Quelle fuer die Metadaten im Contao Manager (contao/package-metadata).
-# Aenderungen hier werden von Claude in den Fork uebertragen.
-# Der englische Block wird beim Abgleich ergaenzt, falls er fehlt.
+# Quelle für die Metadaten im Contao Manager (contao/package-metadata).
+# Änderungen hier werden von Claude in den Fork übertragen.
+# Der englische Block wird beim Abgleich ergänzt, falls er fehlt.
 
 de:
-    title: Topwertungszahlen
+    title: Top-10-Listen des Deutschen Schachbundes
     description: >
         Stellt die Spitzenwertungszahlen des Deutschen Schachbundes als Ranglisten dar.
     keywords:

@@ -1,0 +1,12 @@
+# Route für den Ranglistenlauf.
+#
+# Sie liegt bewußt unterhalb von /contao: Dort greift die Anmeldung am
+# Backend. Der Vorgänger — bundles/contaotopwertungszahlen/Rangliste.php —
+# war ohne jede Prüfung aufrufbar.
+topwertungszahlen_ranglistenlauf:
+    path: /contao/topwertungszahlen/ranglistenlauf
+    methods: [GET]
+    defaults:
+        _scope: backend
+        _token_check: false
+        _controller: Schachbulle\ContaoTopwertungszahlenBundle\Controller\RanglistenlaufController

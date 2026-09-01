@@ -27,7 +27,8 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen']['vorname'] = array('Vorname', 'Vorna
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['titel'] = array('Titel', 'Titel, z.B. Dr.');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['geschlecht'] = array('Geschlecht', 'Geschlecht, z.B. M oder F');
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['geburtstag'] = array('Geburtstag', 'Geburtstag des Spielers');
-$GLOBALS['TL_LANG']['tl_topwertungszahlen']['dewis_id'] = array('DeWIS-ID', 'ID des Spielers in DeWIS');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['pkz'] = array('PKZ', 'Personenkennziffer des Spielers im Wertungsportal');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['dewis_id'] = array('DeWIS-ID', 'ID des Spielers im abgeschalteten DeWIS. Wird nicht mehr gefüllt und bleibt nur als Verlaufsangabe stehen.');
 
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['publish_legend'] = 'Veröffentlichung';
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['published'] = array('Veröffentlicht', 'Spieler aktivieren oder deaktivieren');
