@@ -7,9 +7,9 @@
  */
 
 /**
- * Backend-Modul Übersetzungen
+ * Backend-Modul Ãœbersetzungen
  */
-$GLOBALS["TL_LANG"]["MOD"]["topwertungszahlen"] = array('Toplisten DWZ/Elo', 'Topranglisten für das Frontend verwalten');
+$GLOBALS["TL_LANG"]["MOD"]["topwertungszahlen"] = array('Toplisten DWZ/Elo', 'Topranglisten fÃ¼r das Frontend verwalten');
 
 /**
  * Frontendmodule

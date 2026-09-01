@@ -1,5 +1,15 @@
 # Topwertungszahlen Changelog
 
+## Version 1.7.2 (2026-09-01)
+
+* Fix: **Zwei Sprachdateien waren ISO-8859-1 statt UTF-8**, und zwar die
+  beiden mit sichtbarem Text. Die Umlaute erschienen im Backend als
+  Fragezeichen im Rhombus — betroffen waren die Rückfrage vor dem Import
+  („Der Dienst l?uft einmal t?glich …", `languages/de/default.php`) und die
+  Beschreibung des Backend-Moduls („Topranglisten f?r das Frontend
+  verwalten", `languages/de/modules.php`). Beide Dateien sind jetzt UTF-8
+  ohne BOM, wie alle anderen im Paket
+
 ## Version 1.7.1 (2026-09-01)
 
 * Fix: **In den DWZ-Listen standen Ausländer** — in allen zehn, also auch bei
