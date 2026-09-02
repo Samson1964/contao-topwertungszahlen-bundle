@@ -48,23 +48,6 @@ class Ranglistenlauf
 	public const AUSGABE = 10;
 
 	/**
-	 * Föderation, für die die Ranglisten gelten. Geprüft wird gegen die
-	 * FIDE-Föderation des Spielers — so hielt es auch die alte DeWIS-Fassung
-	 * (`member->fideNation`).
-	 */
-	public const NATION = 'GER';
-
-	/**
-	 * Faktor, um den die DWZ-Listen überzogen angefordert werden.
-	 *
-	 * Die Nationsprüfung nimmt hinterher Zeilen weg. Ohne Überzug bliebe eine
-	 * Liste, aus der zehn Ausländer fielen, um zehn Plätze zu kurz. Das
-	 * Doppelte reicht mit Abstand: In der Spitze des deutschen Bestands sind
-	 * Ausländer die Ausnahme.
-	 */
-	public const UEBERZUG = 2;
-
-	/**
 	 * Ablageort der fertigen Dateien, relativ zum Projektverzeichnis.
 	 *
 	 * Bis Version 1.6.3 lagen sie in `web/bundles/contaotopwertungszahlen/`.
@@ -262,25 +245,26 @@ class Ranglistenlauf
 		$typen = Ranglisten::listentypen();
 		$params = $typen[$schritt['schluessel']]['params'];
 
-		if ('dwz' === $schritt['art']) {
-			// Überzogen anfordern, weil die Nationsprüfung unten noch Zeilen
-			// wegnimmt und die Liste sonst zu kurz ausfiele
-			$params['limit'] = self::TOP * self::UEBERZUG;
-			$ergebnis = Ranglisten::dwz($params);
-			$geliefert = $ergebnis['liste'] ?? [];
+		$params['limit'] = self::TOP;
 
-			$pruefung = $this->nurDeutsche($geliefert);
-			$zeilen = \array_slice($this->platzziffern($pruefung['zeilen'], 'dwz'), 0, self::TOP);
-		} else {
-			// Die Elo-Listen führt die FIDE-Tabelle an, und dort ist die
-			// Föderation immer gefüllt — das Wertungsportal filtert sie
-			// bereits richtig. Kein Nachfiltern nötig
-			$params['limit'] = self::TOP;
-			$ergebnis = Ranglisten::elo($params);
-			$zeilen = $ergebnis['liste'] ?? [];
-			$pruefung = ['verworfen' => 0, 'ohneNation' => 0, 'hinweis' => ''];
-		}
+		// Die Nationsprüfung liegt vollständig im Wertungsportal-Bundle: Es
+		// fragt ab 1.35.0 zuerst die FIDE-Föderation, dann die Nation der
+		// Mitgliederdatei, und behält nur, wovon beides unbekannt ist. Die
+		// Reihenfolge ist wesentlich — Georg Meier ist laut Mitgliederdatei
+		// Deutscher, spielt aber für Uruguay und gehört deshalb in keine
+		// deutsche Liste.
+		//
+		// Bis 1.7.3 prüfte diese Klasse selbst nach, weil das Bundle damals
+		// nur die Mitgliederdatei heranzog und ein leerer Wert dort als
+		// deutsch galt. Die Nachprüfung ist mit 1.7.4 entfallen; sie wäre
+		// nicht nur doppelt, sondern auch strenger gewesen als die Staffel
+		// und hätte Spieler mit deutscher Föderation verworfen, deren
+		// Mitgliederdatei etwas anderes sagt.
+		$ergebnis = 'dwz' === $schritt['art']
+			? Ranglisten::dwz($params)
+			: Ranglisten::elo($params);
 
+		$zeilen = $ergebnis['liste'] ?? [];
 		$quelle = (string) ($ergebnis['quelle'] ?? '');
 
 		$zaehler = ['neu' => 0, 'zugeordnet' => 0];
@@ -296,245 +280,16 @@ class Ranglistenlauf
 			$quelle ?: 'unbekannt'
 		);
 
-		if ($pruefung['verworfen'] > 0) {
-			$meldung .= sprintf(' – %d Nichtdeutsche verworfen', $pruefung['verworfen']);
-		}
-
-		if ($pruefung['ohneNation'] > 0) {
-			$meldung .= sprintf(', %d ohne Föderation (bleiben drin)', $pruefung['ohneNation']);
-		}
-
-		if ('' !== $pruefung['hinweis']) {
-			$meldung .= ' – '.$pruefung['hinweis'];
-		}
-
 		return [
 			'liste'      => $schritt['liste'],
 			'name'       => $schritt['name'],
 			'beschafft'  => \count($zeilen),
 			'ausgabe'    => \count($ausgabe),
 			'quelle'     => $quelle,
-			'verworfen'  => $pruefung['verworfen'],
-			'ohneNation' => $pruefung['ohneNation'],
 			'neu'        => $zaehler['neu'],
 			'zugeordnet' => $zaehler['zugeordnet'],
 			'meldung'    => $meldung,
 		];
-	}
-
-	/**
-	 * Wirft aus einer DWZ-Liste die Spieler heraus, die nachweislich nicht für
-	 * Deutschland spielen.
-	 *
-	 * **Warum das hier nötig ist.** `Ranglisten::dwz()` filtert gegen
-	 * `tl_wertungsportal_persons.nation`, und dort zählt ein LEERER Wert als
-	 * deutsch. Für eine Verbandsrangliste ist das richtig — das Feld stammt
-	 * allein aus der Vereinsmitglieder-CSV und ist für einen großen Teil des
-	 * Bestands leer; wer Leerwerte ausschlösse, verlöre die halbe Liste. Für
-	 * die Spitzenwertungszahlen des DSB ist es falsch: Dort standen dadurch
-	 * Ausländer in der Top-10.
-	 *
-	 * Geprüft wird deshalb die **FIDE-Föderation**, genau wie es die alte
-	 * DeWIS-Fassung tat (`member->fideNation == 'GER'`). Sie steht in
-	 * `tl_wertungsportal_persons.fideNation`; ist sie dort leer, wird sie über
-	 * die FIDE-ID aus `tl_wertungsportal_elo.country` nachgeschlagen. Auf
-	 * genau diesen Weg verweist auch der Quelltext des Wertungsportals.
-	 *
-	 * Verworfen wird nur, wer eine **bekannte andere** Föderation trägt. Wer
-	 * gar keine hat, bleibt drin — sonst verschwänden alle Spieler ohne
-	 * FIDE-Eintrag, und das sind in den unteren Altersklassen die meisten. Wie
-	 * viele das sind, steht in der Rückgabe und damit in der Meldung des
-	 * Schritts.
-	 *
-	 * @param array<int,array> $zeilen Zeilen aus Ranglisten::dwz()
-	 *
-	 * @return array{zeilen:array<int,array>,verworfen:int,ohneNation:int,hinweis:string}
-	 *               `hinweis` ist gesetzt, wenn die Prüfung nicht stattfinden
-	 *               konnte — dann bleiben alle Zeilen stehen, und die Meldung
-	 *               sagt es
-	 */
-	private function nurDeutsche(array $zeilen): array
-	{
-		if ([] === $zeilen) {
-			return ['zeilen' => [], 'verworfen' => 0, 'ohneNation' => 0, 'hinweis' => ''];
-		}
-
-		try {
-			$foederationen = $this->foederationen($zeilen);
-		} catch (\Throwable $e) {
-			// Lieber die vollständige Liste mit sichtbarem Hinweis als eine
-			// stillschweigend ungeprüfte
-			return [
-				'zeilen'     => $zeilen,
-				'verworfen'  => 0,
-				'ohneNation' => 0,
-				'hinweis'    => 'Nationsprüfung nicht möglich: '.$e->getMessage(),
-			];
-		}
-
-		$behalten = [];
-		$verworfen = 0;
-		$ohneNation = 0;
-
-		foreach ($zeilen as $zeile) {
-			$pkz = (string) ($zeile['pkz'] ?? '');
-			$foederation = strtoupper(trim((string) ($foederationen[$pkz] ?? '')));
-
-			// Die Nation aus der Mitgliederdatei zählt mit, wenn sie gefüllt
-			// ist: Sie ist der zweite Beleg und im Zweifel der neuere
-			$nation = strtoupper(trim((string) ($zeile['nation'] ?? '')));
-
-			if ('' !== $foederation && self::NATION !== $foederation) {
-				++$verworfen;
-
-				continue;
-			}
-
-			if ('' !== $nation && '-' !== $nation && self::NATION !== $nation) {
-				++$verworfen;
-
-				continue;
-			}
-
-			if ('' === $foederation) {
-				++$ohneNation;
-			}
-
-			$behalten[] = $zeile;
-		}
-
-		return [
-			'zeilen'     => $behalten,
-			'verworfen'  => $verworfen,
-			'ohneNation' => $ohneNation,
-			'hinweis'    => '',
-		];
-	}
-
-	/**
-	 * Schlägt die FIDE-Föderation der Spieler einer Liste nach.
-	 *
-	 * Zwei Abfragen für die ganze Liste statt einer je Spieler: Die alte
-	 * DeWIS-Fassung rief für jeden Spieler einzeln `tournamentCardForId()`
-	 * auf, nur um an diesen einen Wert zu kommen — das war der Grund für die
-	 * Laufzeiten von Minuten.
-	 *
-	 * @param array<int,array> $zeilen Zeilen aus Ranglisten::dwz()
-	 *
-	 * @return array<string,string> PKZ => Föderation ('GER', 'ISR', …). Nicht
-	 *                              gefundene Spieler fehlen im Ergebnis
-	 *
-	 * @throws \Throwable wenn die Spiegeltabellen des Wertungsportals fehlen
-	 */
-	private function foederationen(array $zeilen): array
-	{
-		$pkzListe = [];
-		$fideZuPkz = [];
-
-		foreach ($zeilen as $zeile) {
-			$pkz = (string) ($zeile['pkz'] ?? '');
-
-			if ('' === $pkz) {
-				continue;
-			}
-
-			$pkzListe[$pkz] = true;
-
-			if ((int) ($zeile['fide_id'] ?? 0) > 0) {
-				$fideZuPkz[(int) $zeile['fide_id']] = $pkz;
-			}
-		}
-
-		if ([] === $pkzListe) {
-			return [];
-		}
-
-		$db = \Database::getInstance();
-		$ergebnis = [];
-
-		// 1. Föderation aus der Mitgliederdatei
-		$pkzWerte = array_keys($pkzListe);
-		$platzhalter = implode(',', array_fill(0, \count($pkzWerte), '?'));
-
-		$objPerson = $db
-			->prepare("SELECT nuLigaPersonId, fideNation FROM tl_wertungsportal_persons WHERE nuLigaPersonId IN ($platzhalter)")
-			->execute(...$pkzWerte)
-		;
-
-		while ($objPerson->next()) {
-			$wert = trim((string) $objPerson->fideNation);
-
-			if ('' !== $wert) {
-				$ergebnis[(string) $objPerson->nuLigaPersonId] = $wert;
-			}
-		}
-
-		// 2. Für die noch offenen Spieler die Föderation der FIDE-Tabelle
-		$offen = [];
-
-		foreach ($fideZuPkz as $fideId => $pkz) {
-			if (!isset($ergebnis[$pkz])) {
-				$offen[] = $fideId;
-			}
-		}
-
-		if ([] !== $offen) {
-			$platzhalter = implode(',', array_fill(0, \count($offen), '?'));
-
-			$objElo = $db
-				->prepare("SELECT fideid, country FROM tl_wertungsportal_elo WHERE fideid IN ($platzhalter)")
-				->execute(...$offen)
-			;
-
-			while ($objElo->next()) {
-				$wert = trim((string) $objElo->country);
-				$pkz = $fideZuPkz[(int) $objElo->fideid] ?? '';
-
-				if ('' !== $wert && '' !== $pkz) {
-					$ergebnis[$pkz] = $wert;
-				}
-			}
-		}
-
-		return $ergebnis;
-	}
-
-	/**
-	 * Vergibt die geteilten Platzziffern neu.
-	 *
-	 * Nach dem Herausnehmen der Nichtdeutschen stimmen die Ziffern des
-	 * Wertungsportals nicht mehr — es hätte sonst Lücken (1, 2, 4, 7). Bei
-	 * gleicher Wertungszahl teilen sich die Spieler den Platz, und der nächste
-	 * überspringt die verbrauchten Ziffern: 1, 2, 2, 4.
-	 *
-	 * @param array<int,array> $zeilen Zeilen in ihrer sortierten Reihenfolge
-	 * @param string           $art    'dwz' oder 'elo' — bestimmt, welches Feld
-	 *                                 die Wertungszahl trägt
-	 *
-	 * @return array<int,array> Dieselben Zeilen mit neuen Werten in `platz`
-	 *                          und `rang`
-	 */
-	private function platzziffern(array $zeilen, string $art): array
-	{
-		$feld = 'dwz' === $art ? 'dwz' : 'elo';
-		$platz = 0;
-		$letzteWertung = null;
-		$nummer = 0;
-
-		foreach ($zeilen as $i => $zeile) {
-			++$nummer;
-			$wertung = (int) ($zeile[$feld] ?? 0);
-
-			if ($wertung !== $letzteWertung) {
-				$platz = $nummer;
-				$letzteWertung = $wertung;
-			}
-
-			$zeilen[$i]['platz'] = $platz;
-			$zeilen[$i]['rang'] = $platz;
-		}
-
-		return $zeilen;
 	}
 
 	/**

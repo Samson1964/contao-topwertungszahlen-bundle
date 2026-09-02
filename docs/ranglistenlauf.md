@@ -33,10 +33,8 @@ vendor/bin/contao-console topwertungszahlen:rangliste
 ```
 
 Beide Wege benutzen dieselbe Klasse `Classes\Ranglistenlauf` und tun genau
-dasselbe.
-
-Ein Lauf dauert wenige Sekunden. Über DeWIS brauchte er Minuten je Liste —
-daher die frühere Aufteilung in zwanzig Einzelaufrufe, die es nicht mehr gibt.
+dasselbe — nur arbeitet die Kommandozeile die Schritte ohne Rückfrage in einem
+Rutsch ab, weil dort niemand auf einen Balken sieht.
 
 ## Was ein Lauf schreibt
 
@@ -101,42 +99,36 @@ genau während des Laufs liest, bekommt dadurch nie einen halben Datenbestand.
 
 ## Warum nur Deutsche in den Listen stehen
 
-`Ranglisten::dwz()` des Wertungsportal-Bundles filtert gegen
-`tl_wertungsportal_persons.nation`, und dort zählt ein **leerer Wert als
-deutsch**. Das ist dort richtig: Das Feld stammt allein aus der
-Vereinsmitglieder-CSV und ist für einen großen Teil des Bestands leer — wer
-Leerwerte ausschlösse, verlöre die halbe Verbandsrangliste.
+Diese Frage beantwortet das Wertungsportal-Bundle, nicht dieses hier. Ab dessen
+Version **1.35.0** fragt der Nationenfilter in drei Stufen, und die erste
+bekannte Antwort entscheidet:
 
-Für die Spitzenwertungszahlen des DSB ist es falsch. In Version 1.7.0 standen
-dadurch Ausländer in allen zehn DWZ-Listen.
+1. **Die FIDE-Föderation** — `tl_wertungsportal_persons.fideNation`,
+   ersatzweise `country` der Elo-Tabelle über die FIDE-ID.
+2. **Die Nation der Mitgliederdatei** — `tl_wertungsportal_persons.nation`.
+3. **Ist beides unbekannt, bleibt der Spieler in der Liste.** Ausgeschlossen
+   wird nur, wer nachweislich anderswo geführt wird.
 
-Seit 1.7.1 prüft der Lauf deshalb nach dem Abruf zusätzlich die
-**FIDE-Föderation** — dasselbe Merkmal, das die alte DeWIS-Fassung benutzte
-(`member->fideNation == 'GER'`):
+Die Föderation steht bewußt vorn. Georg Meier ist laut Mitgliederdatei
+Deutscher, tritt aber für Uruguay an — in einer deutschen Rangliste hat er
+nichts zu suchen, und andersherum würde sich jeder Leser wundern.
 
-1. `tl_wertungsportal_persons.fideNation`,
-2. ersatzweise über die FIDE-ID `tl_wertungsportal_elo.country`.
+> **Zwischenstand in 1.7.1 bis 1.7.3.** In diesen Fassungen prüfte der Lauf
+> selbst nach, weil das Wertungsportal damals nur die Mitgliederdatei heranzog
+> und ein leerer Wert dort als deutsch galt — in den Top-10-Listen standen
+> dadurch Ausländer. Seit 1.7.4 ist die Nachprüfung wieder draußen: Sie wäre
+> nicht nur doppelt, sondern auch strenger als die Staffel gewesen und hätte
+> Spieler mit deutscher Föderation verworfen, deren Mitgliederdatei etwas
+> anderes sagt. Deshalb setzt die `composer.json` seit 1.7.4
+> `schachbulle/contao-wertungsportal-bundle: ^1.35` voraus.
 
-Verworfen wird nur, wer eine **bekannte andere** Föderation trägt. Wer gar
-keine hat, bleibt in der Liste — sonst verschwänden alle Spieler ohne
-FIDE-Eintrag, und das sind in den unteren Altersklassen die meisten. Wie viele
-das jeweils sind, steht in der Meldung des Schritts:
+Wie gut der Filter greift, hängt am Bestand. Steht `fideNation` überwiegend
+leer und ist auch die Elo-Tabelle leer (kein XML-Import), greift die zweite
+Stufe allein; sind beide leer, greift er gar nicht:
 
+```sql
+SELECT fideNation, COUNT(*) FROM tl_wertungsportal_persons GROUP BY fideNation ORDER BY 2 DESC;
 ```
-dwz_alle: 50 Plätze, 11 in der Ausgabe (Quelle: api) – 3 Nichtdeutsche verworfen, 12 ohne Föderation (bleiben drin)
-```
-
-Steht dort dauerhaft eine hohe Zahl bei „ohne Föderation", ist der Elo-Import
-des Wertungsportal-Bundles nicht gelaufen — dann greift die Prüfung nur über
-`fideNation`.
-
-Weil die Prüfung Zeilen wegnimmt, werden die DWZ-Listen **doppelt so lang**
-angefordert wie gebraucht, und die geteilten Platzziffern werden anschließend
-neu vergeben. Ohne das entstünden Lücken (1, 2, 4, 7 statt 1, 2, 2, 4).
-
-Die **Elo-Listen** brauchen das nicht: Sie werden von der FIDE-Tabelle
-angeführt, in der die Föderation immer gefüllt ist, und das Wertungsportal
-filtert sie dort bereits richtig.
 
 ## Wie Spieler zugeordnet werden
 
@@ -174,19 +166,17 @@ Sie meldet, wie viele `dewis_id` sich als PKZ wiederfinden, ob dahinter auch
 dieselbe Person steht, und welche PKZ die übrigen Spieler bekämen. Danach
 wieder entfernen.
 
-## Nach der Aktualisierung auf 1.7.0
+## Nach der Aktualisierung auf 1.7.x
 
-1. `contao:migrate` laufen lassen — das Feld `pkz` kommt hinzu.
-2. Prüfen, daß der Personen-Import des Wertungsportal-Bundles gelaufen ist.
-   Der Nationenfilter arbeitet auf `tl_wertungsportal_persons.nation`, und
-   dieses Feld stammt allein aus der Vereinsmitglieder-CSV. Ist es überwiegend
-   leer, enthalten die Listen auch Ausländer:
-
-   ```sql
-   SELECT nation, COUNT(*) FROM tl_wertungsportal_persons GROUP BY nation ORDER BY 2 DESC;
-   ```
-
-3. Einen Lauf anstoßen und den Bericht ansehen.
-4. Den äußeren Verbraucher der beiden JSON-Dateien auf die neuen URLs
-   umstellen.
-5. Die alten Dateien in `web/bundles/contaotopwertungszahlen/` können weg.
+1. `contao:migrate` laufen lassen — 1.7.0 bringt das Feld `pkz` mit, 1.7.3 die
+   Umschreibung der alten Geschlechtskürzel.
+2. Prüfen, daß das Wertungsportal-Bundle mindestens in **1.35.0** vorliegt.
+   Ohne diese Fassung greift der Nationenfilter nur über die Mitgliederdatei,
+   und in den Listen stehen Ausländer. Composer erzwingt die Fassung seit
+   1.7.4.
+3. Prüfen, daß Personen-Import und FIDE-Elo-Import des Wertungsportal-Bundles
+   gelaufen sind — sie füllen die beiden Felder, auf denen der Filter arbeitet.
+4. Einen Lauf anstoßen und den Bericht ansehen.
+5. Den äußeren Verbraucher der beiden JSON-Dateien auf die neuen URLs
+   umstellen (seit 1.7.0 `files/topwertungszahlen/`).
+6. Die alten Dateien in `web/bundles/contaotopwertungszahlen/` können weg.

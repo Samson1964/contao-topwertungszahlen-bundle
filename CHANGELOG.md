@@ -1,5 +1,29 @@
 # Topwertungszahlen Changelog
 
+## Version 1.7.4 (2026-09-02)
+
+* Change: **Die eigene Nationsprüfung ist wieder draußen.** Sie kam mit 1.7.1
+  als Umgehung dazu, weil das Wertungsportal-Bundle damals nur gegen
+  `tl_wertungsportal_persons.nation` filterte und ein leerer Wert dort als
+  deutsch galt. Ab dessen Version **1.35.0** fragt es in drei Stufen — zuerst
+  die FIDE-Föderation, dann die Nation der Mitgliederdatei, und behalten wird
+  nur, wovon beides unbekannt ist
+* Fix: Die Umgehung war nicht nur doppelt, sondern **strenger als die
+  Staffel**: Sie verwarf, sobald `nation` ODER Föderation fremd war, und hätte
+  damit Spieler mit deutscher Föderation aussortiert, deren Mitgliederdatei
+  etwas anderes sagt. Die Reihenfolge des Wertungsportals ist die richtige —
+  Georg Meier ist laut Mitgliederdatei Deutscher, tritt aber für Uruguay an
+  und gehört in keine deutsche Liste
+* Change: `composer.json` verlangt `schachbulle/contao-wertungsportal-bundle`
+  ab **^1.35**. Damit kann die Kombination aus dieser Fassung und einem
+  Bundle ohne Föderationsprüfung gar nicht erst entstehen
+* Change: Die DWZ-Listen werden nicht mehr überzogen angefordert, und die
+  geteilten Platzziffern werden nicht mehr neu vergeben — beides kommt jetzt
+  vom Wertungsportal. Entfallen sind `nurDeutsche()`, `foederationen()`,
+  `platzziffern()` sowie die Konstanten `NATION` und `UEBERZUG`
+* Change: Die Meldung eines Schritts nennt folglich keine verworfenen Spieler
+  mehr
+
 ## Version 1.7.3 (2026-09-01)
 
 * Fix: **Das Geschlecht wurde im Backend nicht erkannt.** Bis 1.6.3 übernahm
