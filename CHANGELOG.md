@@ -1,5 +1,22 @@
 # Topwertungszahlen Changelog
 
+## Version 1.7.5 (2026-09-02)
+
+* Fix: **Die Abhängigkeit `^1.35` ließ noch 1.35.0 zu — und genau die Fassung
+  hat den Fehler, gegen den sie schützen sollte.** Dort fragte der
+  Nationenfilter zuerst die Mitgliederdatei und erst danach die Föderation,
+  Georg Meier blieb also in der deutschen Liste. Verlangt wird jetzt
+  `^1.35.2`: 1.35.1 drehte die Reihenfolge um, 1.35.2 nahm dem veralteten
+  `persons.fideNation` die Möglichkeit, den frischen Elo-Bestand zu schlagen
+* Change: Die Dokumentation nennt die Quelle der Föderation richtig. Seit
+  Wertungsportal 1.35.2 kommt sie **ausschließlich** aus
+  `tl_wertungsportal_elo`, nachgeschlagen über die FIDE-ID;
+  `persons.fideNation` wird nicht mehr herangezogen
+* Change: In `docs/ranglistenlauf.md` steht jetzt deutlich, daß der Filter mit
+  dem FIDE-Elo-Import steht und fällt — ohne ihn gibt es keine Föderation, und
+  es bleibt die kaum gepflegte Nation der Mitgliederdatei. Dazu die Abfragen,
+  mit denen sich das nachsehen läßt
+
 ## Version 1.7.4 (2026-09-02)
 
 * Change: **Die eigene Nationsprüfung ist wieder draußen.** Sie kam mit 1.7.1

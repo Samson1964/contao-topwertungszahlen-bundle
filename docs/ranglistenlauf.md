@@ -100,18 +100,25 @@ genau während des Laufs liest, bekommt dadurch nie einen halben Datenbestand.
 ## Warum nur Deutsche in den Listen stehen
 
 Diese Frage beantwortet das Wertungsportal-Bundle, nicht dieses hier. Ab dessen
-Version **1.35.0** fragt der Nationenfilter in drei Stufen, und die erste
+Version **1.35.2** fragt der Nationenfilter in drei Stufen, und die erste
 bekannte Antwort entscheidet:
 
-1. **Die FIDE-Föderation** — `tl_wertungsportal_persons.fideNation`,
-   ersatzweise `country` der Elo-Tabelle über die FIDE-ID.
+1. **Die FIDE-Föderation** — `country` aus `tl_wertungsportal_elo`,
+   nachgeschlagen über die FIDE-ID der Person.
 2. **Die Nation der Mitgliederdatei** — `tl_wertungsportal_persons.nation`.
 3. **Ist beides unbekannt, bleibt der Spieler in der Liste.** Ausgeschlossen
    wird nur, wer nachweislich anderswo geführt wird.
 
 Die Föderation steht bewußt vorn. Georg Meier ist laut Mitgliederdatei
 Deutscher, tritt aber für Uruguay an — in einer deutschen Rangliste hat er
-nichts zu suchen, und andersherum würde sich jeder Leser wundern.
+nichts zu suchen, und andersherum würde sich jeder Leser wundern. Eine
+Rangliste beantwortet die Frage „wer spielt für Deutschland?", nicht „wer hat
+einen deutschen Paß?".
+
+Das Feld `persons.fideNation` wird seit 1.35.2 **nicht** mehr herangezogen: Es
+stammt wie `nation` aus dem CSV-Import und ist kaum gepflegt; ein vereinzelt
+gefüllter, veralteter Wert hätte sonst den monatlich frischen Elo-Bestand
+geschlagen.
 
 > **Zwischenstand in 1.7.1 bis 1.7.3.** In diesen Fassungen prüfte der Lauf
 > selbst nach, weil das Wertungsportal damals nur die Mitgliederdatei heranzog
@@ -119,15 +126,23 @@ nichts zu suchen, und andersherum würde sich jeder Leser wundern.
 > dadurch Ausländer. Seit 1.7.4 ist die Nachprüfung wieder draußen: Sie wäre
 > nicht nur doppelt, sondern auch strenger als die Staffel gewesen und hätte
 > Spieler mit deutscher Föderation verworfen, deren Mitgliederdatei etwas
-> anderes sagt. Deshalb setzt die `composer.json` seit 1.7.4
-> `schachbulle/contao-wertungsportal-bundle: ^1.35` voraus.
+> anderes sagt. Deshalb setzt die `composer.json` seit 1.7.5
+> `schachbulle/contao-wertungsportal-bundle: ^1.35.2` voraus — 1.35.0 fragte
+> noch in der falschen Reihenfolge, 1.35.1 ließ sich von einem veralteten
+> `fideNation` schlagen.
 
-Wie gut der Filter greift, hängt am Bestand. Steht `fideNation` überwiegend
-leer und ist auch die Elo-Tabelle leer (kein XML-Import), greift die zweite
-Stufe allein; sind beide leer, greift er gar nicht:
+**Der Filter steht und fällt mit dem FIDE-Elo-Import.** Ohne ihn ist
+`tl_wertungsportal_elo` leer, die erste Stufe liefert nie eine Antwort, und es
+bleibt die kaum gepflegte Nation der Mitgliederdatei. Der Import läuft im
+Backend unter *WP | FIDE-Elo → XML-Import*. Nachsehen, wie viele der Spieler
+überhaupt erreichbar sind:
 
 ```sql
-SELECT fideNation, COUNT(*) FROM tl_wertungsportal_persons GROUP BY fideNation ORDER BY 2 DESC;
+SELECT COUNT(*) AS personen,
+       SUM(fideId > 0) AS mit_fide_id
+FROM tl_wertungsportal_persons WHERE published = '1';
+
+SELECT COUNT(*) FROM tl_wertungsportal_elo;
 ```
 
 ## Wie Spieler zugeordnet werden
@@ -170,12 +185,12 @@ wieder entfernen.
 
 1. `contao:migrate` laufen lassen — 1.7.0 bringt das Feld `pkz` mit, 1.7.3 die
    Umschreibung der alten Geschlechtskürzel.
-2. Prüfen, daß das Wertungsportal-Bundle mindestens in **1.35.0** vorliegt.
-   Ohne diese Fassung greift der Nationenfilter nur über die Mitgliederdatei,
-   und in den Listen stehen Ausländer. Composer erzwingt die Fassung seit
-   1.7.4.
-3. Prüfen, daß Personen-Import und FIDE-Elo-Import des Wertungsportal-Bundles
-   gelaufen sind — sie füllen die beiden Felder, auf denen der Filter arbeitet.
+2. Prüfen, daß das Wertungsportal-Bundle mindestens in **1.35.2** vorliegt.
+   Composer erzwingt das seit 1.7.5.
+3. Prüfen, daß Personen-Import und **FIDE-Elo-Import** des
+   Wertungsportal-Bundles gelaufen sind. Der Elo-Import ist der wichtigere:
+   Ohne ihn hat der Filter keine Föderation und fällt auf die kaum gepflegte
+   Nation der Mitgliederdatei zurück.
 4. Einen Lauf anstoßen und den Bericht ansehen.
 5. Den äußeren Verbraucher der beiden JSON-Dateien auf die neuen URLs
    umstellen (seit 1.7.0 `files/topwertungszahlen/`).

@@ -22,7 +22,7 @@
         "contao/core-bundle": "^4.13",
         "codefog/contao-haste": "*",
         "schachbulle/contao-helper-bundle": "*",
-        "schachbulle/contao-wertungsportal-bundle": "^1.35"
+        "schachbulle/contao-wertungsportal-bundle": "^1.35.2"
     },
     "conflict": {
         "contao/core": "*",
