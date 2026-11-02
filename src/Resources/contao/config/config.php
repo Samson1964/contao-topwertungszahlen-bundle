@@ -1,14 +1,14 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 /**
- * Contao Open Source CMS
+ * Konfiguration des Bundles: Backend-Modul und dessen Schlüssel-Rückrufe.
  *
- * Copyright (C) 2005-2013 Leo Feyer
- *
- * @package   bdf
- * @author    Frank Hoppe
- * @license   GNU/LGPL
- * @copyright Frank Hoppe 2014
+ * Hier stand bis Version 1.9.0 die Zeile
+ * `if (!defined('TL_ROOT')) die('You cannot access this file directly!');`.
+ * Die Konstante gibt es in Contao 5 nicht mehr — die Datei hätte sich dort
+ * beim Laden kommentarlos beendet, und das Backend-Modul wäre spurlos
+ * verschwunden. Einen Schutz braucht sie ohnehin nicht: Sie liegt unterhalb
+ * von `src/` und ist über das Web nicht erreichbar.
  */
 
 $GLOBALS['BE_MOD']['content']['topwertungszahlen'] = array

@@ -15,8 +15,8 @@ $GLOBALS['TL_LANG']['tl_topwertungszahlen']['editHeader'] = array("Spieler %s be
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['editPhoto'] = array("Fotos des Spielers %s bearbeiten", "Fotos des Spielers %s bearbeiten");
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['copy'] = array("Spieler %s kopieren", "Spieler %s kopieren");
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['delete'] = array("Spieler %s löschen", "Spieler %s löschen");
-// Ohne %s in der Beschriftung: Diese Schaltfläche erzeugt Haste selbst und
-// läuft deshalb nicht über den button_callback, der den Namen einsetzt.
+// Ohne %s in der Beschriftung: Den Umschalter rendert Contao selbst, er läuft
+// deshalb nicht über den button_callback, der den Namen einsetzt.
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['toggle'] = array("Spieler aktivieren/deaktivieren", "Spieler %s aktivieren/deaktivieren");
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['show'] = array("Spielerdetails von %s anzeigen", "Details des Spielers %s anzeigen");
 

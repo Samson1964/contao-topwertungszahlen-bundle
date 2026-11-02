@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 	// Config
 	'config' => array
 	(
-		'dataContainer'             => 'Table',
+		'dataContainer'             => Contao\DC_Table::class,
 		'ptable'                    => 'tl_topwertungszahlen',
 		'enableVersioning'          => true,
 		'sql' => array
@@ -39,9 +39,9 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 	(
 		'sorting' => array
 		(
-			'mode'                    => 4,
+			'mode'                    => Contao\DataContainer::MODE_PARENT,
 			'fields'                  => array('date DESC'),
-			'flag'                    => 6,
+			'flag'                    => Contao\DataContainer::SORT_DAY_DESC,
 			'headerFields'            => array('nachname', 'vorname', 'geburtstag'), 
 			'panelLayout'             => 'sort,filter;search,limit',
 			'child_record_callback'   => array('tl_topwertungszahlen_ratings', 'listPlayers'),
@@ -87,17 +87,13 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 			),
 			'toggle' => array
 			(
-				'label'                => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['toggle'],
-				'attributes'           => 'onclick="Backend.getScrollOffset()"',
-				'haste_ajax_operation' => array
-				(
-					'field'            => 'published',
-					'options'          => array
-					(
-						array('value' => '', 'icon' => 'invisible.svg'),
-						array('value' => '1', 'icon' => 'visible.svg'),
-					),
-				),
+				// Eingebauter Umschalter statt des Haste-Aufsatzes: Beide
+				// Contao-Fassungen rendern daraus selbsttaetig einen
+				// Ajax-Knopf mit wechselndem Symbol, sobald das Feld
+				// 'toggle' => true traegt
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['toggle'],
+				'href'                => 'act=toggle&amp;field=published',
+				'icon'                => 'visible.svg',
 			),
 			'show' => array
 			(
@@ -167,7 +163,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['date'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
-			'flag'                    => 5,
+			'flag'                    => Contao\DataContainer::SORT_DAY_ASC,
 			'eval'                    => array
 			(
 				'tl_class'            => 'w50 clr' 
@@ -268,6 +264,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 		'published' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_ratings']['published'],
+			'toggle'                  => true,
 			'exclude'                 => true,
 			'search'                  => false,
 			'sorting'                 => false,
@@ -286,7 +283,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_ratings'] = array
 /**
  * Provide miscellaneous methods that are used by the data configuration array
  */
-class tl_topwertungszahlen_ratings extends Backend
+class tl_topwertungszahlen_ratings extends Contao\Backend
 {
 	 
 	/**
@@ -295,7 +292,6 @@ class tl_topwertungszahlen_ratings extends Backend
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
 	}
 
 	/**

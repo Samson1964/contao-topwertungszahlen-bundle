@@ -19,9 +19,8 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "contao/core-bundle": "^4.13",
-        "codefog/contao-haste": "*",
-        "schachbulle/contao-helper-bundle": "*",
+        "contao/core-bundle": "^4.13 || ^5.3",
+        "schachbulle/contao-helper-bundle": "^1.8.12 || ^2.0 || ^3.0",
         "schachbulle/contao-wertungsportal-bundle": "^1.35.2"
     },
     "conflict": {

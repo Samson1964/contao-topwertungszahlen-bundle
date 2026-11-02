@@ -1,5 +1,47 @@
 # Topwertungszahlen Changelog
 
+## Version 1.9.0 (2026-11-02)
+
+* Add: **Das Bundle läuft unter Contao 4.13 und Contao 5.3.** In der
+  `composer.json` steht jetzt `"contao/core-bundle": "^4.13 || ^5.3"`
+* Fix: **`config.php` hätte sich unter Contao 5 kommentarlos beendet.** Die
+  erste Zeile war `if (!defined('TL_ROOT')) die(...)`; die Konstante gibt es
+  dort nicht mehr. Das Backend-Modul wäre spurlos verschwunden — ohne
+  Fehlermeldung, weil `die()` ohne Text abbricht
+* Fix: **Contao 5 registriert keine Klassenaliasse mehr.** `extends Backend`,
+  `\Database::`, `\Input::`, `\Environment::`, `\System::`, `\FilesModel::`
+  und `\Image::` hätten dort beim Laden abgebrochen. Alle Aufrufe tragen
+  jetzt ihren Namensraum
+* Fix: **`\Session::getInstance()` und `$this->Session` gibt es in Contao 5
+  nicht mehr** — der erweiterte Filter der Spielerliste wäre beim ersten
+  Klick gescheitert, und zwar erst zur Laufzeit. Er liest und schreibt jetzt
+  über `request_stack` im Sitzungsbehälter `contao_backend`, derselben
+  Ablage, in der auch Contao seine Listenfilter hält. Gespeicherte Filter
+  bleiben dabei erhalten
+* Fix: `log_message()` in der Filterauswertung entfernt. Die Funktion ist in
+  Contao 5 weg, und sie schrieb bei **jedem** Aufruf der Liste die komplette
+  Spielerliste ins Protokoll — ein Debug-Überbleibsel
+* Fix: `$this->import('BackendUser', 'User')` in den drei DCA-Rückrufklassen
+  entfernt. Der Aufruf bricht unter Contao 5 ab, weil `import()` den
+  unqualifizierten Namen wörtlich auflöst; das Objekt wurde nirgends benutzt.
+  Die Konstruktoren bleiben: `Backend::__construct()` ist in 4.13 noch
+  `protected`
+* Change: **`codefog/contao-haste` ist keine Abhängigkeit mehr.** Der
+  Umschalter lief über `haste_ajax_operation`; beide Contao-Fassungen können
+  das seit jeher selbst (`act=toggle&field=published` am Knopf,
+  `'toggle' => true` am Feld). Haste verlangt ab 5.4 zudem PHP 8.1 und hätte
+  mit `"php": "^7.4 || ^8.0"` nicht mehr zusammengepaßt
+* Change: Sortiermodi und Sortierkennzeichen stehen als Konstanten von
+  `Contao\DataContainer` statt als Zahlen, `'dataContainer'` als
+  `Contao\DC_Table::class` statt `'Table'` — den Kurznamen kennt Contao 5
+  nicht mehr. Die Zahlenwerte wurden in den Quellen von 4.13.58 und 5.3
+  nachgeschlagen und sind dort gleich
+* Change: `schachbulle/contao-helper-bundle` ist auf
+  `^1.8.12 || ^2.0 || ^3.0` eingegrenzt statt `*` — die 1.8er-Reihe
+  unterstützt kein Contao 5
+* Change: `Classes\Import` erbt nicht mehr von `Backend`. Gebraucht wurde von
+  dort nichts mehr
+
 ## Version 1.8.0 (2026-11-02)
 
 * Add: **Nur die Fotos auffrischen.** Wird zu einem Spieler der Top-10

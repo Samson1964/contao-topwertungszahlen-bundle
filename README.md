@@ -9,6 +9,8 @@ Die Daten kommen aus dem
 (ab dessen Version 1.34.0). Bis Version 1.6.3 stammten sie aus der
 abgeschalteten DeWIS-Schnittstelle.
 
+Läuft unter **Contao 4.13 und Contao 5.3**.
+
 ## Installation
 
 ```bash

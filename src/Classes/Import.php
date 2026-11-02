@@ -20,7 +20,7 @@ namespace Schachbulle\ContaoTopwertungszahlenBundle\Classes;
  * Schritte aus einer Liste kommen statt aus zwanzig verschachtelten
  * Rückrufen, und daß der Fortschritt zu sehen ist.
  */
-class Import extends \Backend
+class Import
 {
 	/**
 	 * Baut die Importmaske und startet den Lauf.
@@ -35,16 +35,16 @@ class Import extends \Backend
 	 */
 	public function run(): string
 	{
-		$url = \System::getContainer()->get('router')->generate('topwertungszahlen_ranglistenlauf');
+		$url = \Contao\System::getContainer()->get('router')->generate('topwertungszahlen_ranglistenlauf');
 
 		// Zurücklink auf die Übersicht: derselbe Aufruf ohne den Schlüssel
 		// der globalen Operation
-		$backlink = str_replace(['&key=importRating', '&key=importPhotos'], '', \Environment::get('request'));
+		$backlink = str_replace(['&key=importRating', '&key=importPhotos'], '', \Contao\Environment::get('request'));
 
 		// Zwei Betriebsarten an derselben Maske: der vollständige Lauf und
 		// das bloße Auffrischen der Fotos. Sie unterscheiden sich allein in
 		// der Liste der Schritte, die das Steuerskript abarbeitet
-		if ('importPhotos' === \Input::get('key')) {
+		if ('importPhotos' === \Contao\Input::get('key')) {
 			$schritte = [['nr' => 'fotos', 'name' => 'Fotos in den Ausgabedateien auffrischen']];
 		} else {
 			// Die zwanzig Listen, dahinter das Zusammensetzen der Dateien als

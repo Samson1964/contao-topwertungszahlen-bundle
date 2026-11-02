@@ -489,7 +489,7 @@ class Ranglistenlauf
 	 */
 	private function spielerIdZuPkz(string $pkz): int
 	{
-		$treffer = \Database::getInstance()
+		$treffer = \Contao\Database::getInstance()
 			->prepare('SELECT id FROM tl_topwertungszahlen WHERE pkz=?')
 			->limit(1)
 			->execute($pkz)
@@ -576,7 +576,7 @@ class Ranglistenlauf
 	 */
 	private function platzierungSpeichern(string $art, int $id, string $liste, string $listendatum, array $zeile): void
 	{
-		$vorhanden = \Database::getInstance()
+		$vorhanden = \Contao\Database::getInstance()
 			->prepare('SELECT id FROM tl_topwertungszahlen_ratings WHERE pid=? AND type=? AND date=?')
 			->limit(1)
 			->execute($id, $liste, $listendatum)
@@ -607,7 +607,7 @@ class Ranglistenlauf
 			'published'    => 1,
 		];
 
-		\Database::getInstance()
+		\Contao\Database::getInstance()
 			->prepare('INSERT INTO tl_topwertungszahlen_ratings %s')
 			->set($set)
 			->execute()
@@ -659,7 +659,7 @@ class Ranglistenlauf
 			return $this->spielerCache[$pkz];
 		}
 
-		$db = \Database::getInstance();
+		$db = \Contao\Database::getInstance();
 
 		// Stufe 1: über die PKZ
 		$treffer = $db->prepare('SELECT id FROM tl_topwertungszahlen WHERE pkz=?')
@@ -743,7 +743,7 @@ class Ranglistenlauf
 
 		// Nur Sätze ohne PKZ kommen in Frage: Ein Satz mit PKZ gehört bereits
 		// einer anderen Person, sonst hätte Stufe 1 ihn gefunden
-		$kandidaten = \Database::getInstance()
+		$kandidaten = \Contao\Database::getInstance()
 			->prepare("SELECT id, vorname, nachname, geburtstag FROM tl_topwertungszahlen WHERE pkz='' AND nachname LIKE ?")
 			->execute(mb_substr((string) $zeile['nachname'], 0, 1).'%')
 		;
@@ -781,7 +781,7 @@ class Ranglistenlauf
 	 */
 	private function pkzNachtragen(int $id, string $pkz): void
 	{
-		\Database::getInstance()
+		\Contao\Database::getInstance()
 			->prepare('UPDATE tl_topwertungszahlen SET pkz=?, tstamp=? WHERE id=?')
 			->execute($pkz, time(), $id)
 		;
@@ -808,7 +808,7 @@ class Ranglistenlauf
 	 */
 	private function spielerfoto(int $id, string $listendatum): array
 	{
-		$foto = \Database::getInstance()
+		$foto = \Contao\Database::getInstance()
 			->prepare('SELECT singleSRC, source FROM tl_topwertungszahlen_photos WHERE pid=? AND date<=? ORDER BY date DESC')
 			->limit(1)
 			->execute($id, $listendatum)

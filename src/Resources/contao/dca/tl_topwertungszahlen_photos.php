@@ -19,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 	// Config
 	'config' => array
 	(
-		'dataContainer'               => 'Table',
+		'dataContainer'               => Contao\DC_Table::class,
 		'ptable'                      => 'tl_topwertungszahlen',
 		'switchToEdit'                => true,
 		'enableVersioning'            => true,
@@ -38,7 +38,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 	(
 		'sorting' => array
 		(
-			'mode'                    => 4,
+			'mode'                    => Contao\DataContainer::MODE_PARENT,
 			'fields'                  => array('date DESC'),
 			'headerFields'            => array('nachname', 'vorname', 'geburtstag'),
 			'panelLayout'             => 'filter;sort,search,limit',
@@ -84,17 +84,13 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 			),
 			'toggle' => array
 			(
-				'label'                => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['toggle'],
-				'attributes'           => 'onclick="Backend.getScrollOffset()"',
-				'haste_ajax_operation' => array
-				(
-					'field'            => 'published',
-					'options'          => array
-					(
-						array('value' => '', 'icon' => 'invisible.svg'),
-						array('value' => '1', 'icon' => 'visible.svg'),
-					),
-				),
+				// Eingebauter Umschalter statt des Haste-Aufsatzes: Beide
+				// Contao-Fassungen rendern daraus selbsttaetig einen
+				// Ajax-Knopf mit wechselndem Symbol, sobald das Feld
+				// 'toggle' => true traegt
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['toggle'],
+				'href'                => 'act=toggle&amp;field=published',
+				'icon'                => 'visible.svg',
 			),
 			'show' => array
 			(
@@ -155,7 +151,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 			'exclude'                 => true,
 			'sorting'                 => true,
 			'default'                 => date('Ymd'),
-			'flag'                    => 12,
+			'flag'                    => Contao\DataContainer::SORT_DESC,
 			'inputType'               => 'text',
 			'eval'                    => array
 			(
@@ -191,6 +187,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
 		'published' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen_photos']['published'],
+			'toggle'                  => true,
 			'default'                 => 1,
 			'inputType'               => 'checkbox',
 			'eval'                    => array
@@ -212,7 +209,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen_photos'] = array
  * @author     Leo Feyer <https://contao.org>
  * @package    News
  */
-class tl_topwertungszahlen_photos extends Backend
+class tl_topwertungszahlen_photos extends Contao\Backend
 {
 
 	/**
@@ -221,7 +218,6 @@ class tl_topwertungszahlen_photos extends Backend
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
 	}
 
 	/**

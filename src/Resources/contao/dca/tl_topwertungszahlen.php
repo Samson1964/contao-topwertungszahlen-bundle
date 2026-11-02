@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 	// Config
 	'config' => array
 	(
-		'dataContainer'             => 'Table',
+		'dataContainer'             => Contao\DC_Table::class,
 		'ctable'                    => array('tl_topwertungszahlen_ratings'),
 		'enableVersioning'          => true,
 		'onload_callback' => array
@@ -42,11 +42,11 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 	(
 		'sorting' => array
 		(
-			'mode'                    => 2,
+			'mode'                    => Contao\DataContainer::MODE_SORTABLE,
 			'fields'                  => array('nachname', 'vorname'),
 			'panelLayout'             => 'myfilter;filter;search,sort,limit',
 			'panel_callback'          => array('myfilter' => array('tl_topwertungszahlen', 'generateAdvancedFilter')),
-			'flag'                    => 11,
+			'flag'                    => Contao\DataContainer::SORT_ASC,
 			'disableGrouping'         => true,
 		),
 		'label' => array
@@ -92,7 +92,8 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			// button_callback. Er setzt den Spielernamen in das %s der
 			// Beschriftung ein — Contao selbst tut das nur im Titel, und dort
 			// nur mit der Datensatz-ID. Die Umschaltfläche bleibt außen vor:
-			// Sie hat kein href, sondern wird von Haste erzeugt.
+			// Sie rendert Contao seit 1.9.0 selbst (act=toggle); ein
+			// button_callback wuerde das eingebaute Verhalten verdraengen.
 			'edit' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['edit'],
@@ -131,17 +132,13 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			),
 			'toggle' => array
 			(
-				'label'                => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['toggle'],
-				'attributes'           => 'onclick="Backend.getScrollOffset()"',
-				'haste_ajax_operation' => array
-				(
-					'field'            => 'published',
-					'options'          => array
-					(
-						array('value' => '', 'icon' => 'invisible.svg'),
-						array('value' => '1', 'icon' => 'visible.svg'),
-					),
-				),
+				// Eingebauter Umschalter statt des Haste-Aufsatzes: Beide
+				// Contao-Fassungen rendern daraus selbsttaetig einen
+				// Ajax-Knopf mit wechselndem Symbol, sobald das Feld
+				// 'toggle' => true traegt
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['toggle'],
+				'href'                => 'act=toggle&amp;field=published',
+				'icon'                => 'visible.svg',
 			),
 			'show' => array
 			(
@@ -242,7 +239,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['geburtstag'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
-			'flag'                    => 5,
+			'flag'                    => Contao\DataContainer::SORT_DAY_ASC,
 			'default'                 => '',
 			'eval'                    => array
 			(
@@ -300,6 +297,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 		'published' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['published'],
+			'toggle'                  => true,
 			'exclude'                 => true,
 			'search'                  => false,
 			'sorting'                 => false,
@@ -326,7 +324,7 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 /**
  * Provide miscellaneous methods that are used by the data configuration array
  */
-class tl_topwertungszahlen extends Backend
+class tl_topwertungszahlen extends Contao\Backend
 {
 
 	/**
@@ -335,7 +333,6 @@ class tl_topwertungszahlen extends Backend
 	public function __construct()
 	{
 		parent::__construct();
-		$this->import('BackendUser', 'User');
 	}
 
 	/**
@@ -375,7 +372,94 @@ class tl_topwertungszahlen extends Backend
 
 		$text = false !== strpos((string) $label, '%s') ? sprintf((string) $label, $name) : (string) $label;
 
-		return '<a href="'.$this->addToUrl($href.'&amp;id='.$row['id']).'" title="'.\Contao\StringUtil::specialchars($text).'"'.$attributes.'>'.\Contao\Image::getHtml($icon, $text).'</a> ';
+		return '<a href="'.\Contao\Controller::addToUrl($href.'&amp;id='.$row['id']).'" title="'.\Contao\StringUtil::specialchars($text).'"'.$attributes.'>'.\Contao\Image::getHtml($icon, $text).'</a> ';
+	}
+
+	/**
+	 * Liest die gespeicherten Werte des erweiterten Filters.
+	 *
+	 * Früher stand hier `\Session::getInstance()->getData()`. Die Klasse gibt
+	 * es in Contao 5 nicht mehr, und `$this->Session` liefert dort still
+	 * `null` — der Aufruf wäre erst zur Laufzeit gescheitert, kein Linter
+	 * hätte es gefunden. Der Ersatz greift in beiden Fassungen auf dieselbe
+	 * Ablage zu, in der auch Contao seine eigenen Listenfilter hält: den
+	 * Sitzungsbehälter `contao_backend`, Schlüssel `filter`.
+	 *
+	 * @return array Werte des Filters, etwa `array('ttwz_filter' => '3')`.
+	 *               Leer, wenn nichts gespeichert ist oder es gar keine
+	 *               Sitzung gibt (Konsole)
+	 */
+	private function filterLesen()
+	{
+		$behaelter = $this->filterBehaelter();
+
+		if (null === $behaelter)
+		{
+			return array();
+		}
+
+		$filter = $behaelter->get('filter');
+
+		return $filter['tl_topwertungszahlenFilter'] ?? array();
+	}
+
+	/**
+	 * Speichert die Werte des erweiterten Filters.
+	 *
+	 * @param array $werte Die zu sichernden Filterwerte; ein leeres Feld
+	 *                     entfernt den Eintrag wieder
+	 */
+	private function filterSchreiben(array $werte)
+	{
+		$behaelter = $this->filterBehaelter();
+
+		if (null === $behaelter)
+		{
+			return;
+		}
+
+		$filter = $behaelter->get('filter');
+		$filter = \is_array($filter) ? $filter : array();
+
+		if (array() === $werte)
+		{
+			unset($filter['tl_topwertungszahlenFilter']);
+		}
+		else
+		{
+			$filter['tl_topwertungszahlenFilter'] = $werte;
+		}
+
+		$behaelter->set('filter', $filter);
+	}
+
+	/**
+	 * Holt den Sitzungsbehälter des Backends.
+	 *
+	 * Der Dienst `session` fehlt in Contao 5; der Weg über `request_stack`
+	 * funktioniert in beiden Fassungen. Außerhalb eines Seitenaufrufs — etwa
+	 * auf der Konsole — gibt es keine Sitzung, dann kommt `null` zurück und
+	 * die Aufrufer arbeiten ohne gespeicherten Filter weiter.
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface|null
+	 */
+	private function filterBehaelter()
+	{
+		try
+		{
+			$stapel = \Contao\System::getContainer()->get('request_stack');
+
+			if (null === $stapel->getCurrentRequest())
+			{
+				return null;
+			}
+
+			return $stapel->getSession()->getBag('contao_backend');
+		}
+		catch (\Throwable $e)
+		{
+			return null;
+		}
 	}
 
 	/**
@@ -388,11 +472,11 @@ class tl_topwertungszahlen extends Backend
 	 *
 	 * @return array
 	 */
-	public function viewLabels($row, $label, Contao\DataContainer $dc, $args)
+	public function viewLabels($row, $label, \Contao\DataContainer $dc, $args)
 	{
 
 		// Aktuelles Spielerfoto ermitteln
-		$foto = \Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_photos WHERE pid=? ORDER BY date DESC")
+		$foto = \Contao\Database::getInstance()->prepare("SELECT * FROM tl_topwertungszahlen_photos WHERE pid=? ORDER BY date DESC")
 		                                ->limit(1)
 		                                ->execute($row['id']);
 		if($foto->numRows)
@@ -421,12 +505,12 @@ class tl_topwertungszahlen extends Backend
 		return $args;
 	}
 
-	public function generateAdvancedFilter(DataContainer $dc)
+	public function generateAdvancedFilter(Contao\DataContainer $dc)
 	{
 
-		if(\Input::get('id') > 0) return '';
+		if(\Contao\Input::get('id') > 0) return '';
 
-		$session = \Session::getInstance()->getData();
+		$werte = $this->filterLesen();
 
 		// Filters
 		$arrFilters = array
@@ -475,13 +559,13 @@ class tl_topwertungszahlen extends Backend
             // Generate options
             foreach ($arrFilter['options'] as $k => $v)
             {
-            	if(isset($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']]))
+            	if(isset($werte[$arrFilter['name']]))
             	{
-                	$strOptions .= '  <option value="' . $k . '"' . (($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']] === (string) $k) ? ' selected' : '') . '>' . $v . '</option>' . "\n";
+                	$strOptions .= '  <option value="' . $k . '"' . (($werte[$arrFilter['name']] === (string) $k) ? ' selected' : '') . '>' . $v . '</option>' . "\n";
             	}
             }
 
-            $strBuffer .= '<select name="' . $arrFilter['name'] . '" id="' . $arrFilter['name'] . '" class="tl_select' . (isset($session['filter']['tl_topwertungszahlenFilter'][$arrFilter['name']]) ? ' active' : '') . '">
+            $strBuffer .= '<select name="' . $arrFilter['name'] . '" id="' . $arrFilter['name'] . '" class="tl_select' . (isset($werte[$arrFilter['name']]) ? ' active' : '') . '">
 ' . $strOptions . '
 </select>' . "\n";
         }
@@ -493,12 +577,8 @@ class tl_topwertungszahlen extends Backend
 	public function applyAdvancedFilter()
 	{
 
-		$session = \Session::getInstance()->getData();
+		$werte = $this->filterLesen();
 
-		//echo "<pre>";
-		//print_r($session);
-		//echo "</pre>";
-		
 		// Filterwerte in der Sitzung speichern
 		foreach($_POST as $k => $v)
 		{
@@ -508,27 +588,27 @@ class tl_topwertungszahlen extends Backend
 			}
 
 			// Filter zurücksetzen
-			if($k == \Input::post($k))
+			if($k == \Contao\Input::post($k))
 			{
-				unset($session['filter']['tl_topwertungszahlenFilter'][$k]);
+				unset($werte[$k]);
 			}
 			// Filter zuweisen
 			else
 			{
-				$session['filter']['tl_topwertungszahlenFilter'][$k] = \Input::post($k);
+				$werte[$k] = \Contao\Input::post($k);
 			}
 		}
 
-		$this->Session->setData($session);
+		$this->filterSchreiben($werte);
 
-		if(\Input::get('id') > 0 || !isset($session['filter']['tl_topwertungszahlenFilter']))
+		if(\Contao\Input::get('id') > 0 || array() === $werte)
 		{
 			return;
 		}
 
 		$arrPlayers = null;
 
-		switch($session['filter']['tl_topwertungszahlenFilter']['ttwz_filter'])
+		switch(($werte['ttwz_filter'] ?? ''))
 		{
 			case '1': $typ = 'dwz_alle'; break; // Alle Spieler
 			case '2': $typ = 'dwz_w'; break; // Alle Frauen
@@ -555,7 +635,7 @@ class tl_topwertungszahlen extends Backend
 
 		if($typ)
 		{
-			$objPlayers = \Database::getInstance()->prepare("SELECT tl_topwertungszahlen.id FROM tl_topwertungszahlen LEFT JOIN tl_topwertungszahlen_ratings ON tl_topwertungszahlen_ratings.pid = tl_topwertungszahlen.id WHERE tl_topwertungszahlen_ratings.type = ? AND tl_topwertungszahlen_ratings.published = ? ORDER BY tl_topwertungszahlen_ratings.date DESC, tl_topwertungszahlen_ratings.rank ASC")
+			$objPlayers = \Contao\Database::getInstance()->prepare("SELECT tl_topwertungszahlen.id FROM tl_topwertungszahlen LEFT JOIN tl_topwertungszahlen_ratings ON tl_topwertungszahlen_ratings.pid = tl_topwertungszahlen.id WHERE tl_topwertungszahlen_ratings.type = ? AND tl_topwertungszahlen_ratings.published = ? ORDER BY tl_topwertungszahlen_ratings.date DESC, tl_topwertungszahlen_ratings.rank ASC")
 			                                      ->limit(15)
 			                                      ->execute($typ, 1);
 			$arrPlayers = is_array($arrPlayers) ? array_intersect($arrPlayers, $objPlayers->fetchEach('id')) : $objPlayers->fetchEach('id');
@@ -566,9 +646,9 @@ class tl_topwertungszahlen extends Backend
 			$arrPlayers = array(0);
 		}
 
-		$log = print_r($arrPlayers, true);
-		log_message($log, 'topwertungszahlen.log');
-
+		// Hier stand ein log_message() mit der kompletten Spielerliste. Die
+		// Funktion gibt es in Contao 5 nicht mehr, und sie schrieb bei JEDEM
+		// Aufruf der Liste eine Protokollzeile — ein Debug-Überbleibsel
 		$GLOBALS['TL_DCA']['tl_topwertungszahlen']['list']['sorting']['root'] = $arrPlayers;
 
 		// ID und Platz (Index) tauschen für Anzeige im Backend
