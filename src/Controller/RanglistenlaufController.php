@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  *   0 … 19     eine einzelne Liste
  *   'dateien'  die Bruchstücke zu den Ausgabedateien zusammensetzen
+ *   'fotos'    nur die Fotos in den Ausgabedateien auffrischen
  *   fehlt      alles auf einmal, für den Aufruf von Hand
  */
 class RanglistenlaufController
@@ -77,6 +78,19 @@ class RanglistenlaufController
 
 			if (null === $schritt || '' === $schritt) {
 				return new JsonResponse($this->allesAufEinmal($lauf));
+			}
+
+			if ('fotos' === $schritt) {
+				$ergebnis = $lauf->fotosAktualisieren();
+
+				return new JsonResponse([
+					'ok'        => true,
+					'meldung'   => $ergebnis['meldung'],
+					'dateien'   => $ergebnis['dateien'],
+					'geprueft'  => $ergebnis['geprueft'],
+					'geaendert' => $ergebnis['geaendert'],
+					'fehlend'   => $ergebnis['fehlend'],
+				]);
 			}
 
 			if ('dateien' === $schritt) {

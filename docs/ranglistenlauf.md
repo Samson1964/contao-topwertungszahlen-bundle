@@ -77,6 +77,7 @@ die Listen sind, dessen Werte die besten zehn Plätze:
   "dwz_alle": [
     {
       "rang": 1,
+      "pkz": "10285765",
       "vorname": "Vincent",
       "nachname": "Keymer",
       "verband": "RLP",
@@ -94,8 +95,43 @@ die Listen sind, dessen Werte die besten zehn Plätze:
 Bei geteilten Platzziffern können mehr als zehn Einträge in einer Liste
 stehen. In den Elo-Listen zeigt `link` auf das FIDE-Profil.
 
+Das Feld `pkz` kam mit 1.8.0 dazu. Für die Anzeige wird es nicht gebraucht; es
+macht das Auffrischen der Fotos möglich, ohne die Wertungszahlen neu zu
+beschaffen. Bei Elo-Einträgen ohne zugeordnete Person bleibt es leer.
+
 Geschrieben wird über eine Zwischendatei und `rename()`. Ein Seitenaufruf, der
 genau während des Laufs liest, bekommt dadurch nie einen halben Datenbestand.
+
+## Nur die Fotos auffrischen
+
+Wird zu einem Spieler der Top-10 nachträglich ein Foto hinterlegt, muß dafür
+nicht der ganze Lauf wiederholt werden — und das brächte auch nichts: Die
+Platzierungen des Tages stehen schon in der Auswertungstabelle und werden von
+einem zweiten Lauf bewußt nicht mehr angefaßt.
+
+**Im Backend:** *Inhalte → Topwertungszahlen → Nur Fotos auffrischen*.
+
+**Auf der Kommandozeile:**
+
+```bash
+vendor/bin/contao-console topwertungszahlen:rangliste --nur-fotos
+```
+
+Was dabei geschieht: Die beiden vorhandenen Ausgabedateien werden gelesen, zu
+jedem Eintrag über seine PKZ das jüngste Foto nachgeschlagen und die Dateien
+zurückgeschrieben. Maßgeblich ist das heutige Datum, nicht das Datum der Liste
+— gesucht ist ja gerade das neu hinzugekommene Bild.
+
+**Nicht angefaßt werden** das Wertungsportal, `tl_topwertungszahlen` und
+`tl_topwertungszahlen_ratings`. Es entsteht auch kein Spielerdatensatz: Wer
+nicht in der Tabelle steht, behält seinen leeren Fotoeintrag.
+
+Gibt es die Ausgabedateien noch nicht, sagt die Meldung das — dann muß erst
+ein vollständiger Lauf laufen.
+
+Nebenbei räumt die Auffrischung auf: Zeigt ein Eintrag auf eine Bilddatei, die
+es nicht mehr gibt, wird der Verweis geleert, statt auf der Webseite ein
+kaputtes Bild zu erzeugen.
 
 ## Warum nur Deutsche in den Listen stehen
 

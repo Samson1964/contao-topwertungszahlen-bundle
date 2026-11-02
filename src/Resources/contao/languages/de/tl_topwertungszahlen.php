@@ -4,6 +4,7 @@
  * Buttons für globale Operationen
  */
 $GLOBALS['TL_LANG']['tl_topwertungszahlen']['importRating'] = array('Wertungszahlen aktualisieren', 'Wertungszahlen laden und JSON-Dateien aktualisieren');
+$GLOBALS['TL_LANG']['tl_topwertungszahlen']['importPhotos'] = array('Nur Fotos auffrischen', 'Allein die Fotos in den JSON-Dateien erneuern, ohne die Wertungszahlen neu zu laden');
 
 /**
  * Buttons für Operationen

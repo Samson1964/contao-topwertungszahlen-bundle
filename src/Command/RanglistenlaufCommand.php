@@ -8,6 +8,7 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Schachbulle\ContaoTopwertungszahlenBundle\Classes\Ranglistenlauf;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -61,10 +62,20 @@ class RanglistenlaufCommand extends Command
 	{
 		$this
 			->setDescription('Erzeugt die zwanzig Ranglisten (DWZ und Elo) aus den Daten des Wertungsportals.')
+			->addOption(
+				'nur-fotos',
+				null,
+				InputOption::VALUE_NONE,
+				'Frischt allein die Fotos in den Ausgabedateien auf, ohne die Wertungszahlen neu zu laden'
+			)
 			->setHelp(
 				'Schreibt die Platzierungen nach tl_topwertungszahlen_ratings und die '
 				.'Ausgabedateien nach '.Ranglistenlauf::AUSGABEORDNER.'. Ein zweiter Lauf am '
 				.'selben Tag läßt bereits festgehaltene Platzierungen unverändert.'
+				."\n\n"
+				.'Mit --nur-fotos wird nichts beschafft und nichts in die Auswertungstabelle '
+				.'geschrieben: Die vorhandenen Ausgabedateien werden gelesen, zu jedem Eintrag '
+				.'das jüngste Foto nachgeschlagen und die Dateien zurückgeschrieben.'
 			)
 		;
 	}
@@ -81,9 +92,27 @@ class RanglistenlaufCommand extends Command
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$stil = new SymfonyStyle($input, $output);
-		$stil->title('Topwertungszahlen: Ranglisten erzeugen');
+		$nurFotos = (bool) $input->getOption('nur-fotos');
+
+		$stil->title($nurFotos
+			? 'Topwertungszahlen: Fotos auffrischen'
+			: 'Topwertungszahlen: Ranglisten erzeugen');
 
 		$this->framework->initialize();
+
+		if ($nurFotos) {
+			try {
+				$ergebnis = (new Ranglistenlauf($this->projektverzeichnis))->fotosAktualisieren();
+			} catch (\Throwable $e) {
+				$stil->error($e->getMessage());
+
+				return 1;
+			}
+
+			$stil->success($ergebnis['meldung']);
+
+			return 0;
+		}
 
 		try {
 			$lauf = new Ranglistenlauf($this->projektverzeichnis);

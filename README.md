@@ -32,6 +32,13 @@ vendor/bin/contao-console topwertungszahlen:rangliste
 Ein Lauf schreibt die Platzierungen in die Datenbank und legt
 `files/topwertungszahlen/dwz.json` und `files/topwertungszahlen/elo.json` an.
 
+Wird nachträglich ein Foto hinterlegt, genügt *Nur Fotos auffrischen*
+beziehungsweise:
+
+```bash
+vendor/bin/contao-console topwertungszahlen:rangliste --nur-fotos
+```
+
 Ausführlich beschrieben in [docs/ranglistenlauf.md](docs/ranglistenlauf.md).
 
 ## Lizenz

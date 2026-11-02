@@ -39,19 +39,26 @@ class Import extends \Backend
 
 		// Zurücklink auf die Übersicht: derselbe Aufruf ohne den Schlüssel
 		// der globalen Operation
-		$backlink = str_replace('&key=importRating', '', \Environment::get('request'));
+		$backlink = str_replace(['&key=importRating', '&key=importPhotos'], '', \Environment::get('request'));
 
-		// Die zwanzig Listen, dahinter das Zusammensetzen der Dateien als
-		// einundzwanzigster Schritt
-		$schritte = [];
+		// Zwei Betriebsarten an derselben Maske: der vollständige Lauf und
+		// das bloße Auffrischen der Fotos. Sie unterscheiden sich allein in
+		// der Liste der Schritte, die das Steuerskript abarbeitet
+		if ('importPhotos' === \Input::get('key')) {
+			$schritte = [['nr' => 'fotos', 'name' => 'Fotos in den Ausgabedateien auffrischen']];
+		} else {
+			// Die zwanzig Listen, dahinter das Zusammensetzen der Dateien als
+			// einundzwanzigster Schritt
+			$schritte = [];
 
-		foreach (Ranglistenlauf::schritte() as $nummer => $schritt) {
-			$schritte[] = ['nr' => (string) $nummer, 'name' => $schritt['name']];
+			foreach (Ranglistenlauf::schritte() as $nummer => $schritt) {
+				$schritte[] = ['nr' => (string) $nummer, 'name' => $schritt['name']];
+			}
+
+			$schritte[] = ['nr' => 'dateien', 'name' => 'Ausgabedateien schreiben'];
 		}
 
-		$schritte[] = ['nr' => 'dateien', 'name' => 'Ausgabedateien schreiben'];
-
-		$content = $this->maske($backlink);
+		$content = $this->maske($backlink, \count($schritte));
 		$content .= '<script>'."\n";
 		$content .= 'var twUrl = '.json_encode($url).';'."\n";
 		$content .= 'var twSchritte = '.json_encode($schritte, JSON_UNESCAPED_UNICODE).';'."\n";
@@ -69,17 +76,18 @@ class Import extends \Backend
 	 * müßte über `assets:install` mitwandern.
 	 *
 	 * @param string $backlink Ziel des Zurücklinks
+	 * @param int    $anzahl   Anzahl der Schritte, die abzuarbeiten sind
 	 *
 	 * @return string HTML ohne Skript
 	 */
-	private function maske(string $backlink): string
+	private function maske(string $backlink, int $anzahl): string
 	{
 		$html = '<div style="margin:10px;">'."\n";
 		$html .= '<p id="tw_stand" style="margin-bottom:6px;font-weight:bold;">Der Lauf wird vorbereitet …</p>'."\n";
 		$html .= '<div style="height:18px;border:1px solid #a3a3a3;background:#f7f7f7;border-radius:3px;overflow:hidden;">'."\n";
 		$html .= '<div id="tw_balken" style="height:100%;width:0;background:#3f7ba7;transition:width .2s;"></div>'."\n";
 		$html .= '</div>'."\n";
-		$html .= '<p id="tw_zaehler" style="margin-top:6px;color:#666;">0 von '.(\count(Ranglistenlauf::schritte()) + 1).' Schritten</p>'."\n";
+		$html .= '<p id="tw_zaehler" style="margin-top:6px;color:#666;">0 von '.$anzahl.' Schritten</p>'."\n";
 		$html .= '<div id="tw_protokoll" style="margin-top:12px;font-family:monospace;font-size:12px;line-height:1.6;"></div>'."\n";
 		$html .= '<p style="margin-top:12px;"><a href="'.$backlink.'">Zurück zur Übersicht</a></p>'."\n";
 		$html .= '</div>'."\n";

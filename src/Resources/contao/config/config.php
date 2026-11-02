@@ -14,7 +14,11 @@
 $GLOBALS['BE_MOD']['content']['topwertungszahlen'] = array
 (
 	'tables'            => array('tl_topwertungszahlen', 'tl_topwertungszahlen_ratings', 'tl_topwertungszahlen_photos'),
-	'importRating'      => array('Schachbulle\ContaoTopwertungszahlenBundle\Classes\Import', 'run')
+	// Beide Schlüssel führen in dieselbe Maske; sie unterscheidet die
+	// Betriebsart am Schlüssel und arbeitet entweder alle 21 Schritte ab oder
+	// nur den einen, der die Fotos auffrischt
+	'importRating'      => array('Schachbulle\ContaoTopwertungszahlenBundle\Classes\Import', 'run'),
+	'importPhotos'      => array('Schachbulle\ContaoTopwertungszahlenBundle\Classes\Import', 'run')
 );
 
 /**

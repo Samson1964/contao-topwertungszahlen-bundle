@@ -1,5 +1,39 @@
 # Topwertungszahlen Changelog
 
+## Version 1.8.0 (2026-11-02)
+
+* Add: **Nur die Fotos auffrischen.** Wird zu einem Spieler der Top-10
+  nachträglich ein Foto hinterlegt, mußte bisher der ganze Lauf wiederholt
+  werden — und das brachte nichts, weil ein zweiter Lauf am selben Tag die
+  Platzierungen bewußt nicht mehr anfaßt. Neu im Backend die globale Operation
+  *Nur Fotos auffrischen* und auf der Kommandozeile
+  `topwertungszahlen:rangliste --nur-fotos`. Gelesen werden die vorhandenen
+  Ausgabedateien, nachgeschlagen wird je Eintrag das jüngste Foto. Weder das
+  Wertungsportal noch die beiden Tabellen werden dabei berührt, und es entsteht
+  kein Spielerdatensatz
+* Add: Die Ausgabedateien führen je Eintrag das Feld `pkz`. Für die Anzeige
+  wird es nicht gebraucht, es macht die Auffrischung erst möglich. Ältere
+  Dateien ohne das Feld werden über den Spielerlink aufgelöst, die erste
+  Auffrischung nach der Aktualisierung greift also auch
+* Fix: **Ein verwaister Fotoverweis erzeugte bei jedem Aufruf der Backend-Liste
+  eine Meldung.** `listImages` und `viewLabels` griffen nach
+  `FilesModel::findByPk()` ohne Prüfung auf `->path` zu — fehlte der Eintrag in
+  der Dateiverwaltung, meldete PHP 8 „Attempt to read property "path" on null",
+  und zwar je Zeile. Fehlte nur die Datei, schrieb die Bilderzeugung „could not
+  be processed" ins Systemprotokoll
+* Change: Beide Stellen laufen jetzt über den gemeinsamen Helfer
+  `Helper\Bilder`. Er behandelt den leeren Wert, die leere UUID, den fehlenden
+  Eintrag und die fehlende Datei gleich und liefert in allen Fällen einen
+  leeren String ohne Protokolleintrag. In der Fotoliste steht an Stelle des
+  Bildes „Datei fehlt", in der Spielerliste ein Warnzeichen — so findet der
+  Redakteur den verwaisten Datensatz überhaupt erst
+* Change: Das Vorschaubild entsteht über `contao.image.factory` statt über
+  `Image::get()`. Die statische Methode gibt es in Contao 5 nicht mehr; damit
+  fällt ein weiterer Stolperstein der Portierung weg
+* Change: `Ranglistenlauf::spielerfoto()` prüft jetzt ebenfalls, ob die Datei
+  wirklich auf der Platte liegt. Bisher konnte ein Pfad in die Ausgabedatei
+  geraten, hinter dem nichts mehr lag
+
 ## Version 1.7.5 (2026-09-02)
 
 * Fix: **Die Abhängigkeit `^1.35` ließ noch 1.35.0 zu — und genau die Fassung

@@ -68,6 +68,16 @@ $GLOBALS['TL_DCA']['tl_topwertungszahlen'] = array
 				'icon'                => 'bundles/contaotopwertungszahlen/images/import.png',
 				'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['tl_topwertungszahlen']['importRating_confirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"',
 			),
+			// Frischt allein die Fotos in den Ausgabedateien auf. Der häufige
+			// Pflegefall — ein Foto wird nachgetragen — braucht keinen
+			// vollständigen Lauf, und ein solcher würde die Platzierungen des
+			// Tages ohnehin nicht mehr anfassen
+			'importPhotos' => array
+			(
+				'label'               => &$GLOBALS['TL_LANG']['tl_topwertungszahlen']['importPhotos'],
+				'href'                => 'key=importPhotos',
+				'icon'                => 'bundles/contaotopwertungszahlen/images/foto-icon.png',
+			),
 			'all' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
@@ -387,13 +397,16 @@ class tl_topwertungszahlen extends Backend
 		                                ->execute($row['id']);
 		if($foto->numRows)
 		{
-			// Foto vorhanden
-			$bildid = $foto->singleSRC;
-			$objFile = \FilesModel::findByPk($foto->singleSRC);
-			$pfad = $objFile->path;
-			$quelle = $foto->source; // Nur das funktioniert im Moment
-			$thumbnail = \Image::get($objFile->path, 20, 20, 'crop');
-			$str = '<img src="' . $thumbnail . '" width="20" height="20" style="margin-right:5px">'.\Schachbulle\ContaoHelperBundle\Classes\Helper::getDate($foto->date);
+			$datum = \Schachbulle\ContaoHelperBundle\Classes\Helper::getDate($foto->date);
+			$vorschau = \Schachbulle\ContaoTopwertungszahlenBundle\Helper\Bilder::vorschau($foto->singleSRC, 20);
+
+			// Ohne brauchbares Bild bleibt das Datum stehen und davor ein
+			// Hinweis: Der Fotodatensatz ist ja vorhanden, nur seine Datei
+			// nicht. Ein ungeprüfter Zugriff erzeugte hier früher je Zeile
+			// eine PHP-Warnung beziehungsweise einen Protokolleintrag
+			$str = $vorschau
+				? '<img src="' . $vorschau . '" width="20" height="20" style="margin-right:5px">'.$datum
+				: '<span style="color:#c33" title="Die Bilddatei fehlt">⚠</span> '.$datum;
 		}
 		else
 		{

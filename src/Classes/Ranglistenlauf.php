@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Schachbulle\ContaoTopwertungszahlenBundle\Classes;
 
+use Schachbulle\ContaoTopwertungszahlenBundle\Helper\Bilder;
 use Schachbulle\ContaoWertungsportalBundle\Helper\Ranglisten;
 
 /**
@@ -338,6 +339,166 @@ class Ranglistenlauf
 	}
 
 	/**
+	 * Frischt allein die Fotos in den beiden Ausgabedateien auf.
+	 *
+	 * Gedacht für den häufigsten Pflegefall: Zu einem Spieler der Top-10 wird
+	 * ein Foto nachgetragen, und das soll auf der Webseite erscheinen, ohne
+	 * daß die Ranglisten neu beschafft werden. Ein vollständiger Lauf wäre
+	 * dafür nicht nur unnötig aufwendig, er würde die Platzierungen des Tages
+	 * auch gar nicht mehr anfassen — die stehen bereits in der
+	 * Auswertungstabelle und bleiben dort unverändert.
+	 *
+	 * Gearbeitet wird auf den fertigen Dateien: Jede Zeile trägt die PKZ, über
+	 * sie wird der Spieler gefunden und sein jüngstes Foto nachgeschlagen.
+	 * Weder das Wertungsportal noch die Auswertungstabelle werden dabei
+	 * angefaßt, und es entsteht kein neuer Spielerdatensatz.
+	 *
+	 * Maßgeblich ist das heutige Datum und nicht das Datum der Liste: Gesucht
+	 * ist das aktuellste Foto, denn genau deshalb wird aufgefrischt.
+	 *
+	 * @return array{dateien:array<string,string>,geprueft:int,geaendert:int,fehlend:array<int,string>,meldung:string}
+	 *               `geprueft` zählt alle durchgesehenen Zeilen, `geaendert`
+	 *               die mit neuem Foto. `fehlend` nennt Dateien, die es noch
+	 *               nicht gibt — dann muß erst ein vollständiger Lauf laufen
+	 */
+	public function fotosAktualisieren(): array
+	{
+		$listendatum = date('Ymd');
+		$dateien = [];
+		$fehlend = [];
+		$geprueft = 0;
+		$geaendert = 0;
+
+		// Ein Spieler steht in mehreren Listen; sein Foto wird trotzdem nur
+		// einmal nachgeschlagen
+		$fotos = [];
+
+		foreach (['dwz', 'elo'] as $art) {
+			$pfad = $this->projektverzeichnis.'/'.self::AUSGABEORDNER.'/'.$art.'.json';
+
+			if (!is_file($pfad)) {
+				$fehlend[] = $art.'.json';
+
+				continue;
+			}
+
+			$daten = json_decode((string) file_get_contents($pfad), true);
+
+			if (!\is_array($daten)) {
+				$fehlend[] = $art.'.json';
+
+				continue;
+			}
+
+			foreach ($daten as $liste => $zeilen) {
+				if (!\is_array($zeilen)) {
+					continue;
+				}
+
+				foreach ($zeilen as $i => $zeile) {
+					++$geprueft;
+
+					$pkz = $this->pkzAusZeile($zeile);
+
+					if ('' === $pkz) {
+						continue;
+					}
+
+					if (!isset($fotos[$pkz])) {
+						$id = $this->spielerIdZuPkz($pkz);
+						$fotos[$pkz] = $id > 0
+							? $this->spielerfoto($id, $listendatum)
+							: ['pfad' => '', 'quelle' => ''];
+					}
+
+					$foto = $fotos[$pkz];
+
+					if ((string) ($zeile['foto'] ?? '') === $foto['pfad'] && (string) ($zeile['quelle'] ?? '') === $foto['quelle']) {
+						continue;
+					}
+
+					$daten[$liste][$i]['foto'] = $foto['pfad'];
+					$daten[$liste][$i]['quelle'] = $foto['quelle'];
+					++$geaendert;
+				}
+			}
+
+			$dateien[$art] = $this->dateiSchreiben($art.'.json', $daten);
+		}
+
+		$meldung = sprintf('%d Einträge durchgesehen, %d Fotos geändert.', $geprueft, $geaendert);
+
+		if ([] !== $dateien) {
+			$meldung .= ' Geschrieben: '.implode(', ', $dateien).'.';
+		}
+
+		if ([] !== $fehlend) {
+			$meldung .= ' Nicht vorhanden: '.implode(', ', $fehlend)
+				.' – dafür muß erst ein vollständiger Lauf laufen.';
+		}
+
+		return [
+			'dateien'  => $dateien,
+			'geprueft' => $geprueft,
+			'geaendert' => $geaendert,
+			'fehlend'  => $fehlend,
+			'meldung'  => $meldung,
+		];
+	}
+
+	/**
+	 * Holt die PKZ aus einer Zeile einer Ausgabedatei.
+	 *
+	 * Seit 1.8.0 steht sie als eigenes Feld darin. Ältere Dateien kennen das
+	 * Feld nicht; dort wird sie aus dem Spielerlink zurückgewonnen
+	 * (`spieler/10285765.html`). Ohne diesen Rückfall könnte die erste
+	 * Auffrischung nach der Aktualisierung nichts ausrichten, weil die
+	 * vorhandenen Dateien noch aus der Zeit davor stammen.
+	 *
+	 * @param array $zeile Eine Zeile aus dwz.json oder elo.json
+	 *
+	 * @return string Die PKZ, oder ein leerer String bei Elo-Zeilen ohne
+	 *                zugeordnete Person und bei Links anderer Form
+	 */
+	private function pkzAusZeile(array $zeile): string
+	{
+		$pkz = trim((string) ($zeile['pkz'] ?? ''));
+
+		if ('' !== $pkz) {
+			return $pkz;
+		}
+
+		if (preg_match('#(?:^|/)spieler/(\d+)\.html$#', (string) ($zeile['link'] ?? ''), $treffer)) {
+			return $treffer[1];
+		}
+
+		return '';
+	}
+
+	/**
+	 * Sucht einen Spieler allein über seine PKZ.
+	 *
+	 * Anders als spielerId() legt diese Methode **nichts** an und schreibt
+	 * nichts nach. Beim Auffrischen der Fotos darf kein Spielerdatensatz
+	 * entstehen: Die Ranglisten sind da, es geht nur um das Bild.
+	 *
+	 * @param string $pkz Personenkennziffer aus dem Wertungsportal
+	 *
+	 * @return int Datensatz-ID in tl_topwertungszahlen, oder 0 wenn der
+	 *             Spieler dort nicht geführt wird
+	 */
+	private function spielerIdZuPkz(string $pkz): int
+	{
+		$treffer = \Database::getInstance()
+			->prepare('SELECT id FROM tl_topwertungszahlen WHERE pkz=?')
+			->limit(1)
+			->execute($pkz)
+		;
+
+		return $treffer->numRows ? (int) $treffer->id : 0;
+	}
+
+	/**
 	 * Schreibt eine einzelne Liste in die Auswertungstabelle und baut ihre
 	 * Ausgabezeilen.
 	 *
@@ -377,6 +538,12 @@ class Ranglistenlauf
 
 			$ausgabe[] = [
 				'rang'     => (int) $zeile['platz'],
+				// Die PKZ steht seit 1.8.0 mit in der Datei. Sie wird für die
+				// Anzeige nicht gebraucht, macht aber das Auffrischen der
+				// Fotos möglich, ohne die Wertungszahlen neu zu beschaffen
+				// (@see fotosAktualisieren()). Bei Elo-Zeilen ohne zugeordnete
+				// Person bleibt sie leer
+				'pkz'      => (string) $zeile['pkz'],
 				'vorname'  => (string) $zeile['vorname'],
 				'nachname' => (string) $zeile['nachname'],
 				'verband'  => (string) $zeile['verbandskuerzel'],
@@ -651,15 +818,18 @@ class Ranglistenlauf
 			return ['pfad' => '', 'quelle' => ''];
 		}
 
-		$objFile = \FilesModel::findByPk($foto->singleSRC);
+		// Der Verweis kann auf zwei Arten ins Leere gehen: Der Eintrag in der
+		// Dateiverwaltung fehlt, oder er ist da und die Datei nicht. Beides
+		// behandelt der Helfer, und beides muß hier dasselbe bedeuten — ein
+		// Pfad in der Ausgabedatei, hinter dem nichts liegt, erzeugt auf der
+		// Webseite ein kaputtes Bild
+		$pfad = Bilder::pfad($foto->singleSRC);
 
-		// Der Verweis kann ins Leere gehen, wenn die Datei gelöscht wurde,
-		// ohne den Fotodatensatz mitzunehmen
-		if (null === $objFile) {
+		if ('' === $pfad) {
 			return ['pfad' => '', 'quelle' => ''];
 		}
 
-		return ['pfad' => (string) $objFile->path, 'quelle' => (string) $foto->source];
+		return ['pfad' => $pfad, 'quelle' => (string) $foto->source];
 	}
 
 	/**

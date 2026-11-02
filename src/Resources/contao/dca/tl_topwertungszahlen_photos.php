@@ -308,17 +308,42 @@ class tl_topwertungszahlen_photos extends Backend
 		return $svg;
 	}
 
+	/**
+	 * Baut die Zeile eines Fotos in der Elternansicht des Spielers.
+	 *
+	 * Zeigt das Vorschaubild, den Dateipfad, das Datum und die Quellenangabe.
+	 *
+	 * Fehlt das Bild — weil der Eintrag in der Dateiverwaltung oder die Datei
+	 * selbst verschwunden ist —, steht an seiner Stelle ein Hinweis. Früher
+	 * griff diese Methode ohne Prüfung auf `$objFile->path` zu und erzeugte
+	 * dann je Zeile eine PHP-Warnung beziehungsweise einen Eintrag im
+	 * Systemprotokoll; der Redakteur sah nur ein kaputtes Bild und wußte
+	 * nicht, welcher Datensatz es war.
+	 *
+	 * @param array $arrRow Datensatz aus tl_topwertungszahlen_photos
+	 *
+	 * @return string HTML der Zeile
+	 */
 	public function listImages($arrRow)
 	{
-		// Bild extrahieren
-		$objFile = \FilesModel::findByPk($arrRow['singleSRC']);
-		$thumbnail = Image::get($objFile->path, 160, 160, 'crop');
+		$pfad = \Schachbulle\ContaoTopwertungszahlenBundle\Helper\Bilder::pfad($arrRow['singleSRC']);
+		$vorschau = $pfad ? \Schachbulle\ContaoTopwertungszahlenBundle\Helper\Bilder::vorschau($arrRow['singleSRC'], 160) : '';
 
 		$temp = '<div class="tl_content_left" style="min-width:300px">';
-		$temp .= '<img src="' . $thumbnail . '" width="160" height="160" style="float:left; margin-right:5px" />';
-		$temp .= 'Datei: <b>' . $objFile->path . '</b><br>';
+
+		if ($vorschau)
+		{
+			$temp .= '<img src="' . $vorschau . '" width="160" height="160" style="float:left; margin-right:5px" />';
+		}
+		else
+		{
+			$temp .= '<div style="float:left; margin-right:5px; width:160px; height:160px; border:1px dashed #c33; color:#c33; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px;">Datei fehlt</div>';
+		}
+
+		$temp .= 'Datei: <b>' . ($pfad ?: '<span style="color:#c33">nicht vorhanden</span>') . '</b><br>';
 		$temp .= 'Datum: <b>' . \Schachbulle\ContaoHelperBundle\Classes\Helper::getDate($arrRow['date']) . '</b><br>';
 		$temp .= 'Quelle: <b>' . $arrRow['source'] . '</b>';
+
 		return $temp.'</div>';
 	}
 
