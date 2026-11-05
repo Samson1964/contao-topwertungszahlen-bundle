@@ -1,5 +1,26 @@
 # Topwertungszahlen Changelog
 
+## Version 1.9.1 (2026-11-05)
+
+* Fix: **„Nur Fotos auffrischen" fand überhaupt keinen Spieler.** Die
+  vorhandenen Ausgabedateien stammen noch aus der Zeit vor 1.8.0 und tragen
+  das Feld `pkz` nicht; die Auffrischung fällt dann auf den Spielerlink
+  zurück. Deren Ausdruck ließ aber nur **Ziffern** zu — die PKZ des
+  Wertungsportals beginnt mit „NU" (`spieler/NU4279580.html`). Von den 101
+  Einträgen in `dwz.json` traf er deshalb **keinen einzigen**. Nachgemessen
+  an den echten Dateien von schachbund.de
+* Fix: **Ältere `elo.json` ließ sich gar nicht auffrischen.** Dort zeigt der
+  Link auf das FIDE-Profil und nennt keine PKZ. Die FIDE-ID steht aber als
+  `rating_id` an jeder Elo-Platzierung — darüber wird der Spieler jetzt
+  gefunden
+* Fix: **Eine nicht zuzuordnende Zeile wird nicht mehr geleert.** Bisher
+  bekam sie ein leeres Foto zugewiesen; damit hätte ein Fehlschlag die
+  vorhandenen Bilder aus der Datei entfernt
+* Add: Die Meldung nennt jetzt, wie viele Spieler sich **nicht zuordnen**
+  ließen. Genau daran wäre der Fehler sofort aufgefallen — die Ausgabe
+  lautete „101 Einträge durchgesehen, 0 Fotos geändert" und verschwieg,
+  warum
+
 ## Version 1.9.0 (2026-11-02)
 
 * Add: **Das Bundle läuft unter Contao 4.13 und Contao 5.3.** In der

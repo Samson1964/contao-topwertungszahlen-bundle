@@ -89,6 +89,7 @@ class RanglistenlaufController
 					'dateien'   => $ergebnis['dateien'],
 					'geprueft'  => $ergebnis['geprueft'],
 					'geaendert' => $ergebnis['geaendert'],
+					'unbekannt' => $ergebnis['unbekannt'],
 					'fehlend'   => $ergebnis['fehlend'],
 				]);
 			}

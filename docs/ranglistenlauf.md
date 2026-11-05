@@ -123,8 +123,20 @@ zurückgeschrieben. Maßgeblich ist das heutige Datum, nicht das Datum der Liste
 — gesucht ist ja gerade das neu hinzugekommene Bild.
 
 **Nicht angefaßt werden** das Wertungsportal, `tl_topwertungszahlen` und
-`tl_topwertungszahlen_ratings`. Es entsteht auch kein Spielerdatensatz: Wer
-nicht in der Tabelle steht, behält seinen leeren Fotoeintrag.
+`tl_topwertungszahlen_ratings`. Es entsteht auch kein Spielerdatensatz.
+
+Die Zuordnung läuft über das Feld `pkz` der Zeile. Dateien aus der Zeit vor
+1.8.0 kennen es nicht; dort wird der Spieler über den Link gefunden — bei DWZ
+aus `spieler/NU4279580.html`, bei Elo über die FIDE-ID und die Spalte
+`rating_id` der Auswertungstabelle. Läßt sich eine Zeile trotzdem nicht
+zuordnen, bleibt sie **unverändert** stehen, und die Meldung nennt die Anzahl:
+
+```
+101 Einträge durchgesehen, 1 Fotos geändert. 3 Spieler nicht zuzuordnen (unverändert gelassen).
+```
+
+Steht dort eine hohe Zahl, stimmt etwas nicht — in 1.8.0 und 1.9.0 waren es
+alle, weil der Ausdruck für den Link nur Ziffern zuließ.
 
 Gibt es die Ausgabedateien noch nicht, sagt die Meldung das — dann muß erst
 ein vollständiger Lauf laufen.

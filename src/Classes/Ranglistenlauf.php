@@ -356,7 +356,7 @@ class Ranglistenlauf
 	 * Maßgeblich ist das heutige Datum und nicht das Datum der Liste: Gesucht
 	 * ist das aktuellste Foto, denn genau deshalb wird aufgefrischt.
 	 *
-	 * @return array{dateien:array<string,string>,geprueft:int,geaendert:int,fehlend:array<int,string>,meldung:string}
+	 * @return array{dateien:array<string,string>,geprueft:int,geaendert:int,unbekannt:int,fehlend:array<int,string>,meldung:string}
 	 *               `geprueft` zählt alle durchgesehenen Zeilen, `geaendert`
 	 *               die mit neuem Foto. `fehlend` nennt Dateien, die es noch
 	 *               nicht gibt — dann muß erst ein vollständiger Lauf laufen
@@ -368,9 +368,11 @@ class Ranglistenlauf
 		$fehlend = [];
 		$geprueft = 0;
 		$geaendert = 0;
+		$unbekannt = 0;
 
 		// Ein Spieler steht in mehreren Listen; sein Foto wird trotzdem nur
-		// einmal nachgeschlagen
+		// einmal nachgeschlagen. Ein `null` merkt sich, daß die Zeile keinem
+		// Spieler zuzuordnen war
 		$fotos = [];
 
 		foreach (['dwz', 'elo'] as $art) {
@@ -398,20 +400,35 @@ class Ranglistenlauf
 				foreach ($zeilen as $i => $zeile) {
 					++$geprueft;
 
-					$pkz = $this->pkzAusZeile($zeile);
+					// Schlüssel des Zwischenspeichers: die PKZ, solange die
+					// Zeile sie trägt, sonst der Link. Beides ist je Spieler
+					// eindeutig, und so wird derselbe Spieler über alle
+					// zwanzig Listen hinweg nur einmal nachgeschlagen
+					$schluessel = trim((string) ($zeile['pkz'] ?? '')) ?: (string) ($zeile['link'] ?? '');
 
-					if ('' === $pkz) {
+					if ('' === $schluessel) {
 						continue;
 					}
 
-					if (!isset($fotos[$pkz])) {
-						$id = $this->spielerIdZuPkz($pkz);
-						$fotos[$pkz] = $id > 0
+					if (!isset($fotos[$schluessel])) {
+						$id = $this->spielerIdZuZeile($zeile);
+
+						if (0 === $id) {
+							++$unbekannt;
+						}
+
+						$fotos[$schluessel] = $id > 0
 							? $this->spielerfoto($id, $listendatum)
-							: ['pfad' => '', 'quelle' => ''];
+							: null;
 					}
 
-					$foto = $fotos[$pkz];
+					$foto = $fotos[$schluessel];
+
+					// Nicht zuzuordnende Zeilen bleiben, wie sie sind: Ein
+					// Leeren wäre hier keine Auffrischung, sondern Datenverlust
+					if (null === $foto) {
+						continue;
+					}
 
 					if ((string) ($zeile['foto'] ?? '') === $foto['pfad'] && (string) ($zeile['quelle'] ?? '') === $foto['quelle']) {
 						continue;
@@ -428,6 +445,13 @@ class Ranglistenlauf
 
 		$meldung = sprintf('%d Einträge durchgesehen, %d Fotos geändert.', $geprueft, $geaendert);
 
+		// Nicht zuzuordnende Spieler gehören in die Meldung, nicht ins
+		// Schweigen: Genau daran wäre der Fehler vor 1.9.1 sofort aufgefallen,
+		// bei dem kein einziger Eintrag zugeordnet werden konnte
+		if ($unbekannt > 0) {
+			$meldung .= sprintf(' %d Spieler nicht zuzuordnen (unverändert gelassen).', $unbekannt);
+		}
+
 		if ([] !== $dateien) {
 			$meldung .= ' Geschrieben: '.implode(', ', $dateien).'.';
 		}
@@ -438,41 +462,67 @@ class Ranglistenlauf
 		}
 
 		return [
-			'dateien'  => $dateien,
-			'geprueft' => $geprueft,
+			'dateien'   => $dateien,
+			'geprueft'  => $geprueft,
 			'geaendert' => $geaendert,
-			'fehlend'  => $fehlend,
-			'meldung'  => $meldung,
+			'unbekannt' => $unbekannt,
+			'fehlend'   => $fehlend,
+			'meldung'   => $meldung,
 		];
 	}
 
 	/**
-	 * Holt die PKZ aus einer Zeile einer Ausgabedatei.
+	 * Sucht zu einer Zeile einer Ausgabedatei den Spielerdatensatz.
 	 *
-	 * Seit 1.8.0 steht sie als eigenes Feld darin. Ältere Dateien kennen das
-	 * Feld nicht; dort wird sie aus dem Spielerlink zurückgewonnen
-	 * (`spieler/10285765.html`). Ohne diesen Rückfall könnte die erste
-	 * Auffrischung nach der Aktualisierung nichts ausrichten, weil die
-	 * vorhandenen Dateien noch aus der Zeit davor stammen.
+	 * Seit 1.8.0 trägt jede Zeile ihre PKZ; damit ist die Zuordnung eine
+	 * einzige Abfrage. Dateien aus der Zeit davor kennen das Feld nicht, und
+	 * solange der nächtliche Lauf sie nicht neu geschrieben hat, muß die
+	 * Auffrischung ohne auskommen. Dafür die beiden Rückfälle über den Link.
+	 *
+	 * Angelegt oder geändert wird dabei nichts — es geht nur um das Bild.
 	 *
 	 * @param array $zeile Eine Zeile aus dwz.json oder elo.json
 	 *
-	 * @return string Die PKZ, oder ein leerer String bei Elo-Zeilen ohne
-	 *                zugeordnete Person und bei Links anderer Form
+	 * @return int Datensatz-ID in tl_topwertungszahlen, oder 0 wenn sich die
+	 *             Zeile keinem Spieler zuordnen läßt (Elo-Zeilen ohne Person,
+	 *             Links anderer Form, Spieler nicht in der Tabelle)
 	 */
-	private function pkzAusZeile(array $zeile): string
+	private function spielerIdZuZeile(array $zeile): int
 	{
+		// 1. Das Feld pkz, seit 1.8.0 in jeder Zeile
 		$pkz = trim((string) ($zeile['pkz'] ?? ''));
 
 		if ('' !== $pkz) {
-			return $pkz;
+			return $this->spielerIdZuPkz($pkz);
 		}
 
-		if (preg_match('#(?:^|/)spieler/(\d+)\.html$#', (string) ($zeile['link'] ?? ''), $treffer)) {
-			return $treffer[1];
+		$link = (string) ($zeile['link'] ?? '');
+
+		// 2. Ältere DWZ-Dateien: die PKZ steckt im Spielerlink.
+		//    ACHTUNG, hier lag bis 1.9.1 ein Fehler: Der Ausdruck ließ nur
+		//    Ziffern zu. Die PKZ des Wertungsportals beginnt aber mit „NU"
+		//    (`NU4279580`), also traf er auf der echten Webseite KEINE
+		//    einzige Zeile — das Auffrischen tat gar nichts
+		if (preg_match('#(?:^|/)spieler/([A-Za-z0-9_-]+)\.html$#', $link, $treffer)) {
+			return $this->spielerIdZuPkz($treffer[1]);
 		}
 
-		return '';
+		// 3. Ältere Elo-Dateien: dort zeigt der Link auf das FIDE-Profil und
+		//    nennt keine PKZ. Die FIDE-ID steht aber als `rating_id` an jeder
+		//    Elo-Platzierung in der Auswertungstabelle
+		if (preg_match('#/profile/(\d+)$#', $link, $treffer)) {
+			$platz = \Contao\Database::getInstance()
+				->prepare("SELECT pid FROM tl_topwertungszahlen_ratings WHERE rating_id=? AND type LIKE 'elo%' ORDER BY date DESC")
+				->limit(1)
+				->execute($treffer[1])
+			;
+
+			if ($platz->numRows) {
+				return (int) $platz->pid;
+			}
+		}
+
+		return 0;
 	}
 
 	/**
