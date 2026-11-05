@@ -44,7 +44,9 @@ class Import
 		// Zwei Betriebsarten an derselben Maske: der vollständige Lauf und
 		// das bloße Auffrischen der Fotos. Sie unterscheiden sich allein in
 		// der Liste der Schritte, die das Steuerskript abarbeitet
-		if ('importPhotos' === \Contao\Input::get('key')) {
+		$nurFotos = 'importPhotos' === \Contao\Input::get('key');
+
+		if ($nurFotos) {
 			$schritte = [['nr' => 'fotos', 'name' => 'Fotos in den Ausgabedateien auffrischen']];
 		} else {
 			// Die zwanzig Listen, dahinter das Zusammensetzen der Dateien als
@@ -62,6 +64,7 @@ class Import
 		$content .= '<script>'."\n";
 		$content .= 'var twUrl = '.json_encode($url).';'."\n";
 		$content .= 'var twSchritte = '.json_encode($schritte, JSON_UNESCAPED_UNICODE).';'."\n";
+		$content .= 'var twSpielerbilanz = '.($nurFotos ? 'false' : 'true').';'."\n";
 		$content .= $this->skript();
 		$content .= '</script>'."\n";
 
@@ -142,7 +145,11 @@ class Import
 		if (i >= twSchritte.length) {
 			stand.textContent = 'Fertig in ' + sekunden() + ' Sekunden';
 			stand.style.color = '#2a8';
-			zeile(neu + ' Spieler neu angelegt, ' + zugeordnet + ' über den Namen zugeordnet.');
+			// Nur beim vollständigen Lauf: Die Auffrischung der Fotos legt
+			// keine Spieler an, dort stünde immer eine Null-Meldung
+			if (twSpielerbilanz) {
+				zeile(neu + ' Spieler neu angelegt, ' + zugeordnet + ' über den Namen zugeordnet.');
+			}
 			return;
 		}
 

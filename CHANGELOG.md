@@ -1,5 +1,13 @@
 # Topwertungszahlen Changelog
 
+## Version 1.9.2 (2026-11-05)
+
+* Fix: Nach „Nur Fotos auffrischen" stand als letzte Zeile „0 Spieler neu
+  angelegt, 0 über den Namen zugeordnet". Die Auffrischung legt
+  grundsätzlich keine Spieler an — die Zeile konnte also nur Null melden und
+  klang, als wäre etwas nicht geglückt. Sie erscheint jetzt allein beim
+  vollständigen Lauf, wo die Zahlen etwas bedeuten
+
 ## Version 1.9.1 (2026-11-05)
 
 * Fix: **„Nur Fotos auffrischen" fand überhaupt keinen Spieler.** Die
